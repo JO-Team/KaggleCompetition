@@ -6,12 +6,12 @@ import xgboost as xgb
 import matplotlib.pyplot as plt
 
 macro_cols = ["balance_trade", "balance_trade_growth", "eurrub", "average_provision_of_build_contract",
-"micex_rgbi_tr", "micex_cbi_tr", "deposits_rate", "mortgage_value", "mortgage_rate",
-"income_per_cap", "rent_price_4+room_bus", "museum_visitis_per_100_cap", "apartment_build"]
+              "micex_rgbi_tr", "micex_cbi_tr", "deposits_rate", "mortgage_value", "mortgage_rate",
+              "income_per_cap", "rent_price_4+room_bus", "museum_visitis_per_100_cap", "apartment_build"]
 
-df_train=pd.read_csv("Data/train.csv",parse_dates=['timestamp'])
-df_test=pd.read_csv("Data/test.csv",parse_dates=['timestamp'])
-df_macro=pd.read_csv("Data/macro.csv",parse_dates=['timestamp'],usecols=['timestamp']+macro_cols)
+df_train = pd.read_csv("Data/train.csv", parse_dates=['timestamp'])
+df_test = pd.read_csv("Data/test.csv", parse_dates=['timestamp'])
+df_macro = pd.read_csv("Data/macro.csv", parse_dates=['timestamp'], usecols=['timestamp'] + macro_cols)
 df_train.head()
 
 # ylog will be log(1+y), as suggested by https://github.com/dmlc/xgboost/issues/446#issuecomment-135555130
@@ -48,8 +48,6 @@ df_all['rel_kitch_sq'] = df_all['kitch_sq'] / df_all['full_sq'].astype(float)
 # Remove timestamp column (may overfit the model in train)
 df_all.drop(['timestamp'], axis=1, inplace=True)
 
-
-
 # Deal with categorical values
 df_numeric = df_all.select_dtypes(exclude=['object'])
 df_obj = df_all.select_dtypes(include=['object']).copy()
@@ -59,8 +57,6 @@ for c in df_obj:
 
 df_values = pd.concat([df_numeric, df_obj], axis=1)
 
-
-
 # Convert to numpy values
 X_all = df_values.values
 print(X_all.shape)
@@ -69,8 +65,8 @@ print(X_all.shape)
 num_val = int(num_train * 0.2)
 
 X_train_all = X_all[:num_train]
-X_train = X_all[:num_train-num_val]
-X_val = X_all[num_train-num_val:num_train]
+X_train = X_all[:num_train - num_val]
+X_val = X_all[num_train - num_val:num_train]
 ylog_train = ylog_train_all[:-num_val]
 ylog_val = ylog_train_all[-num_val:]
 
@@ -85,16 +81,10 @@ print('X_val shape is', X_val.shape)
 print('y_val shape is', ylog_val.shape)
 print('X_test shape is', X_test.shape)
 
-
-
-
 dtrain_all = xgb.DMatrix(X_train_all, ylog_train_all, feature_names=df_columns)
 dtrain = xgb.DMatrix(X_train, ylog_train, feature_names=df_columns)
 dval = xgb.DMatrix(X_val, ylog_val, feature_names=df_columns)
 dtest = xgb.DMatrix(X_test, feature_names=df_columns)
-
-
-
 
 xgb_params = {
     'eta': 0.05,
@@ -108,25 +98,19 @@ xgb_params = {
 
 # Uncomment to tune XGB `num_boost_rounds`
 partial_model = xgb.train(xgb_params, dtrain, num_boost_round=1000, evals=[(dval, 'val')],
-                       early_stopping_rounds=20, verbose_eval=20)
+                          early_stopping_rounds=20, verbose_eval=20)
 
 num_boost_round = partial_model.best_iteration
 
-
-
-
 fig, ax = plt.subplots(1, 1, figsize=(8, 16))
-#xgb.plot_importance(partial_model, max_num_features=50, height=0.5, ax=ax)
-
-
-
+# xgb.plot_importance(partial_model, max_num_features=50, height=0.5, ax=ax)
 
 num_boost_round = partial_model.best_iteration
 
 model = xgb.train(dict(xgb_params, silent=0), dtrain_all, num_boost_round=num_boost_round)
 
 fig, ax = plt.subplots(1, 1, figsize=(8, 16))
-#xgb.plot_importance(model, max_num_features=50, height=0.5, ax=ax)
+# xgb.plot_importance(model, max_num_features=50, height=0.5, ax=ax)
 
 ylog_pred = model.predict(dtest)
 y_pred = np.exp(ylog_pred) - 1
