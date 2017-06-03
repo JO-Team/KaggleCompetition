@@ -43,7 +43,7 @@ xgb_params = {
 dtrain = xgb.DMatrix(x_train, y_train)
 dtest = xgb.DMatrix(x_test)
 
-num_boost_rounds = 384  # This was the CV output, as earlier version shows
+num_boost_rounds = 384   
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_rounds)
 
 y_predict = model.predict(dtest)
