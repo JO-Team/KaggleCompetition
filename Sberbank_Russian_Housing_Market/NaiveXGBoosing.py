@@ -1,3 +1,4 @@
+# *coding=utf-8*
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -20,7 +21,7 @@ x_train = train.drop(["id", "timestamp", "price_doc"], axis=1)
 x_test = test.drop(["id", "timestamp"], axis=1)
 
 # can't merge train with test because the kernel run for very long time
-
+#标签预处理  标签编码  非数值类型的标签到数值类型标签的转化 比如['a','a','b']transform之后[0,0,1]
 for c in x_train.columns:
     if x_train[c].dtype == 'object':
         lbl = preprocessing.LabelEncoder()
@@ -56,10 +57,10 @@ num_boost_rounds = len(cv_output)
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_rounds)
 
 fig, ax = plt.subplots(1, 1, figsize=(8, 13))
-xgb.plot_importance(model, max_num_features=50, height=0.5, ax=ax)
+#xgb.plot_importance(model, max_num_features=50, height=0.5, ax=ax)
 
 y_predict = model.predict(dtest)
 output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
 output.head()
 
-output.to_csv('xgbSub.csv', index=False)
+#output.to_csv('xgbSub.csv', index=False)
