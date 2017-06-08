@@ -6,8 +6,9 @@ bruno_weight = .2
 reynaldo_weight = 1 - jason_weight - bruno_weight
 
 # Get ready for lots of annoying deprecation warnings
-import statsmodels.api as sm
-
+# import statsmodels.api as sm
+# import statsmodels as sm
+from statsmodels import api as sm
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
