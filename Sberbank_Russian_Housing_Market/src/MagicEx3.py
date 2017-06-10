@@ -155,6 +155,28 @@ bad_index = test[test.life_sq > 200].index
 test.ix[bad_index, ["life_sq", "full_sq"]] = np.NaN
 train.product_type.value_counts(normalize=True)
 test.product_type.value_counts(normalize=True)
+
+###################################################################
+
+bad_index = train[train.build_year == 20052009].index
+train.ix[bad_index, "build_year"] = 2009
+bad_index = train[train.build_year == 1691].index
+train.ix[bad_index, "build_year"] = 1961
+bad_index = train[train.build_year == 4965].index
+train.ix[bad_index, "build_year"] = 1965
+bad_index = train[train.build_year == 215].index
+train.ix[bad_index, "build_year"] = 2015
+bad_index = train[train.build_year == 2].index
+train.ix[bad_index, "build_year"] = 2014
+bad_index = train[train.build_year == 20].index
+train.ix[bad_index, "build_year"] = 2014
+bad_index = train[train.max_floor > 57].index
+train.ix[bad_index, 'max_floor']=np.NaN
+bad_index = test[test.max_floor > 57].index
+test.ix[bad_index, 'max_floor']=np.NaN
+
+##################################################################
+
 bad_index = train[train.build_year < 1500].index
 train.ix[bad_index, "build_year"] = np.NaN
 bad_index = test[test.build_year < 1500].index
@@ -188,6 +210,44 @@ train.state.value_counts()
 bad_index = train[train.state == 33].index
 train.ix[bad_index, "state"] = np.NaN
 test.state.value_counts()
+
+
+##############################################################################################
+'''
+mode_by_own = train.loc[train.product_type == "OwnerOccupier", "build_year"].mode()[0]
+mode_by_invest = train.loc[train.product_type == "Investment", "build_year"].mode()[0]
+
+
+train.loc[(train.product_type == "OwnerOccupier") & (train.build_year.isnull()), "build_year"] = mode_by_own
+train.loc[(train.product_type == "Investment") & (train.build_year.isnull()), "build_year"] = mode_by_invest
+
+train["year"]  = train["timestamp"].dt.year
+
+train["year_difference"] = train.year - train.build_year
+
+mode_by_own = test.loc[test.product_type == "OwnerOccupier", "build_year"].mode()[0]
+mode_by_invest = test.loc[test.product_type == "Investment", "build_year"].mode()[0]
+
+
+test.loc[(test.product_type == "OwnerOccupier") & (test.build_year.isnull()), "build_year"] = mode_by_own
+test.loc[(test.product_type == "Investment") & (test.build_year.isnull()), "build_year"] = mode_by_invest
+
+test["year"]  = test["timestamp"].dt.year
+
+test["year_difference"] = test.year - test.build_year
+
+train['desity']=train['raion_popul']/(train['area_m']/1000000)
+train = train.drop(['raion_popul', 'area_m'], axis=1)
+
+test['desity']=test['raion_popul']/(test['area_m']/1000000)
+test = test.drop(['raion_popul', 'area_m'], axis=1)
+'''
+
+# brings error down a lot by removing extreme price per sqm
+train.loc[train.full_sq == 0, 'full_sq'] = 50
+train = train[train.price_doc/train.full_sq <= 600000]
+train = train[train.price_doc/train.full_sq >= 10000]
+###############################################################################################
 
 # brings error down a lot by removing extreme price per sqm
 train.loc[train.full_sq == 0, 'full_sq'] = 50
@@ -269,8 +329,9 @@ print('Model 1: \n')
 cv_output[['train-rmse-mean', 'test-rmse-mean']]
 # cv_output[['train-rmse-mean', 'test-rmse-mean']].plot()
 
-# num_boost_rounds = len(cv_output)
+#num_boost_rounds = len(cv_output)
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=350)
+#model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_rounds)
 
 # fig, ax = plt.subplots(1, 1, figsize=(8, 13))
 # xgb.plot_importance(model, max_num_features=50, height=0.5, ax=ax)
@@ -280,6 +341,8 @@ jason_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
 
 jason_model_output.to_csv('jason_model.csv', index=False)
 np.exp(jason_model_output.price_doc.apply(np.log).mean())
+
+
 
 # Fit Reynaldo's model
 # Reynaldo
@@ -317,13 +380,16 @@ xgb_params = {
 dtrain = xgb.DMatrix(x_train, y_train)
 dtest = xgb.DMatrix(x_test)
 
-num_boost_rounds = 384  # This was the CV output, as earlier version shows
-model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_rounds)
-
 cv_output_model2 = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_rounds=20, verbose_eval=50,
                           show_stdv=False)
 print('Model 2: \n')
 cv_output_model2[['train-rmse-mean', 'test-rmse-mean']]
+
+#num_boost_rounds =len(cv_output_model2)
+num_boost_rounds = 384  # This was the CV output, as earlier version shows
+model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_rounds)
+
+
 
 y_predict = model.predict(dtest)
 reynaldo_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
@@ -419,13 +485,16 @@ xgb_params = {
 dtrain = xgb.DMatrix(X_train, y_train, feature_names=df_columns)
 dtest = xgb.DMatrix(X_test, feature_names=df_columns)
 
-num_boost_round = 489  # From Bruno's original CV, I think
-model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_round)
-
 cv_output_model3 = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_rounds=20, verbose_eval=50,
                           show_stdv=False)
 print('Model 3: \n')
 cv_output_model3[['train-rmse-mean', 'test-rmse-mean']]
+
+#num_boost_round =len(cv_output_model3)
+num_boost_round = 489  # From Bruno's original CV, I think
+model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_round)
+
+
 
 y_pred = model.predict(dtest)
 bruno_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_pred})
