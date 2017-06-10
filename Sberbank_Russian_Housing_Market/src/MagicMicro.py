@@ -7,9 +7,9 @@ import statsmodels.api as sm
 micro_humility_factor = 1  # range from 0 (complete humility) to 1 (no humility)
 macro_humility_factor = 1
 
-macro = pd.read_csv('./Data/macro.csv')
-train = pd.read_csv('./Data/train.csv')
-test = pd.read_csv('./Data/test.csv')
+macro = pd.read_csv('../input/macro.csv')
+train = pd.read_csv('../input/train.csv')
+test = pd.read_csv('../input/test.csv')
 
 # Macro data monthly medians
 macro["timestamp"] = pd.to_datetime(macro["timestamp"])
@@ -100,9 +100,9 @@ macro_naive
 # Combine naive and substantive macro models
 macro_mean = macro_naive * (macro_mean / macro_naive) ** macro_humility_factor
 
-df_train = pd.read_csv("./Data/train.csv", parse_dates=['timestamp'])
-df_test = pd.read_csv("./Data/test.csv", parse_dates=['timestamp'])
-df_macro = pd.read_csv("./Data/macro.csv", parse_dates=['timestamp'])
+df_train = pd.read_csv("../input/train.csv", parse_dates=['timestamp'])
+df_test = pd.read_csv("../input/test.csv", parse_dates=['timestamp'])
+df_macro = pd.read_csv("../input/macro.csv", parse_dates=['timestamp'])
 
 # Altervative validation
 

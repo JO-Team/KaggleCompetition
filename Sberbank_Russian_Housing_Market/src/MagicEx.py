@@ -1,14 +1,16 @@
-# Parameters
-micro_humility_factor = 1     #    range from 0 (complete humility) to 1 (no humility)
-macro_humility_factor = 0.96
-jason_weight = .2
-bruno_weight = .2
-reynaldo_weight = 1 - jason_weight - bruno_weight
 
-# Get ready for lots of annoying deprecation warnings
-# import statsmodels.api as sm
-# import statsmodels as sm
-from statsmodels import api as sm
+# Mostly a lot of silliness at this point:
+#   Main contribution (53%) is based on Reynaldo's script with a linear transformation of y_train
+#      that happens to fit the public test data well
+#      and may also fit the private test data well
+#      if it reflects a macro effect
+#      but almost certainly won't generalize to later data
+#   Second contribution (21%) is based on Bruno do Amaral's very early entry but
+#      with an outlier that I deleted early in the competition
+#   Third contribution (26%) is based on a legitimate data cleaning,
+#      probably by gunja agarwal, but it gets hard to tell with all the forks
+#   This combo being run by Andy Harless on June 3
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -17,111 +19,13 @@ from sklearn import model_selection, preprocessing
 import xgboost as xgb
 import datetime
 
-#Fit macro model and compute average prediction
-# Read data
-macro = pd.read_csv('./Data/macro.csv')
-train = pd.read_csv('./Data/train.csv')
-test = pd.read_csv('./Data/test.csv')
-
-# Macro data monthly medians
-macro["timestamp"] = pd.to_datetime(macro["timestamp"])
-macro["year"]  = macro["timestamp"].dt.year
-macro["month"] = macro["timestamp"].dt.month
-macro["yearmonth"] = 100*macro.year + macro.month
-macmeds = macro.groupby("yearmonth").median()
-
-# Price data monthly medians
-train["timestamp"] = pd.to_datetime(train["timestamp"])
-train["year"]  = train["timestamp"].dt.year
-train["month"] = train["timestamp"].dt.month
-train["yearmonth"] = 100*train.year + train.month
-prices = train[["yearmonth","price_doc"]]
-p = prices.groupby("yearmonth").median()
-
-# Join monthly prices to macro data
-df = macmeds.join(p)
-
-# Function to process Almon lags
-
-import numpy.matlib as ml
-
-
-def almonZmatrix(X, maxlag, maxdeg):
-    """
-    Creates the Z matrix corresponding to vector X.
-    """
-    n = len(X)
-    Z = ml.zeros((len(X) - maxlag, maxdeg + 1))
-    for t in range(maxlag, n):
-        # Solve for Z[t][0].
-        Z[t - maxlag, 0] = sum([X[t - lag] for lag in range(maxlag + 1)])
-        for j in range(1, maxdeg + 1):
-            s = 0.0
-            for i in range(1, maxlag + 1):
-                s += (i) ** j * X[t - i]
-            Z[t - maxlag, j] = s
-    return Z
-
-# Prepare data for macro model
-y = df.price_doc.div(df.cpi).apply(np.log).loc[201108:201506]
-lncpi = df.cpi.apply(np.log)
-tblags = 5    # Number of lags used on PDL for Trade Balance
-mrlags = 5    # Number of lags used on PDL for Mortgage Rate
-cplags = 5    # Number of lags used on PDL for CPI
-ztb = almonZmatrix(df.balance_trade.loc[201103:201506].as_matrix(), tblags, 1)
-zmr = almonZmatrix(df.mortgage_rate.loc[201103:201506].as_matrix(), mrlags, 1)
-zcp = almonZmatrix(lncpi.loc[201103:201506].as_matrix(), cplags, 1)
-columns = ['tb0', 'tb1', 'mr0', 'mr1', 'cp0', 'cp1']
-z = pd.DataFrame( np.concatenate( (ztb, zmr, zcp), axis=1), y.index.values, columns )
-X = sm.add_constant( z )
-
-# Fit macro model
-eq = sm.OLS(y, X)
-fit = eq.fit()
-
-# Predict with macro model
-test_cpi = df.cpi.loc[201507:201605]
-test_index = test_cpi.index
-ztb_test = almonZmatrix(df.balance_trade.loc[201502:201605].as_matrix(), tblags, 1)
-zmr_test = almonZmatrix(df.mortgage_rate.loc[201502:201605].as_matrix(), mrlags, 1)
-zcp_test = almonZmatrix(lncpi.loc[201502:201605].as_matrix(), cplags, 1)
-z_test = pd.DataFrame( np.concatenate( (ztb_test, zmr_test, zcp_test), axis=1),
-                       test_index, columns )
-X_test = sm.add_constant( z_test )
-pred_lnrp = fit.predict( X_test )
-pred_p = np.exp(pred_lnrp) * test_cpi
-
-# Merge with test cases and compute mean for macro prediction
-test["timestamp"] = pd.to_datetime(test["timestamp"])
-test["year"]  = test["timestamp"].dt.year
-test["month"] = test["timestamp"].dt.month
-test["yearmonth"] = 100*test.year + test.month
-test_ids = test[["yearmonth","id"]]
-monthprices = pd.DataFrame({"yearmonth":pred_p.index.values,"monthprice":pred_p.values})
-macro_mean = np.exp(test_ids.merge(monthprices, on="yearmonth").monthprice.apply(np.log).mean())
-
-
-# Naive macro model assumes housing prices will simply follow CPI
-naive_pred_lnrp = y.mean()
-naive_pred_p = np.exp(naive_pred_lnrp) * test_cpi
-monthnaive = pd.DataFrame({"yearmonth":pred_p.index.values, "monthprice":naive_pred_p.values})
-macro_naive = np.exp(test_ids.merge(monthnaive, on="yearmonth").monthprice.apply(np.log).mean())
-
-
-# Combine naive and substantive macro models
-macro_mean = macro_naive * (macro_mean/macro_naive) ** macro_humility_factor
-
-#Fit Jason's model
-
-# Jason/Gunja
-
-
-
 # load files
-train = pd.read_csv('./Data/train.csv', parse_dates=['timestamp'])
-test = pd.read_csv('./Data/test.csv', parse_dates=['timestamp'])
-macro = pd.read_csv('./Data/macro.csv', parse_dates=['timestamp'])
+train = pd.read_csv('../input/train.csv', parse_dates=['timestamp'])
+test = pd.read_csv('../input/test.csv', parse_dates=['timestamp'])
+macro = pd.read_csv('../input/macro.csv', parse_dates=['timestamp'])
 id_test = test.id
+
+# multiplier = 0.969
 
 # clean data
 bad_index = train[train.life_sq > train.full_sq].index
@@ -236,7 +140,6 @@ train['room_size'] = train['life_sq'] / train['num_room'].astype(float)
 test['room_size'] = test['life_sq'] / test['num_room'].astype(float)
 
 y_train = train["price_doc"]
-wts = 1 - .47 * (y_train == 1e6)
 x_train = train.drop(["id", "timestamp", "price_doc"], axis=1)
 x_test = test.drop(["id", "timestamp"], axis=1)
 
@@ -261,39 +164,37 @@ xgb_params = {
     'colsample_bytree': 0.7,
     'objective': 'reg:linear',
     'eval_metric': 'rmse',
-    'silent': 1
+    'silent': 1,
+    'booster': 'gbtree',
+    'tuneLength': 3
 }
 
-dtrain = xgb.DMatrix(x_train, y_train, weight=wts)
+dtrain = xgb.DMatrix(x_train, y_train)
 dtest = xgb.DMatrix(x_test)
 
-# cv_output = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_rounds=20,
-#    verbose_eval=50, show_stdv=False)
+cv_output = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_rounds=20, verbose_eval=50, show_stdv=False)
+print('Model 1: \n')
+cv_output[['train-rmse-mean', 'test-rmse-mean']]
 # cv_output[['train-rmse-mean', 'test-rmse-mean']].plot()
 
 # num_boost_rounds = len(cv_output)
-model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=350)
+model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=400)
 
 # fig, ax = plt.subplots(1, 1, figsize=(8, 13))
 # xgb.plot_importance(model, max_num_features=50, height=0.5, ax=ax)
 
 y_predict = model.predict(dtest)
-jason_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
+y_predict = np.round(y_predict * 0.99)
+gunja_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
+gunja_output.head()
 
-
-
-jason_model_output.to_csv('jason_model.csv', index=False)
-np.exp( jason_model_output.price_doc.apply(np.log).mean() )
-
-#Fit Reynaldo's model
-# Reynaldo
-
-
-train = pd.read_csv('./Data/train.csv')
-test = pd.read_csv('./Data/test.csv')
+train = pd.read_csv('train.csv')
+test = pd.read_csv('test.csv')
 id_test = test.id
 
-y_train = train["price_doc"]
+mult = .969
+
+y_train = train["price_doc"] * mult + 10
 x_train = train.drop(["id", "timestamp", "price_doc"], axis=1)
 x_test = test.drop(["id", "timestamp"], axis=1)
 
@@ -326,26 +227,17 @@ num_boost_rounds = 384  # This was the CV output, as earlier version shows
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_rounds)
 
 y_predict = model.predict(dtest)
-reynaldo_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
-
-
-
-reynaldo_model_output.to_csv('reynaldo_model.csv', index=False)
-np.exp( reynaldo_model_output.price_doc.apply(np.log).mean() )
-
-#Fit Bruno's model
-# Bruno with outlier dropped
-
-
+output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
+output.head()
 
 # Any results you write to the current directory are saved as output.
-df_train = pd.read_csv("./Data/train.csv", parse_dates=['timestamp'])
-df_test = pd.read_csv("./Data/test.csv", parse_dates=['timestamp'])
-df_macro = pd.read_csv("./Data/macro.csv", parse_dates=['timestamp'])
+df_train = pd.read_csv("../input/train.csv", parse_dates=['timestamp'])
+df_test = pd.read_csv("../input/test.csv", parse_dates=['timestamp'])
+df_macro = pd.read_csv("../input/macro.csv", parse_dates=['timestamp'])
 
 df_train.drop(df_train[df_train["life_sq"] > 7000].index, inplace=True)
 
-y_train = df_train['price_doc'].values
+y_train = df_train['price_doc'].values * mult + 10
 id_test = df_test['id']
 
 df_train.drop(['id', 'price_doc'], axis=1, inplace=True)
@@ -379,7 +271,6 @@ df_all['rel_kitch_sq'] = df_all['kitch_sq'] / df_all['full_sq'].astype(float)
 # Remove timestamp column (may overfit the model in train)
 df_all.drop(['timestamp', 'timestamp_macro'], axis=1, inplace=True)
 
-
 factorize = lambda t: pd.factorize(t[1])[0]
 
 df_obj = df_all.select_dtypes(include=['object'])
@@ -393,7 +284,6 @@ print(X_all.shape)
 X_train = X_all[:num_train]
 X_test = X_all[num_train:]
 
-
 # Deal with categorical values
 df_numeric = df_all.select_dtypes(exclude=['object'])
 df_obj = df_all.select_dtypes(include=['object']).copy()
@@ -403,7 +293,6 @@ for c in df_obj:
 
 df_values = pd.concat([df_numeric, df_obj], axis=1)
 
-
 # Convert to numpy values
 X_all = df_values.values
 print(X_all.shape)
@@ -412,7 +301,6 @@ X_train = X_all[:num_train]
 X_test = X_all[num_train:]
 
 df_columns = df_values.columns
-
 
 xgb_params = {
     'eta': 0.05,
@@ -427,45 +315,21 @@ xgb_params = {
 dtrain = xgb.DMatrix(X_train, y_train, feature_names=df_columns)
 dtest = xgb.DMatrix(X_test, feature_names=df_columns)
 
-
 num_boost_round = 489  # From Bruno's original CV, I think
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_round)
 
 y_pred = model.predict(dtest)
-bruno_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_pred})
 
-bruno_model_output.to_csv('bruno_model.csv', index=False)
-np.exp( bruno_model_output.price_doc.apply(np.log).mean() )
+df_sub = pd.DataFrame({'id': id_test, 'price_doc': y_pred})
 
-#Merge and adjust the results
-# Merge
+df_sub.head()
+first_result = output.merge(df_sub, on="id", suffixes=['_louis', '_bruno'])
+first_result["price_doc"] = np.exp(.72 * np.log(first_result.price_doc_louis) +
+                                   .28 * np.log(first_result.price_doc_bruno))
+result = first_result.merge(gunja_output, on="id", suffixes=['_follow', '_gunja'])
 
-results = reynaldo_model_output.merge(
-             jason_model_output.merge(
-                 bruno_model_output, on='id', suffixes=['_jason','_bruno'] ), on='id' )
-results["price_doc_reynaldo"] = results["price_doc"]
-results["price_doc"] = np.exp( np.log(results.price_doc_reynaldo)*reynaldo_weight +
-                               np.log(results.price_doc_jason)*jason_weight       +
-                               np.log(results.price_doc_bruno)*bruno_weight          )
-
-results.drop(["price_doc_reynaldo", "price_doc_bruno", "price_doc_jason"],axis=1,inplace=True)
-results.to_csv('unadjusted_combo.csv', index=False)
-
-# Adjust
-
-lny = np.log(results.price_doc)
-lnm = np.log(macro_mean)
-
-# I'm not sure whether this makes any sense or not.
-# 1+lny.mean()-lnm term is meant to offest the scale effect of the logarithmic mean shift
-#   while allowing the new logarithmic mean to remain at lnm.
-y_trans = lnm  +  micro_humility_factor * (lny-lny.mean()) * (1+lny.mean()-lnm)
-y_predict = np.exp( y_trans )
-
-sub = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
-
-
-sub.to_csv('sub.csv', index=False)
-
-
-
+result["price_doc"] = np.exp(.74 * np.log(result.price_doc_follow) +
+                             .26 * np.log(result.price_doc_gunja))
+result.drop(["price_doc_louis", "price_doc_bruno", "price_doc_follow", "price_doc_gunja"], axis=1, inplace=True)
+result.head()
+result.to_csv('sub.csv', index=False)

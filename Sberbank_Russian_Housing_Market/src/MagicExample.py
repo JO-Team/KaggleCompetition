@@ -8,8 +8,8 @@ import datetime
 
 
 
-train = pd.read_csv('Data/train.csv')
-test = pd.read_csv('Data/test.csv')
+train = pd.read_csv('../input/train.csv')
+test = pd.read_csv('../input/test.csv')
 id_test = test.id
 
 mult = .969
@@ -51,9 +51,9 @@ output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
 output.head()
 
 # Any results you write to the current directory are saved as output.
-df_train = pd.read_csv("Data/train.csv", parse_dates=['timestamp'])
-df_test = pd.read_csv("Data/test.csv", parse_dates=['timestamp'])
-df_macro = pd.read_csv("Data/macro.csv", parse_dates=['timestamp'])
+df_train = pd.read_csv("../input/train.csv", parse_dates=['timestamp'])
+df_test = pd.read_csv("../input/test.csv", parse_dates=['timestamp'])
+df_macro = pd.read_csv("../input/macro.csv", parse_dates=['timestamp'])
 
 df_train.drop(df_train[df_train["life_sq"] > 7000].index, inplace=True)
 

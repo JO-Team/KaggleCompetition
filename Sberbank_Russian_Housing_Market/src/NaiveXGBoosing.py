@@ -10,9 +10,9 @@ import datetime
 
 # now = datetime.datetime.now()
 
-train = pd.read_csv('Data/train.csv')
-test = pd.read_csv('Data/test.csv')
-macro = pd.read_csv('Data/macro.csv')
+train = pd.read_csv('../input/train.csv')
+test = pd.read_csv('../input/test.csv')
+macro = pd.read_csv('../input/macro.csv')
 id_test = test.id
 train.sample(3)
 
