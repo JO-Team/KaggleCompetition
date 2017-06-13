@@ -1,8 +1,8 @@
 # Parameters
 micro_humility_factor = 1  # range from 0 (complete humility) to 1 (no humility)
 macro_humility_factor = 0.96
-jason_weight = .2
-bruno_weight = .2
+jason_weight = .22
+bruno_weight = .24
 reynaldo_weight = 1 - jason_weight - bruno_weight
 
 # Get ready for lots of annoying deprecation warnings
@@ -16,6 +16,37 @@ import seaborn as sns
 from sklearn import model_selection, preprocessing
 import xgboost as xgb
 import datetime
+import scipy as sp
+
+#######################################################################
+# Functions to use in data adjustment
+
+def scale_miss(   # Scale shifted logs and compare raw stdev to old raw stdev
+        alpha,
+        shifted_logs,
+        oldstd,
+        new_logmean
+        ):
+    newlogs = new_logmean + alpha*(shifted_logs - new_logmean)
+    newstd = np.std(np.exp(newlogs))
+    return (newstd-oldstd)**2
+
+
+def shift_logmean_but_keep_scale(  # Or change the scale, but relative to the old scale
+        data,
+        new_logmean,
+        rescaler
+        ):
+    logdata = np.log(data)
+    oldstd = data.std()
+    shift = new_logmean - logdata.mean()
+    shifted_logs = logdata + shift
+    scale = sp.optimize.leastsq( scale_miss, 1, args=(shifted_logs, oldstd, new_logmean) )
+    alpha = scale[0][0]
+    newlogs = new_logmean + rescaler*alpha*(shifted_logs - new_logmean)
+    return np.exp(newlogs)
+
+#######################################################################
 
 # Fit macro model and compute average prediction
 # Read data
@@ -121,6 +152,10 @@ macro = pd.read_csv('../input/macro.csv', parse_dates=['timestamp'])
 id_test = test.id
 
 # clean data
+#######################################################################
+
+
+#######################################################################
 bad_index = train[train.life_sq > train.full_sq].index
 train.ix[bad_index, "life_sq"] = np.NaN
 equal_index = [601, 1896, 2791]
@@ -175,6 +210,23 @@ train.ix[bad_index, 'max_floor']=np.NaN
 bad_index = test[test.max_floor > 57].index
 test.ix[bad_index, 'max_floor']=np.NaN
 
+# train.ix[11271, 'build_year']=2014
+# train.ix[19127, 'build_year']=1960
+# bad_index = train[train.floor > 57].index
+# train.ix[bad_index, 'floor']=np.NaN
+
+
+# bad_index = train[train.full_sq >250].index
+# train.ix[bad_index,'full_sq']= train.ix[bad_index,'full_sq']/10
+# bad_index = train[train.full_sq >1000].index
+# train.ix[bad_index,'full_sq']= train.ix[bad_index,'full_sq']/100
+#
+# bad_index = test[test.full_sq >250].index
+# test.ix[bad_index,'full_sq']= test.ix[bad_index,'full_sq']/10
+# bad_index = test[test.full_sq >1000].index
+# test.ix[bad_index,'full_sq']= test.ix[bad_index,'full_sq']/100
+
+
 ##################################################################
 
 bad_index = train[train.build_year < 1500].index
@@ -208,7 +260,7 @@ train.material.value_counts()
 test.material.value_counts()
 train.state.value_counts()
 bad_index = train[train.state == 33].index
-train.ix[bad_index, "state"] = np.NaN
+train.ix[bad_index, "state"] = 3
 test.state.value_counts()
 
 
@@ -247,6 +299,10 @@ test = test.drop(['raion_popul', 'area_m'], axis=1)
 train.loc[train.full_sq == 0, 'full_sq'] = 50
 train = train[train.price_doc/train.full_sq <= 600000]
 train = train[train.price_doc/train.full_sq >= 10000]
+# train = train.drop(['hospital_beds_raion','cafe_avg_price_500','cafe_sum_500_max_price_avg','cafe_sum_500_min_price_avg',
+#                     'preschool_quota','school_quota','cafe_avg_price_1000','cafe_sum_1000_max_price_avg','cafe_sum_1000_min_price_avg'],axis=1)
+# test = test.drop(['hospital_beds_raion','cafe_avg_price_500','cafe_sum_500_max_price_avg','cafe_sum_500_min_price_avg',
+#                     'preschool_quota','school_quota','cafe_avg_price_1000','cafe_sum_1000_max_price_avg','cafe_sum_1000_min_price_avg'],axis=1)
 ###############################################################################################
 
 # brings error down a lot by removing extreme price per sqm
@@ -343,6 +399,16 @@ jason_model_output.to_csv('jason_model.csv', index=False)
 np.exp(jason_model_output.price_doc.apply(np.log).mean())
 
 
+#########################################################################
+# Adjust
+
+# lnm = np.log(macro_mean)
+# y_predict = shift_logmean_but_keep_scale( y_predict, lnm, micro_humility_factor )
+#
+# jason_model_adjusted_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
+
+#########################################################################
+
 
 # Fit Reynaldo's model
 # Reynaldo
@@ -397,10 +463,21 @@ reynaldo_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
 reynaldo_model_output.to_csv('reynaldo_model.csv', index=False)
 np.exp(reynaldo_model_output.price_doc.apply(np.log).mean())
 
+#########################################################################################
+# Adjust
+
+# lnm = np.log(macro_mean)
+# y_predict = shift_logmean_but_keep_scale( y_predict, lnm, micro_humility_factor )
+#
+# reynaldo_model_adjusted_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
+#########################################################################################
+
+#reynaldo_model_output=pd.read_csv('reynaldo_model.csv')
 # Fit Bruno's model
 # Bruno with outlier dropped
 
 # Any results you write to the current directory are saved as output.
+
 df_train = pd.read_csv("../input/train.csv", parse_dates=['timestamp'])
 df_test = pd.read_csv("../input/test.csv", parse_dates=['timestamp'])
 df_macro = pd.read_csv("../input/macro.csv", parse_dates=['timestamp'])
@@ -502,6 +579,19 @@ bruno_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_pred})
 bruno_model_output.to_csv('bruno_model.csv', index=False)
 np.exp(bruno_model_output.price_doc.apply(np.log).mean())
 
+#########################################################################################
+# Adjust
+
+# lnm = np.log(macro_mean)
+# y_predict = shift_logmean_but_keep_scale( y_predict, lnm, micro_humility_factor )
+#
+# bruno_model_adjusted_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
+#########################################################################################
+
+
+
+#bruno_model_output=pd.read_csv('bruno_model.csv')
+
 # Merge and adjust the results
 # Merge
 
@@ -512,6 +602,12 @@ results["price_doc_reynaldo"] = results["price_doc"]
 results["price_doc"] = np.exp(np.log(results.price_doc_reynaldo) * reynaldo_weight +
                               np.log(results.price_doc_jason) * jason_weight +
                               np.log(results.price_doc_bruno) * bruno_weight)
+
+
+
+
+
+
 
 results.drop(["price_doc_reynaldo", "price_doc_bruno", "price_doc_jason"], axis=1, inplace=True)
 results.to_csv('unadjusted_combo.csv', index=False)
