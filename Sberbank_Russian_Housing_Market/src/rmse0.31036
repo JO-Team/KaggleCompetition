@@ -6,3 +6,8 @@
 [250]	train-rmse:1.67142e+06	test-rmse:2.55485e+06
 [300]	train-rmse:1.58652e+06	test-rmse:2.54761e+06
 [350]	train-rmse:1.51823e+06	test-rmse:2.54553e+06
+[400]	train-rmse:1.45119e+06	test-rmse:2.54396e+06
+[450]	train-rmse:1.39236e+06	test-rmse:2.54358e+06
+[500]	train-rmse:1.3377e+06	test-rmse:2.54202e+06
+[550]	train-rmse:1.28566e+06	test-rmse:2.54173e+06
+[600]	train-rmse:1.23429e+06	test-rmse:2.54089e+06
