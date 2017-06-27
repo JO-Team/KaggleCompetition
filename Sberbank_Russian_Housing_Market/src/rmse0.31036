@@ -1,0 +1,8 @@
+[0]	train-rmse:8.3687e+06	test-rmse:8.37693e+06
+[50]	train-rmse:2.3212e+06	test-rmse:2.79148e+06
+[100]	train-rmse:1.99715e+06	test-rmse:2.61835e+06
+[150]	train-rmse:1.87022e+06	test-rmse:2.58388e+06
+[200]	train-rmse:1.76141e+06	test-rmse:2.56376e+06
+[250]	train-rmse:1.67142e+06	test-rmse:2.55485e+06
+[300]	train-rmse:1.58652e+06	test-rmse:2.54761e+06
+[350]	train-rmse:1.51823e+06	test-rmse:2.54553e+06
