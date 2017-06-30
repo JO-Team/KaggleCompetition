@@ -111,7 +111,7 @@ xgb_params = {
     'silent': 1  #设置成1则没有运行信息输出，最好是设置为0
 }
 
-'''
+
 # Uncomment to tune XGB `num_boost_rounds`
 partial_model = xgb.train(xgb_params, dtrain, num_boost_round=1000, evals=[(dval, 'val')],
                           early_stopping_rounds=20, verbose_eval=20)
@@ -135,7 +135,7 @@ df_sub = pd.DataFrame({'id': id_test, 'price_doc': y_pred})
 
 #df_sub.to_csv('sub.csv', index=False)
 
-'''
+
 ddtrain = xgb.DMatrix(X_train_all, ylog_train_all)
 ddtest = xgb.DMatrix(X_test)
 

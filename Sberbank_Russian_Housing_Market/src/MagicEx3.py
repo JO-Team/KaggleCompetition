@@ -1,8 +1,9 @@
+# *coding=utf-8*
 # Parameters
 micro_humility_factor = 1  # range from 0 (complete humility) to 1 (no humility)
 macro_humility_factor = 0.96
 jason_weight = .22
-bruno_weight = .24
+bruno_weight = .20
 reynaldo_weight = 1 - jason_weight - bruno_weight
 
 # Get ready for lots of annoying deprecation warnings
@@ -14,9 +15,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn import model_selection, preprocessing
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import Imputer
 import xgboost as xgb
 import datetime
 import scipy as sp
+from sklearn.externals import joblib
 
 #######################################################################
 # Functions to use in data adjustment
@@ -149,11 +153,16 @@ macro_mean = macro_naive * (macro_mean / macro_naive) ** macro_humility_factor
 train = pd.read_csv('../input/train.csv', parse_dates=['timestamp'])
 test = pd.read_csv('../input/test.csv', parse_dates=['timestamp'])
 macro = pd.read_csv('../input/macro.csv', parse_dates=['timestamp'])
+fx = pd.read_excel('../input/BAD_ADDRESS_FIX.xlsx').drop_duplicates('id').set_index('id')
 id_test = test.id
 
 # clean data
 #######################################################################
+train.update(fx,overwrite=True)
+test.update(fx,overwrite=True)
 
+print('Fix in train: ', train.index.intersection(fx.index).shape[0])
+print('Fix in test : ', test.index.intersection(fx.index).shape[0])
 
 #######################################################################
 bad_index = train[train.life_sq > train.full_sq].index
@@ -210,21 +219,21 @@ train.ix[bad_index, 'max_floor']=np.NaN
 bad_index = test[test.max_floor > 57].index
 test.ix[bad_index, 'max_floor']=np.NaN
 
-# train.ix[11271, 'build_year']=2014
-# train.ix[19127, 'build_year']=1960
-# bad_index = train[train.floor > 57].index
-# train.ix[bad_index, 'floor']=np.NaN
+train.ix[11271, 'build_year']=2014
+train.ix[19127, 'build_year']=1960
+bad_index = train[train.floor > 57].index
+train.ix[bad_index, 'floor']=np.NaN
 
 
-# bad_index = train[train.full_sq >250].index
-# train.ix[bad_index,'full_sq']= train.ix[bad_index,'full_sq']/10
-# bad_index = train[train.full_sq >1000].index
-# train.ix[bad_index,'full_sq']= train.ix[bad_index,'full_sq']/100
-#
-# bad_index = test[test.full_sq >250].index
-# test.ix[bad_index,'full_sq']= test.ix[bad_index,'full_sq']/10
-# bad_index = test[test.full_sq >1000].index
-# test.ix[bad_index,'full_sq']= test.ix[bad_index,'full_sq']/100
+bad_index = train[train.full_sq >250].index
+train.ix[bad_index,'full_sq']= train.ix[bad_index,'full_sq']/10
+bad_index = train[train.full_sq >1000].index
+train.ix[bad_index,'full_sq']= train.ix[bad_index,'full_sq']/100
+
+bad_index = test[test.full_sq >250].index
+test.ix[bad_index,'full_sq']= test.ix[bad_index,'full_sq']/10
+bad_index = test[test.full_sq >1000].index
+test.ix[bad_index,'full_sq']= test.ix[bad_index,'full_sq']/100
 
 
 ##################################################################
@@ -260,7 +269,7 @@ train.material.value_counts()
 test.material.value_counts()
 train.state.value_counts()
 bad_index = train[train.state == 33].index
-train.ix[bad_index, "state"] = 3
+train.ix[bad_index, "state"] = np.NaN
 test.state.value_counts()
 
 
@@ -273,9 +282,7 @@ mode_by_invest = train.loc[train.product_type == "Investment", "build_year"].mod
 train.loc[(train.product_type == "OwnerOccupier") & (train.build_year.isnull()), "build_year"] = mode_by_own
 train.loc[(train.product_type == "Investment") & (train.build_year.isnull()), "build_year"] = mode_by_invest
 
-train["year"]  = train["timestamp"].dt.year
 
-train["year_difference"] = train.year - train.build_year
 
 mode_by_own = test.loc[test.product_type == "OwnerOccupier", "build_year"].mode()[0]
 mode_by_invest = test.loc[test.product_type == "Investment", "build_year"].mode()[0]
@@ -283,17 +290,21 @@ mode_by_invest = test.loc[test.product_type == "Investment", "build_year"].mode(
 
 test.loc[(test.product_type == "OwnerOccupier") & (test.build_year.isnull()), "build_year"] = mode_by_own
 test.loc[(test.product_type == "Investment") & (test.build_year.isnull()), "build_year"] = mode_by_invest
-
-test["year"]  = test["timestamp"].dt.year
-
-test["year_difference"] = test.year - test.build_year
-
-train['desity']=train['raion_popul']/(train['area_m']/1000000)
-train = train.drop(['raion_popul', 'area_m'], axis=1)
-
-test['desity']=test['raion_popul']/(test['area_m']/1000000)
-test = test.drop(['raion_popul', 'area_m'], axis=1)
 '''
+# train["year"]  = train["timestamp"].dt.year
+#
+# train["year_difference"] = train.year - train.build_year
+#
+# test["year"]  = test["timestamp"].dt.year
+#
+# test["year_difference"] = test.year - test.build_year
+#
+# train['desity']=train['raion_popul']/(train['area_m']/1000000)
+# train = train.drop(['raion_popul', 'area_m'], axis=1)
+#
+# test['desity']=test['raion_popul']/(test['area_m']/1000000)
+# test = test.drop(['raion_popul', 'area_m'], axis=1)
+
 
 # brings error down a lot by removing extreme price per sqm
 train.loc[train.full_sq == 0, 'full_sq'] = 50
@@ -348,6 +359,30 @@ test.apartment_name = test.sub_area + train['metro_km_avto'].astype(str)
 train['room_size'] = train['life_sq'] / train['num_room'].astype(float)
 test['room_size'] = test['life_sq'] / test['num_room'].astype(float)
 
+##############################################################################
+
+
+train['diff_floor']=(train['max_floor']-train['floor']).astype(float)
+train['rel_life_sq']=(train['life_sq']/train['full_sq']).astype(float)
+train['rel_kitchen_life']=(train['kitch_sq']/train['life_sq']).astype(float)
+train['rel_sq_per_floor']=(train['full_sq']/train['floor']).astype(float)
+train['diff_life_sq']=(train['full_sq']-train['life_sq']).astype(float)
+train['building_age']=(train["timestamp"].dt.year-train['build_year']).astype(float)
+
+test['diff_floor']=(test['max_floor']-test['floor']).astype(float)
+test['rel_life_sq']=(test['life_sq']/test['full_sq']).astype(float)
+test['rel_kitchen_life']=(test['kitch_sq']/test['life_sq']).astype(float)
+test['rel_sq_per_floor']=(test['full_sq']/test['floor']).astype(float)
+test['diff_life_sq']=(test['full_sq']-test['life_sq']).astype(float)
+test['building_age']=(test["timestamp"].dt.year-test['build_year']).astype(float)
+
+
+train['pop_ratio']=(train['male_f']/train['female_f']).astype(float)
+test['pop_ratio']=(test['male_f']/test['female_f']).astype(float)
+
+
+##############################################################################
+
 y_train = train["price_doc"]
 wts = 1 - .47 * (y_train == 1e6)
 x_train = train.drop(["id", "timestamp", "price_doc"], axis=1)
@@ -379,24 +414,45 @@ xgb_params = {
 
 dtrain = xgb.DMatrix(x_train, y_train, weight=wts)
 dtest = xgb.DMatrix(x_test)
-
-cv_output = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_rounds=20, verbose_eval=50, show_stdv=False)
-print('Model 1: \n')
-cv_output[['train-rmse-mean', 'test-rmse-mean']]
+#'''
+# cv_output = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_rounds=20, verbose_eval=50, show_stdv=False)
+# print('Model 1: \n')
+# cv_output[['train-rmse-mean', 'test-rmse-mean']]
 # cv_output[['train-rmse-mean', 'test-rmse-mean']].plot()
 
 #num_boost_rounds = len(cv_output)
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=350)
 #model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_rounds)
-
+#model.save_model('../model/fix_xgbmodel1.model')
+#'''
+#model = xgb.Booster({'nthread':4}) #init model
+#model.load_model('../model/xgbmodel1.model') # load data
 # fig, ax = plt.subplots(1, 1, figsize=(8, 13))
 # xgb.plot_importance(model, max_num_features=50, height=0.5, ax=ax)
 
+#model = joblib.load('../model/xgbmodel1.model')
 y_predict = model.predict(dtest)
+
+##############################################################
+'''
+x_train= Imputer().fit_transform(x_train)
+y_train= Imputer().fit_transform(y_train)
+x_test= Imputer().fit_transform(x_test)
+rfmodel1 = RandomForestRegressor()
+rfmodel1.fit(x_train,y_train)
+print(rfmodel1.oob_score_)
+print(rfmodel1.feature_importances_)
+rfoutput=rfmodel1.predict(x_test)
+rfmodel1.save_model('../model/rfmodel1.model')
+'''
+#############################################################
+
 jason_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
 
 jason_model_output.to_csv('jason_model.csv', index=False)
 np.exp(jason_model_output.price_doc.apply(np.log).mean())
+
+
 
 
 #########################################################################
@@ -416,10 +472,20 @@ np.exp(jason_model_output.price_doc.apply(np.log).mean())
 train = pd.read_csv('../input/train.csv')
 test = pd.read_csv('../input/test.csv')
 id_test = test.id
+fx = pd.read_excel('../input/BAD_ADDRESS_FIX.xlsx').drop_duplicates('id').set_index('id')
+
+train.update(fx,overwrite=True)
+test.update(fx,overwrite=True)
+
+print('Fix in train: ', train.index.intersection(fx.index).shape[0])
+print('Fix in test : ', test.index.intersection(fx.index).shape[0])
+
+
 
 y_train = train["price_doc"]
 x_train = train.drop(["id", "timestamp", "price_doc"], axis=1)
 x_test = test.drop(["id", "timestamp"], axis=1)
+
 
 for c in x_train.columns:
     if x_train[c].dtype == 'object':
@@ -445,17 +511,20 @@ xgb_params = {
 
 dtrain = xgb.DMatrix(x_train, y_train)
 dtest = xgb.DMatrix(x_test)
-
+'''
 cv_output_model2 = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_rounds=20, verbose_eval=50,
                           show_stdv=False)
 print('Model 2: \n')
 cv_output_model2[['train-rmse-mean', 'test-rmse-mean']]
 
-#num_boost_rounds =len(cv_output_model2)
-num_boost_rounds = 384  # This was the CV output, as earlier version shows
+num_boost_rounds =len(cv_output_model2)
+#num_boost_rounds = 384  # This was the CV output, as earlier version shows
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_rounds)
+model.save_model('../model/fix_xgbmodel2.model')
+'''
 
-
+model = xgb.Booster({'nthread':4}) #init model
+model.load_model('../model/fix_xgbmodel2.model') # load data
 
 y_predict = model.predict(dtest)
 reynaldo_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
@@ -481,6 +550,15 @@ np.exp(reynaldo_model_output.price_doc.apply(np.log).mean())
 df_train = pd.read_csv("../input/train.csv", parse_dates=['timestamp'])
 df_test = pd.read_csv("../input/test.csv", parse_dates=['timestamp'])
 df_macro = pd.read_csv("../input/macro.csv", parse_dates=['timestamp'])
+
+fx = pd.read_excel('../input/BAD_ADDRESS_FIX.xlsx').drop_duplicates('id').set_index('id')
+
+df_train.update(fx,overwrite=True)
+df_test.update(fx,overwrite=True)
+
+print('Fix in train: ', df_train.index.intersection(fx.index).shape[0])
+print('Fix in test : ', df_test.index.intersection(fx.index).shape[0])
+
 
 df_train.drop(df_train[df_train["life_sq"] > 7000].index, inplace=True)
 
@@ -561,17 +639,21 @@ xgb_params = {
 
 dtrain = xgb.DMatrix(X_train, y_train, feature_names=df_columns)
 dtest = xgb.DMatrix(X_test, feature_names=df_columns)
-
+'''
 cv_output_model3 = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_rounds=20, verbose_eval=50,
                           show_stdv=False)
 print('Model 3: \n')
 cv_output_model3[['train-rmse-mean', 'test-rmse-mean']]
 
-#num_boost_round =len(cv_output_model3)
-num_boost_round = 489  # From Bruno's original CV, I think
+num_boost_round =len(cv_output_model3)
+#num_boost_round = 489  # From Bruno's original CV, I think
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_round)
+model.save_model('../model/fix_xgbmodel3.model')
+'''
 
-
+#加载模型
+model = xgb.Booster({'nthread':4}) #init model
+model.load_model('../model/fix_xgbmodel3.model') # load data
 
 y_pred = model.predict(dtest)
 bruno_model_output = pd.DataFrame({'id': id_test, 'price_doc': y_pred})
@@ -602,10 +684,6 @@ results["price_doc_reynaldo"] = results["price_doc"]
 results["price_doc"] = np.exp(np.log(results.price_doc_reynaldo) * reynaldo_weight +
                               np.log(results.price_doc_jason) * jason_weight +
                               np.log(results.price_doc_bruno) * bruno_weight)
-
-
-
-
 
 
 
