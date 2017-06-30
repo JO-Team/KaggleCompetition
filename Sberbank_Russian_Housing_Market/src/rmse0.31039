@@ -1,9 +1,0 @@
-[0]	train-rmse:8.36817e+06	test-rmse:8.37654e+06
-[50]	train-rmse:2.32769e+06	test-rmse:2.78718e+06
-[100]	train-rmse:2.00274e+06	test-rmse:2.61225e+06
-[150]	train-rmse:1.88374e+06	test-rmse:2.57537e+06
-[200]	train-rmse:1.7736e+06	test-rmse:2.55792e+06
-[250]	train-rmse:1.68389e+06	test-rmse:2.54651e+06
-[300]	train-rmse:1.60576e+06	test-rmse:2.54372e+06
-[350]	train-rmse:1.53534e+06	test-rmse:2.53769e+06
-[400]	train-rmse:1.4711e+06	test-rmse:2.53541e+06
