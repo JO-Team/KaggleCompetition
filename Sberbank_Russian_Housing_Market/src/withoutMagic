@@ -1,0 +1,47 @@
+[0]	train-rmse:7.93331e+06	test-rmse:7.94112e+06
+[50]	train-rmse:2.20044e+06	test-rmse:2.64625e+06
+[100]	train-rmse:1.89325e+06	test-rmse:2.48213e+06
+[150]	train-rmse:1.77292e+06	test-rmse:2.44945e+06
+[200]	train-rmse:1.66977e+06	test-rmse:2.43038e+06
+[250]	train-rmse:1.58447e+06	test-rmse:2.42193e+06
+[300]	train-rmse:1.50398e+06	test-rmse:2.41507e+06
+[350]	train-rmse:1.43925e+06	test-rmse:2.4131e+06
+[400]	train-rmse:1.37569e+06	test-rmse:2.41161e+06
+[450]	train-rmse:1.31993e+06	test-rmse:2.41125e+06
+[500]	train-rmse:1.26811e+06	test-rmse:2.40977e+06
+[550]	train-rmse:1.21878e+06	test-rmse:2.4095e+06
+[600]	train-rmse:1.17008e+06	test-rmse:2.4087e+06
+
+
+[0]	train-rmse:7.95133e+06	test-rmse:7.95455e+06
+[50]	train-rmse:2.46634e+06	test-rmse:2.82728e+06
+[100]	train-rmse:2.15403e+06	test-rmse:2.6551e+06
+[150]	train-rmse:2.03248e+06	test-rmse:2.61476e+06
+[200]	train-rmse:1.94856e+06	test-rmse:2.59151e+06
+[250]	train-rmse:1.88412e+06	test-rmse:2.58385e+06
+[300]	train-rmse:1.825e+06	test-rmse:2.57731e+06
+[350]	train-rmse:1.77208e+06	test-rmse:2.57224e+06
+[400]	train-rmse:1.7253e+06	test-rmse:2.56999e+06
+[450]	train-rmse:1.68174e+06	test-rmse:2.56895e+06
+[500]	train-rmse:1.64093e+06	test-rmse:2.5675e+06
+[550]	train-rmse:1.60375e+06	test-rmse:2.56878e+06
+
+
+[0]	train-rmse:7.95123e+06	test-rmse:7.95437e+06
+[50]	train-rmse:2.43532e+06	test-rmse:2.78592e+06
+[100]	train-rmse:2.10815e+06	test-rmse:2.61754e+06
+[150]	train-rmse:1.98145e+06	test-rmse:2.57588e+06
+[200]	train-rmse:1.89873e+06	test-rmse:2.55477e+06
+[250]	train-rmse:1.82657e+06	test-rmse:2.5422e+06
+[300]	train-rmse:1.76108e+06	test-rmse:2.53341e+06
+[350]	train-rmse:1.70295e+06	test-rmse:2.5299e+06
+[400]	train-rmse:1.65213e+06	test-rmse:2.52765e+06
+[450]	train-rmse:1.60488e+06	test-rmse:2.52557e+06
+[500]	train-rmse:1.55939e+06	test-rmse:2.52503e+06
+[550]	train-rmse:1.51782e+06	test-rmse:2.52383e+06
+
+
+
+
+
+
