@@ -184,6 +184,8 @@ def ka_add_groupby_features_n_vs_1(df, group_columns_list, target_columns_list, 
             df_new = pd.merge(left=df_new, right=the_stats, on=group_columns_list, how='left')
         return df_new
 
+
+
 path_data = '../input/'
 priors, train, orders, products, aisles, departments, sample_submission = load_data(path_data)
 
@@ -203,7 +205,7 @@ priors_orders_detail.loc[:,'_user_buy_product_times'] = priors_orders_detail.gro
 agg_dict = {'user_id':{'_prod_tot_cnts':'count'},
             'reordered':{'_prod_reorder_tot_cnts':'sum'},
             '_user_buy_product_times': {'_prod_buy_first_time_total_cnt':lambda x: sum(x==1),
-                                        '_prod_buy_second_time_total_cnt':lambda x: sum(x>=2)}}
+                                        '_prod_buy_second_time_total_cnt':lambda x: sum(x==2)}}
 prd = ka_add_groupby_features_1_vs_n(priors_orders_detail, ['product_id'], agg_dict)
 
 # _prod_reorder_prob: 这个指标不好理解
@@ -211,6 +213,46 @@ prd = ka_add_groupby_features_1_vs_n(priors_orders_detail, ['product_id'], agg_d
 prd['_prod_reorder_prob'] = prd._prod_buy_second_time_total_cnt / prd._prod_buy_first_time_total_cnt
 prd['_prod_reorder_ratio'] = prd._prod_reorder_tot_cnts / prd._prod_tot_cnts
 prd['_prod_reorder_times'] = 1 + prd._prod_reorder_tot_cnts / prd._prod_buy_first_time_total_cnt
+######################################################################################################
+#商品总共unique用户数量
+prd['_prod_unique_user'] = priors_orders_detail.groupby(['product_id'])['user_id'].size().astype(np.int16)
+#商品总共有再购的unique用户数量
+prd['_prod_uniquereorder_user'] = priors_orders_detail[priors_orders_detail.reordered==1].groupby(['product_id'])['user_id'].size().astype(np.int16)
+#商品再购用户数和总共用户数比例
+prd['_prod_uniquereorder_user_ratio']=prd._prod_unique_user / (1+prd._prod_uniquereorder_user)
+# #每个人的回头率(回头次数/回头人数)
+# prd['_prod_reorder_user_ratio']=prd._prod_reorder_tot_cnts / prd._prod_uniquereorder_user
+#该商品人均销量
+# prd['_prod_per_cnts']=prd._prod_tot_cnts/prd._prod_unique_user
+# print(prd)
+
+# ###该product被多少个不同的人购买
+# priors_orders_detail1 =priors_orders_detail
+# bad_index=priors_orders_detail1[priors_orders_detail1.days_since_prior_order<1].index
+# priors_orders_detail1.ix[bad_index,'days_since_prior_order'] = 0
+# bad_index=priors_orders_detail1[priors_orders_detail1.days_since_prior_order>=1].index
+# priors_orders_detail1.ix[bad_index,'days_since_prior_order'] = 1
+# bad_index=priors_orders_detail1[priors_orders_detail1.reordered==0].index
+# priors_orders_detail1.ix[bad_index,'days_since_prior_order'] = 0
+# prd['everyday'] = priors_orders_detail1.groupby('product_id')['days_since_prior_order'].size().astype(np.int16)
+# del priors_orders_detail1
+
+
+# priors_orders_detail2 =priors_orders_detail
+# bad_index=priors_orders_detail2[priors_orders_detail2.days_since_prior_order<1].index
+# priors_orders_detail2.ix[bad_index,'days_since_prior_order'] = 0
+# bad_index=priors_orders_detail2[priors_orders_detail2.days_since_prior_order>=1].index
+# priors_orders_detail2.ix[bad_index,'days_since_prior_order'] = 1
+# bad_index=priors_orders_detail2[priors_orders_detail2.days_since_prior_order>7].index
+# priors_orders_detail2.ix[bad_index,'days_since_prior_order'] = 0
+# bad_index=priors_orders_detail2[priors_orders_detail2.reordered==0].index
+# priors_orders_detail2.ix[bad_index,'days_since_prior_order'] = 0
+# prd['everyweek'] = priors_orders_detail2.groupby('product_id')['days_since_prior_order'].size().astype(np.int16)
+# del priors_orders_detail2
+
+#每件商品平均被加入购物车的次序
+#prd['avg_add_to_cart_order'] = priors_orders_detail.groupby('product_id')['add_to_cart_order'].mean().astype(np.int16)
+#############################################################################################################
 
 # User Part
 # _user_total_orders: 用户的总订单数
@@ -223,8 +265,7 @@ agg_dict_2 = {'order_number':{'_user_total_orders':'max'},
               'days_since_prior_order':{'_user_sum_days_since_prior_order':'sum',
                                         '_user_mean_days_since_prior_order': 'mean'}}
 users = ka_add_groupby_features_1_vs_n(orders[orders.eval_set == 'prior'], ['user_id'], agg_dict_2)
-#总购物车数量
-users['nb_orders'] = orders.groupby('user_id').size().astype(np.int16)
+
 
 # _user_reorder_ratio: reorder的总次数 / 第一单后买后的总次数
 # _user_total_products: 用户购买的总商品数
@@ -266,7 +307,8 @@ users = users.merge(us, how='inner')
 agg_dict_4 = {'order_number':{'_up_order_count': 'count',
                               '_up_first_order_number': 'min',
                               '_up_last_order_number':'max'},
-              'add_to_cart_order':{'_up_average_cart_position': 'mean'}}
+              'add_to_cart_order':{'_up_average_cart_position': 'mean'}
+              }
 
 data = ka_add_groupby_features_1_vs_n(df=priors_orders_detail,
                                                       group_columns_list=['user_id', 'product_id'],
@@ -280,75 +322,27 @@ data['_up_order_rate'] = data._up_order_count / data._user_total_orders
 data['_up_order_since_last_order'] = data._user_total_orders - data._up_last_order_number
 data['_up_order_rate_since_first_order'] = data._up_order_count / (data._user_total_orders - data._up_first_order_number + 1)
 
+###############################################################
+
+
+###############################################################
+
 # add user_id to train set
 train = train.merge(right=orders[['order_id', 'user_id']], how='left', on='order_id')
 data = data.merge(train[['user_id', 'product_id', 'reordered']], on=['user_id', 'product_id'], how='left')
 
 # release Memory
-# del train, prd, users
+del train, prd, users
 # gc.collect()
 # release Memory
 del priors_orders_detail, orders
 gc.collect()
 
-data.to_pickle('kernel38-data.pkl')
+#data.to_pickle('kernel38-data.pkl')
 ##########################################验证部分##################################################
-'''
-from functools import partial # to reduce df memory consumption by applying to_numeric
-train_gtl = []
 
-op_train = pd.read_csv('../input/order_products__train.csv', engine='c',
-                       dtype={'order_id': np.int32, 'product_id': np.int32,
-                              'add_to_cart_order': np.int16, 'reordered': np.int8})
-
-train_details = pd.merge(
-                left=op_train,
-                 right=orders,
-                 how='left',
-                 on='order_id'
-        ).apply(partial(pd.to_numeric, errors='ignore', downcast='integer'))
-
-for uid, subset in train_details.groupby('user_id'):
-    subset1 = subset[subset.reordered == 1]
-    oid = subset.order_id.values[0]
-
-    if len(subset1) == 0:
-        train_gtl.append((oid, 'None'))
-        continue
-
-    ostr = ' '.join([str(int(e)) for e in subset1.product_id.values])
-    # .strip is needed because join can have a padding space at the end
-    train_gtl.append((oid, ostr.strip()))
-
-df_train_gt = pd.DataFrame(train_gtl)
-
-df_train_gt.columns = ['order_id', 'products']
-df_train_gt.set_index('order_id', inplace=True)
-df_train_gt.sort_index(inplace=True)
-
-df_train_gt.to_csv('train.csv')
-
-def compare_results(df_gt, df_preds):
-
-    df_gt_cut = df_gt.loc[df_preds.index]
-
-    f1 = []
-    for gt, pred in zip(df_gt_cut.sort_index().products, df_preds.sort_index().products):
-        lgt = gt.replace("None", "-1").split(' ')
-        lpred = pred.replace("None", "-1").split(' ')
-
-        rr = (np.intersect1d(lgt, lpred))
-        precision = np.float(len(rr)) / len(lpred)
-        recall = np.float(len(rr)) / len(lgt)
-
-        denom = precision + recall
-        f1.append(((2 * precision * recall) / denom) if denom > 0 else 0)
-
-    #print(np.mean(f1))
-    return(np.mean(f1))
- '''
 ########################################训练部分#####################################################
-import xgboost
+import xgboost as xgb
 
 train = data.loc[data.eval_set == "train",:]
 train.drop(['eval_set', 'user_id', 'product_id', 'order_id'], axis=1, inplace=True)
@@ -357,12 +351,12 @@ train.loc[:, 'reordered'] = train.reordered.fillna(0)
 X_test = data.loc[data.eval_set == "test",:]
 
 # subsample 让training时间更短
-# X_train, X_val, y_train, y_val = train_test_split(train.drop('reordered', axis=1), train.reordered,
-#                                                     test_size=0.9, random_state=42)
+# Xtrain, Xval, ytrain, yval = train_test_split(train.drop('reordered', axis=1), train.reordered,
+#                                                     test_size=0.3, random_state=42)
 X_train = train.drop('reordered', axis=1)
 y_train = train.reordered
 
-d_train = xgboost.DMatrix(X_train, y_train)
+d_train = xgb.DMatrix(X_train, y_train)
 xgb_params = {
     "objective"         : "reg:logistic"
     ,"eval_metric"      : "logloss"
@@ -375,18 +369,80 @@ xgb_params = {
     ,"alpha"            :2e-05
     ,"lambda"           :10
 }
+#############################################cross_validation################################
+print('Model cv: \n')
+cv_output = xgb.cv(xgb_params, d_train, num_boost_round=200, early_stopping_rounds=20, verbose_eval=10,
+                          show_stdv=False)
 
+#cv_output[['train-logloss-mean', 'test-logloss-mean']]
+
+############################################train+F1########################################
+'''
+print('Model train: \n')
 watchlist= [(d_train, "train")]
-bst = xgboost.train(params=xgb_params, dtrain=d_train, num_boost_round=80, evals=watchlist, verbose_eval=10)
-xgboost.plot_importance(bst)
+bst = xgb.train(params=xgb_params, dtrain=d_train, num_boost_round=180, evals=watchlist, verbose_eval=10)
+#bst.save_model('../model/base_xgbmodel.model')
+xgb.plot_importance(bst)
 
-d_test = xgboost.DMatrix(X_test.drop(['eval_set', 'user_id', 'order_id', 'reordered', 'product_id'], axis=1))
-X_test.loc[:,'reordered'] = (bst.predict(d_test) > 0.21).astype(int)
-X_test.loc[:, 'product_id'] = X_test.product_id.astype(str)
-submit = ka_add_groupby_features_n_vs_1(X_test[X_test.reordered == 1],
-                                               group_columns_list=['order_id'],
-                                               target_columns_list= ['product_id'],
-                                               methods_list=[lambda x: ' '.join(set(x))], keep_only_stats=True)
-submit.columns = sample_submission.columns.tolist()
-submit_final = sample_submission[['order_id']].merge(submit, how='left').fillna('None')
-submit_final.to_csv("python_test.csv", index=False)
+d_test = xgb.DMatrix(X_test.drop(['eval_set', 'user_id', 'order_id', 'reordered', 'product_id'], axis=1))
+
+X_test['pred']=bst.predict(d_test)
+
+X_test.to_csv('middle.csv',index=False)
+
+###################################################F1计算
+
+#读取每个order,每个product的再购率
+#X_test=pd.read_csv('middle.csv')
+
+
+#按再购率进行由高到低排序
+
+X_test=X_test.sort_values(by='pred',ascending=False)
+
+def calculate(test_group):
+
+    #test['preds']=np.array(test_group.groupby('order_id')['score'].apply(set))
+    # score=[]
+    # score=np.array(score.append(test_group['score'][:len(test_group)]))
+    # print(score)
+    # print_best_prediction(test['preds'])
+
+    df = test_group.copy()
+    order_id = np.int(df.iloc[0]['order_id'])
+    print(order_id)
+
+    products, preds = (zip(*df.sort_values('pred', ascending=False)[['product_id', 'pred']].values))
+    print(products)
+    products=np.array(products).astype(str)
+    print(products)
+
+    (topk,best_none)=F1_faron.cal_ef1(preds)
+
+    print(best_none)
+    productslist=np.hstack((products[:topk],best_none))
+    print(productslist)
+
+    return pd.DataFrame({'order_id':order_id,'products':productslist})
+
+
+import F1_faron
+#同一个order的product聚合在一起
+tmp = X_test.groupby(['order_id'])
+#利用ICML2012的算法计算F1求出每个order最可能再次购买的k个product
+df_ef1 = tmp.apply(lambda x: calculate(x))
+
+#去除每个product_id的末尾.0
+def filterProduct(x):
+    if x.endswith('.0'):
+        return x[:-2]
+    else:
+        return x
+
+df_ef1.products=df_ef1.products.map(filterProduct)
+#同一个order的product放入一个list中
+output=df_ef1.groupby(['order_id']).apply(lambda x: ' '.join(x['products']))
+result=pd.DataFrame({'products':output})
+result.to_csv('sub.csv', index=False)
+'''
+######################################################################################################
