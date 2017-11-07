@@ -158,6 +158,12 @@ test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel =
 test['notAutorenew_&_cancel'] = ((test.is_auto_renew == 0) == (test.is_cancel == 1)).astype(np.int8)
 # test['long_time_user'] = (((test['registration_duration'] / 365).astype(int)) > 1).astype(int)
 
+# Drop datetime features
+datetime_cols = list(train.select_dtypes(include=['datetime64[ns]']).columns)
+train = train.drop([datetime_cols], 1)
+datetime_cols = list(test.select_dtypes(include=['datetime64[ns]']).columns)
+test = test.drop([datetime_cols], 1)
+
 # Deal with gender
 gender = {'male': 1, 'female': 2}
 train['gender'] = train['gender'].map(gender)
@@ -194,5 +200,6 @@ for i in range(fold):
     else:
         pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
 pred /= fold
+
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 test[['msno', 'is_churn']].to_csv('submission_xgboost_9_features.csv', index=False)
