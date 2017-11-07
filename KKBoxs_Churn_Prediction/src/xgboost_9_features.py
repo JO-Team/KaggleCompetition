@@ -28,8 +28,6 @@ train = pd.read_csv('../input/train_v2.csv')
 test = pd.read_csv('../input/sample_submission_v2.csv')
 members = pd.read_csv('../input/members_v2.csv')
 
-print(members.head(10))
-
 transactions_features = ['msno', 'payment_method_id', 'payment_plan_days', 'plan_list_price', 'actual_amount_paid',
                          'is_auto_renew', 'transaction_date', 'membership_expire_date', 'is_cancel']
 trans_features = [feature for feature in transactions_features[1:] if feature != '_']
@@ -150,15 +148,15 @@ train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
 
 # Add 4 Features After combine
-train['reg_mem_duration'] = train['registration_duration'] - train['membership_duration']
+# train['reg_mem_duration'] = train['registration_duration'] - train['membership_duration']
 train['autorenew_&_not_cancel'] = ((train.is_auto_renew == 1) == (train.is_cancel == 0)).astype(np.int8)
 train['notAutorenew_&_cancel'] = ((train.is_auto_renew == 0) == (train.is_cancel == 1)).astype(np.int8)
-train['long_time_user'] = (((train['registration_duration'] / 365).astype(int)) > 1).astype(int)
+# train['long_time_user'] = (((train['registration_duration'] / 365).astype(int)) > 1).astype(int)
 
-test['reg_mem_duration'] = test['registration_duration'] - test['membership_duration']
+# test['reg_mem_duration'] = test['registration_duration'] - test['membership_duration']
 test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel == 0)).astype(np.int8)
 test['notAutorenew_&_cancel'] = ((test.is_auto_renew == 0) == (test.is_cancel == 1)).astype(np.int8)
-test['long_time_user'] = (((test['registration_duration'] / 365).astype(int)) > 1).astype(int)
+# test['long_time_user'] = (((test['registration_duration'] / 365).astype(int)) > 1).astype(int)
 
 # Deal with gender
 gender = {'male': 1, 'female': 2}
