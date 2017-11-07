@@ -30,7 +30,7 @@ members = pd.read_csv('../input/members_v2.csv')
 
 transactions_features = ['msno', 'payment_method_id', 'payment_plan_days', 'plan_list_price', 'actual_amount_paid',
                          'is_auto_renew', 'transaction_date', 'membership_expire_date', 'is_cancel']
-# trans_features = [feature for feature in transactions_features[1:] if feature != '_']
+trans_features = [feature for feature in transactions_features[1:] if feature != '_']
 
 
 def make_transactions_features():
