@@ -114,17 +114,17 @@ transactions = make_transactions_features()
 user_logs = make_userlog_features()
 
 # Add 5 Features
-transactions_features['discount'] = transactions_features['plan_list_price']
-transactions_features['is_discount'] = transactions_features.discount.apply(lambda x: 1 if x > 0 else 0)
-transactions_features['amt_per_day'] = transactions_features['actual_amount_paid'] / transactions_features['payment_plan_days']
+transactions['discount'] = transactions_features['plan_list_price']
+transactions['is_discount'] = transactions.discount.apply(lambda x: 1 if x > 0 else 0)
+transactions['amt_per_day'] = transactions['actual_amount_paid'] / transactions['payment_plan_days']
 
 date_cols = ['transaction_date', 'membership_expire_date']
 for col in date_cols:
     transactions_features[col] = pd.to_datetime(transactions_features[col], format='%Y%m%d')
 
-transactions_features['membership_duration'] = transactions_features.membership_expire_date - transactions_features.transaction_date
-transactions_features['membership_duration'] = transactions_features['membership_duration'] / np.timedelta64(1, 'D')
-transactions_features['membership_duration'] = transactions_features['membership_duration'].astype(int)
+transactions['membership_duration'] = transactions.membership_expire_date - transactions.transaction_date
+transactions['membership_duration'] = transactions['membership_duration'] / np.timedelta64(1, 'D')
+transactions['membership_duration'] = transactions['membership_duration'].astype(int)
 
 
 date_cols = ['registration_init_time', 'expiration_date']
