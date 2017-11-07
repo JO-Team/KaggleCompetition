@@ -21,15 +21,15 @@ import pandas as pd
 import numpy as np
 import sklearn
 
-train = pd.read_csv('../input/train.csv')
-test = pd.read_csv('../input/sample_submission_zero.csv')
+train = pd.read_csv('../input/train_v2.csv')
+test = pd.read_csv('../input/sample_submission_v2.csv')
 
 transactions_features = ['msno', 'payment_method_id', 'payment_plan_days', 'plan_list_price', 'actual_amount_paid', 'is_auto_renew', '_', '_', 'is_cancel']
 trans_features = [feature for feature in transactions_features[1:] if feature != '_']
 def make_transactions_features():
     print('loading...')
     infos = {}
-    with open('../input/transactions.csv') as fd:
+    with open('../input/transactions_v2.csv') as fd:
         count = 0
         fd.readline()
         for line in fd:
@@ -62,7 +62,7 @@ userlog_features = ['msno', 'num_25', 'num_50', 'num_75', 'num_985', 'num_100', 
 def make_userlog_features():
     print('loading...')
     infos = {}
-    with open('../input/user_logs.csv') as fd:
+    with open('../input/user_logs_v2.csv') as fd:
         count = 0
         fd.readline()
         for line in fd:
@@ -107,7 +107,7 @@ test = pd.merge(test, transactions, how='left', on='msno')
 train = pd.merge(train, user_logs, how='left', on='msno')
 test = pd.merge(test, user_logs, how='left', on='msno')
 
-members = pd.read_csv('../input/members.csv')
+members = pd.read_csv('../input/members_v2.csv')
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
 
@@ -145,4 +145,4 @@ for i in range(fold):
         pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
 pred /= fold
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno','is_churn']].to_csv('submission3.csv', index=False)
+test[['msno','is_churn']].to_csv('submission_v2.csv', index=False)
