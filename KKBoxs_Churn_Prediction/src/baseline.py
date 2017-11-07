@@ -126,10 +126,10 @@ def xgb_score(preds, dtrain):
     labels = dtrain.get_label()
     return 'log_loss', sklearn.metrics.log_loss(labels, preds)
 
-fold = 1
+fold = 10
 for i in range(fold):
     params = {
-        'eta': 0.02, #use 0.002
+        'eta': 0.002, #use 0.002
         'max_depth': 7,
         'objective': 'binary:logistic',
         'eval_metric': 'logloss',
@@ -138,11 +138,11 @@ for i in range(fold):
     }
     x1, x2, y1, y2 = sklearn.model_selection.train_test_split(train[cols], train['is_churn'], test_size=0.3, random_state=i)
     watchlist = [(xgb.DMatrix(x1, y1), 'train'), (xgb.DMatrix(x2, y2), 'valid')]
-    model = xgb.train(params, xgb.DMatrix(x1, y1), 150,  watchlist, feval=xgb_score, maximize=False, verbose_eval=50, early_stopping_rounds=50) #use 1500
+    model = xgb.train(params, xgb.DMatrix(x1, y1), 1500,  watchlist, feval=xgb_score, maximize=False, verbose_eval=50, early_stopping_rounds=50) #use 1500
     if i != 0:
         pred += model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
     else:
         pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
 pred /= fold
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno','is_churn']].to_csv('submission_v2.csv', index=False)
+test[['msno','is_churn']].to_csv('submission_v2_10_fold.csv', index=False)
