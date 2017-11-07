@@ -28,6 +28,8 @@ train = pd.read_csv('../input/train_v2.csv')
 test = pd.read_csv('../input/sample_submission_v2.csv')
 members = pd.read_csv('../input/members_v2.csv')
 
+print(members.head(10))
+
 transactions_features = ['msno', 'payment_method_id', 'payment_plan_days', 'plan_list_price', 'actual_amount_paid',
                          'is_auto_renew', 'transaction_date', 'membership_expire_date', 'is_cancel']
 trans_features = [feature for feature in transactions_features[1:] if feature != '_']
