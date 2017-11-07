@@ -129,14 +129,15 @@ transactions['membership_duration'] = transactions['membership_duration'] / np.t
 transactions['membership_duration'] = transactions['membership_duration'].astype(int)
 
 
-date_cols = ['registration_init_time', 'expiration_date']
+# date_cols = ['registration_init_time', 'expiration_date']
+date_cols = ['registration_init_time']
 
 for col in date_cols:
     members[col] = pd.to_datetime(members[col], format='%Y%m%d')
 
-members['registration_duration'] = members.expiration_date - members.registration_init_time
-members['registration_duration'] = members['registration_duration'] / np.timedelta64(1, 'D')
-members['registration_duration'] = members['registration_duration'].astype(int)
+# members['registration_duration'] = members.expiration_date - members.registration_init_time
+# members['registration_duration'] = members['registration_duration'] / np.timedelta64(1, 'D')
+# members['registration_duration'] = members['registration_duration'].astype(int)
 
 
 train = pd.merge(train, transactions, how='left', on='msno')
