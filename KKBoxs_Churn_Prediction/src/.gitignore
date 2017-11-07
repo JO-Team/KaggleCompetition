@@ -1,4 +1,4 @@
 # Ignore the submission file
 *.csv
-
+.out
 .kaggle-cli
