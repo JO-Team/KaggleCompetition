@@ -161,10 +161,10 @@ test['notAutorenew_&_cancel'] = ((test.is_auto_renew == 0) == (test.is_cancel ==
 # Drop datetime features
 # datetime_cols = list(train.select_dtypes(include=['datetime64[ns]']).columns)
 # train = train.drop([datetime_cols], 1)
-train = train.drop([['transaction_date', 'membership_expire_date', 'registration_init_time']], 1)
+train = train.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], 1)
 # datetime_cols = list(test.select_dtypes(include=['datetime64[ns]']).columns)
 # test = test.drop([datetime_cols], 1)
-test = test.drop([['transaction_date', 'membership_expire_date', 'registration_init_time']], 1)
+test = test.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], 1)
 
 # Deal with gender
 gender = {'male': 1, 'female': 2}
