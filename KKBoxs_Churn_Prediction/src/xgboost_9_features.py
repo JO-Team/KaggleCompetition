@@ -114,7 +114,7 @@ transactions = make_transactions_features()
 user_logs = make_userlog_features()
 
 # Add 5 Features
-transactions['discount'] = transactions_features['plan_list_price']
+transactions['discount'] = transactions['plan_list_price']
 transactions['is_discount'] = transactions.discount.apply(lambda x: 1 if x > 0 else 0)
 transactions['amt_per_day'] = transactions['actual_amount_paid'] / transactions['payment_plan_days']
 
