@@ -107,7 +107,7 @@ test = pd.merge(test, transactions, how='left', on='msno')
 train = pd.merge(train, user_logs, how='left', on='msno')
 test = pd.merge(test, user_logs, how='left', on='msno')
 
-members = pd.read_csv('../input/members_v2.csv')
+members = pd.read_csv('../input/members_v3.csv')
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
 
