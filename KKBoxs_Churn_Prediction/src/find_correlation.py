@@ -108,7 +108,7 @@ test = pd.merge(test, transactions, how='left', on='msno')
 train = pd.merge(train, user_logs, how='left', on='msno')
 test = pd.merge(test, user_logs, how='left', on='msno')
 
-members = pd.read_csv('../input/members_v3.csv')
+members = pd.read_csv('../input/members_v2.csv')
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
 
@@ -128,7 +128,6 @@ X2 = sm.add_constant(x_train)
 est = sm.OLS(y_train, X2)
 est2 = est.fit()
 print(est2.summary())
-
 
 def xgb_score(preds, dtrain):
     labels = dtrain.get_label()
@@ -151,12 +150,12 @@ for i in range(fold):
     eval_cv = xgb.cv(params, xgb.DMatrix(x1, y1), num_boost_round=1500, feval=xgb_score, maximize=False,
                      verbose_eval=50,
                      early_stopping_rounds=50)  # use 1500
-    print(eval_cv)
+    # print(eval_cv)
     model = xgb.train(params, xgb.DMatrix(x1, y1), 1500, watchlist, feval=xgb_score, maximize=False, verbose_eval=50,
                       early_stopping_rounds=50)  # use 1500
     plt.rcParams['figure.figsize'] = (7.0, 7.0)
     xgb.plot_importance(booster=model)
-    plt.savefig('feature_importance')
+    plt.savefig('xgboost_feature_importance_with_members_v2')
     # plt.show()
 
     if i != 0:
