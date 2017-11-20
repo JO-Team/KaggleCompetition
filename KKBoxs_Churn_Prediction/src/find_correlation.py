@@ -121,6 +121,28 @@ test = test.fillna(0)
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
+corr = train.corr()
+
+print('Train Data Set Correlation:')
+print(corr)
+
+# Generate a mask for the upper triangle
+mask = np.zeros_like(corr, dtype=np.bool)
+mask[np.triu_indices_from(mask)] = True
+
+# Set up the matplotlib figure
+f, ax = plt.subplots(figsize=(11, 9))
+
+# Generate a custom diverging colormap
+cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+# Draw the heatmap with the mask and correct aspect ratio
+headmap = sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0,
+            square=True, linewidths=.5, cbar_kws={"shrink": .5})
+
+headmap.savefig('Features_correlation_heatmap')
+
+'''
 print('OLS Analyses on all attributes and is_churn')
 y_train = train['is_churn']
 x_train = train.drop(['msno', 'is_churn'], axis=1)
@@ -128,6 +150,7 @@ X2 = sm.add_constant(x_train)
 est = sm.OLS(y_train, X2)
 est2 = est.fit()
 print(est2.summary())
+
 
 
 def xgb_score(preds, dtrain):
@@ -167,5 +190,5 @@ pred /= fold
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 # test[['msno', 'is_churn']].to_csv('submission_eta_0.02_round_1500_cv.csv', index=False)
 
-
+'''
 
