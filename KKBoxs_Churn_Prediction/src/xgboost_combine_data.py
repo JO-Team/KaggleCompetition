@@ -5,7 +5,8 @@ import xgboost as xgb
 
 transactions = pd.read_csv('../input/transactions_v2.csv')  # reading the transaction file
 members = pd.read_csv('../input/members_v3.csv')
-user_log = pd.read_csv('../input/user_logs_v2.csv')
+# user_log = pd.read_csv('../input/user_logs_v2.csv')
+user_log = pd.read_csv('../input/processed_user_log.csv')
 train = pd.read_csv('../input/train_v2.csv')
 test = pd.read_csv('../input/sample_submission_v2.csv')
 
@@ -166,6 +167,8 @@ newdf_grouped['days_to_buy_membership'] = newdf_grouped['transaction_date'] - ne
 
 newdf_grouped['days_to_buy_membership'] = (newdf_grouped['days_to_buy_membership'] / np.timedelta64(1, 'D')).astype(int)
 
+newdf_grouped = newdf_grouped.merge(user_log, how='inner', on='msno')
+
 print('The data column is:')
 print(newdf_grouped.dtypes)
 
@@ -179,7 +182,7 @@ def xgb_score(preds, dtrain):
     return 'log_loss', sklearn.metrics.log_loss(labels, preds)
 
 
-fold = 10
+fold = 1
 for i in range(fold):
     params = {
         'eta': 0.02,  # use 0.002
@@ -201,4 +204,4 @@ for i in range(fold):
 pred /= fold
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v3_10_fold.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v3_with_user_log.csv', index=False)
