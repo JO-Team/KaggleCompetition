@@ -122,11 +122,12 @@ cols = [c for c in train.columns if c not in ['is_churn','msno']]
 
 train.head()
 
+
 def xgb_score(preds, dtrain):
     labels = dtrain.get_label()
     return 'log_loss', sklearn.metrics.log_loss(labels, preds)
 
-fold = 10
+fold = 1
 for i in range(fold):
     params = {
         'eta': 0.02, #use 0.002
@@ -148,4 +149,4 @@ for i in range(fold):
         pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
 pred /= fold
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno','is_churn']].to_csv('submission_eta_0.02_round_1500_cv.csv', index=False)
+test[['msno','is_churn']].to_csv('submission_v3.csv', index=False)
