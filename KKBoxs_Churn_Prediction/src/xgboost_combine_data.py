@@ -54,8 +54,8 @@ for i in data['payment_method_id'].unique():
 newdf = newdf.rename(columns=payment_method_id)  # renaming the new columns
 del newdf['payment_method_id']  # deleting the extra columns
 
-print('Data Column after payment_method_id')
-print(newdf.columns)
+# print('Data Column after payment_method_id')
+# print(newdf.columns)
 
 newdf = newdf.join(pd.get_dummies(newdf['gender']))  # creating a new columns for paymenth method id dummyvariable
 
@@ -100,7 +100,7 @@ newdf_grouped = newdf.groupby('msno').agg({'bd': np.mean, 'registration_init_tim
                                            'is_auto_renew': np.mean, 'transaction_date': min,
                                            'membership_expire_date': max,
                                            'is_cancel': np.mean, 'is_churn': min, 'discount': 'sum',
-                                           'payment_method_id2': np.mean,
+                                           # 'payment_method_id2': np.mean,
                                            'payment_method_id3': sum, 'payment_method_id4': np.sum,
                                            'payment_method_id5': np.sum,
                                            'payment_method_id6': np.sum, 'payment_method_id8': np.sum,
