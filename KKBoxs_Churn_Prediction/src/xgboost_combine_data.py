@@ -6,7 +6,7 @@ import xgboost as xgb
 transactions = pd.read_csv('../input/transactions_v2.csv')  # reading the transaction file
 members = pd.read_csv('../input/members_v3.csv')
 # user_log = pd.read_csv('../input/user_logs_v2.csv')
-user_log = pd.read_csv('../input/processed_user_log.csv')
+user_log = pd.read_csv('../input/processed_user_log.csv', index_col='msno')
 train = pd.read_csv('../input/train_v2.csv')
 test = pd.read_csv('../input/sample_submission_v2.csv')
 
@@ -173,7 +173,7 @@ newdf_grouped['days_to_buy_membership'] = (newdf_grouped['days_to_buy_membership
 print(newdf_grouped.columns)
 print(user_log.columns)
 
-newdf_grouped = pd.merge(newdf_grouped, user_log, how='outer', on=['msno'])
+newdf_grouped = pd.merge(newdf_grouped, user_log, how='outer', left_index=True, right_index=True)
 
 print('The data column is:')
 print(newdf_grouped.dtypes)
