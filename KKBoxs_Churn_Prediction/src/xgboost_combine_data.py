@@ -99,6 +99,9 @@ newdf[(newdf['bd'] < 0) | (newdf['bd'] > 100)].loc[:, 'bd'] = bd_mean  # filling
 
 newdf['count_of_recharge'] = 1
 
+print('The data column is:')
+print(newdf.columns)
+
 newdf_grouped = newdf.groupby('msno').agg({'bd': np.mean, 'registration_init_time': min,
                                            'payment_plan_days': np.mean, 'plan_list_price': np.mean,
                                            'count_of_recharge': 'sum', 'actual_amount_paid': np.mean,
