@@ -170,13 +170,12 @@ newdf_grouped['days_to_buy_membership'] = newdf_grouped['transaction_date'] - ne
 
 newdf_grouped['days_to_buy_membership'] = (newdf_grouped['days_to_buy_membership'] / np.timedelta64(1, 'D')).astype(int)
 
-print(user_log.head())
-print(newdf_grouped.head())
-
-newdf_grouped = newdf_grouped.merge(user_log, how='inner', on='msno')
+newdf_grouped = newdf_grouped.merge(user_log, how='inner', left_on='msno', right_on='msno')
 
 print('The data column is:')
 print(newdf_grouped.dtypes)
+
+print(newdf_grouped.head())
 
 # Use XGBoost
 
