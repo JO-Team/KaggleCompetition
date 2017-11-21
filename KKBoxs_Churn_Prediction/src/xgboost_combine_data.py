@@ -106,9 +106,6 @@ newdf[(newdf['bd'] < 0) | (newdf['bd'] > 100)].loc[:, 'bd'] = bd_mean  # filling
 
 newdf['count_of_recharge'] = 1
 
-print('The data column is:')
-print(newdf.columns)
-
 newdf_grouped = newdf.groupby('msno').agg({'bd': np.mean, 'registration_init_time': min,
                                            'payment_plan_days': np.mean, 'plan_list_price': np.mean,
                                            'count_of_recharge': 'sum', 'actual_amount_paid': np.mean,
@@ -172,6 +169,9 @@ newdf_grouped[newdf_grouped.columns[2:5]] = newdf_grouped[newdf_grouped.columns[
 newdf_grouped['days_to_buy_membership'] = newdf_grouped['transaction_date'] - newdf_grouped['registration_init_time']
 
 newdf_grouped['days_to_buy_membership'] = (newdf_grouped['days_to_buy_membership'] / np.timedelta64(1, 'D')).astype(int)
+
+print(user_log.head())
+print(newdf_grouped.head())
 
 newdf_grouped = newdf_grouped.merge(user_log, how='inner', on='msno')
 
