@@ -12,7 +12,7 @@ def process_user_log(chunk):
     return answer
 
 
-size = 2e7  # 40 million
+size = 1e6  # 1 million
 reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size, index_col=['msno'])
 start_time = time.time()
 for i in range(10):
