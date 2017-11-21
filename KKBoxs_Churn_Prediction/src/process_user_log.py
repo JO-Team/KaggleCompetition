@@ -15,7 +15,7 @@ def process_user_log(chunk):
 size = 1e6  # 1 million
 reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size, index_col=['msno'])
 start_time = time.time()
-for i in range(10):
+for i in range(18):
     user_log_chunk = next(reader)
     if (i == 0):
         result = process_user_log(user_log_chunk)
