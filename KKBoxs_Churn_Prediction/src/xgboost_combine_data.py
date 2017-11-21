@@ -4,7 +4,7 @@ import sklearn
 import xgboost as xgb
 
 transactions = pd.read_csv('../input/transactions_v2.csv')  # reading the transaction file
-members = pd.read_csv('../input/members_v2.csv')
+members = pd.read_csv('../input/members_v3.csv')
 user_log = pd.read_csv('../input/user_logs_v2.csv')
 train = pd.read_csv('../input/train_v2.csv')
 test = pd.read_csv('../input/sample_submission_v2.csv')
@@ -109,21 +109,21 @@ newdf_grouped = newdf.groupby('msno').agg({'bd': np.mean, 'registration_init_tim
                                            'membership_expire_date': max,
                                            'is_cancel': np.mean, 'is_churn': min, 'discount': 'sum',
                                            # 'payment_method_id2': np.mean,
-                                           # 2 #'payment_method_id3': sum,
+                                           'payment_method_id3': sum,
                                            # 'payment_method_id4': np.sum,
                                            # 'payment_method_id5': np.sum,
-                                           # 2 #'payment_method_id6': np.sum,
+                                           'payment_method_id6': np.sum,
                                            'payment_method_id8': np.sum,
                                            'payment_method_id10': np.sum,
                                            'payment_method_id11': np.sum, 'payment_method_id12': np.sum,
-                                           # 2 #'payment_method_id13': np.sum,
+                                           'payment_method_id13': np.sum,
                                            'payment_method_id14': np.sum, 'payment_method_id15': np.sum,
                                            'payment_method_id16': np.sum,
                                            'payment_method_id17': np.sum, 'payment_method_id18': np.sum,
                                            'payment_method_id19': np.sum,
-                                           # 2 #'payment_method_id20': np.sum,
+                                           'payment_method_id20': np.sum,
                                            'payment_method_id21': np.sum,
-                                           # 2 #'payment_method_id22': np.sum,
+                                           'payment_method_id22': np.sum,
                                            'payment_method_id23': np.sum,
                                            # 'payment_method_id24': np.sum,
                                            # 'payment_method_id25': np.sum,
@@ -179,7 +179,7 @@ def xgb_score(preds, dtrain):
     return 'log_loss', sklearn.metrics.log_loss(labels, preds)
 
 
-fold = 1
+fold = 10
 for i in range(fold):
     params = {
         'eta': 0.02,  # use 0.002
@@ -201,4 +201,4 @@ for i in range(fold):
 pred /= fold
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v2.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v3_10_fold.csv', index=False)
