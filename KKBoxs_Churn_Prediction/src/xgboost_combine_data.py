@@ -6,7 +6,7 @@ import xgboost as xgb
 transactions = pd.read_csv('../input/transactions_v2.csv')  # reading the transaction file
 members = pd.read_csv('../input/members_v3.csv')
 # user_log = pd.read_csv('../input/user_logs_v2.csv')
-user_log = pd.read_csv('../input/processed_user_log.csv')
+user_log = pd.read_csv('../input/processed_user_log.csv', index_col='msno')
 train = pd.read_csv('../input/train_v2.csv')
 test = pd.read_csv('../input/sample_submission_v2.csv')
 
