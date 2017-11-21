@@ -54,6 +54,9 @@ for i in data['payment_method_id'].unique():
 newdf = newdf.rename(columns=payment_method_id)  # renaming the new columns
 del newdf['payment_method_id']  # deleting the extra columns
 
+print('Data Column after payment_method_id')
+print(newdf.columns)
+
 newdf = newdf.join(pd.get_dummies(newdf['gender']))  # creating a new columns for paymenth method id dummyvariable
 
 gender = {}
