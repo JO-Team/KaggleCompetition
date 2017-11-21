@@ -30,8 +30,14 @@ members['registration_init_time'] = pd.to_datetime(members['registration_init_ti
                                                    infer_datetime_format=True, exact=False)
 train['is_churn'] = train['is_churn'].astype('int8')
 
-user_log['date'] = pd.to_datetime(user_log['date'].astype(str),
-                                  infer_datetime_format=True, exact=False)
+# user_log['date'] = pd.to_datetime(user_log['date'].astype(str),
+#                                   infer_datetime_format=True, exact=False)
+
+user_log['date_min'] = pd.to_datetime(user_log['date_min'].astype(str),
+                                      infer_datetime_format=True, exact=False)
+
+user_log['date_max'] = pd.to_datetime(user_log['date_max'].astype(str),
+                                      infer_datetime_format=True, exact=False)
 
 members_trans = members.merge(transactions, how='inner', on='msno')
 data = members_trans.merge(train, how='inner', on='msno')
