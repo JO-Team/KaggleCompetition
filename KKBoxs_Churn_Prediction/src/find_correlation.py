@@ -139,8 +139,8 @@ cmap = sns.diverging_palette(220, 10, as_cmap=True)
 # Draw the heatmap with the mask and correct aspect ratio
 headmap = sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0,
             square=True, linewidths=.5, cbar_kws={"shrink": .5})
-
-headmap.savefig('Features_correlation_heatmap')
+fig = headmap.get_figure()
+fig.savefig('Features_correlation_heatmap')
 
 '''
 print('OLS Analyses on all attributes and is_churn')
