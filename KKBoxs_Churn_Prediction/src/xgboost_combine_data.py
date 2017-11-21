@@ -4,7 +4,8 @@ import sklearn
 import xgboost as xgb
 
 transactions = pd.read_csv('../input/transactions_v2.csv')  # reading the transaction file
-members = pd.read_csv('../input/members_v3.csv')
+members = pd.read_csv('../input/members_v2.csv')
+user_log = pd.read_csv('../input/user_logs_v2.csv')
 train = pd.read_csv('../input/train_v2.csv')
 test = pd.read_csv('../input/sample_submission_v2.csv')
 
@@ -17,7 +18,8 @@ transactions['is_auto_renew'] = transactions['is_auto_renew'].astype('int8')  # 
 transactions['is_cancel'] = transactions['is_cancel'].astype('int8')  # changing the type to boolean
 transactions['membership_expire_date'] = pd.to_datetime(transactions['membership_expire_date'].astype(str),
                                                         infer_datetime_format=True, exact=False)
-transactions['transaction_date'] = pd.to_datetime(transactions['transaction_date'].astype(str), infer_datetime_format = True, exact=False)
+transactions['transaction_date'] = pd.to_datetime(transactions['transaction_date'].astype(str),
+                                                  infer_datetime_format=True, exact=False)
 # converting the series to string and then to datetime format for easy manipulation of dates
 
 members['city'] = members['city'].astype('int8')
@@ -25,8 +27,10 @@ members['bd'] = members['bd'].astype('int16')
 members['bd'] = members['bd'].astype('int8')
 members['registration_init_time'] = pd.to_datetime(members['registration_init_time'].astype(str),
                                                    infer_datetime_format=True, exact=False)
-
 train['is_churn'] = train['is_churn'].astype('int8')
+
+user_log['date'] = pd.to_datetime(user_log['date'].astype(str),
+                                  infer_datetime_format=True, exact=False)
 
 members_trans = members.merge(transactions, how='inner', on='msno')
 data = members_trans.merge(train, how='inner', on='msno')
@@ -192,4 +196,4 @@ for i in range(fold):
 pred /= fold
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v2.csv', index=False)
