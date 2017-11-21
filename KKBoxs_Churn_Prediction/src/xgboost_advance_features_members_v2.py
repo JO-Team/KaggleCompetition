@@ -118,7 +118,7 @@ test = pd.merge(test, transactions, how='left', on='msno')
 train = pd.merge(train, user_logs, how='left', on='msno')
 test = pd.merge(test, user_logs, how='left', on='msno')
 
-members = pd.read_csv('../input/members_v3.csv')
+members = pd.read_csv('../input/members_v2.csv')
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
 
@@ -167,4 +167,4 @@ for i in range(fold):
         pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
 pred /= fold
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno', 'is_churn']].to_csv('submission_baseline_xgboost_advance_features_members_v3.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_baseline_xgboost_advance_features_members_v2.csv', index=False)
