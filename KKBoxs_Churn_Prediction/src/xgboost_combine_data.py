@@ -123,7 +123,7 @@ newdf_grouped = newdf.groupby('msno').agg({'bd': np.mean, 'registration_init_tim
                                            'payment_method_id19': np.sum,
                                            # 2 #'payment_method_id20': np.sum,
                                            'payment_method_id21': np.sum,
-                                           'payment_method_id22': np.sum,
+                                           # 2 #'payment_method_id22': np.sum,
                                            'payment_method_id23': np.sum,
                                            # 'payment_method_id24': np.sum,
                                            # 'payment_method_id25': np.sum,
