@@ -17,6 +17,7 @@ transactions['is_auto_renew'] = transactions['is_auto_renew'].astype('int8')  # 
 transactions['is_cancel'] = transactions['is_cancel'].astype('int8')  # changing the type to boolean
 transactions['membership_expire_date'] = pd.to_datetime(transactions['membership_expire_date'].astype(str),
                                                         infer_datetime_format=True, exact=False)
+transactions['transaction_date'] = pd.to_datetime(transactions['transaction_date'].astype(str), infer_datetime_format = True, exact=False)
 # converting the series to string and then to datetime format for easy manipulation of dates
 
 members['city'] = members['city'].astype('int8')
