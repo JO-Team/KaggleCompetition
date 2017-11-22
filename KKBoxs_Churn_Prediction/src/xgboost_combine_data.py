@@ -319,5 +319,5 @@ pred /= fold
 print('Len of final output')
 print(len(newdf_test_grouped))
 
-newdf_test_grouped['is_churn'] = pred.clip(0.0000001, 0.999999)
-newdf_test_grouped[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v3_with_user_log.csv', index=False)
+test['is_churn'] = pred.clip(0.0000001, 0.999999)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v3_with_user_log.csv', index=False)
