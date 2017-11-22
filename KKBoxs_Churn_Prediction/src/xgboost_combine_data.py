@@ -41,10 +41,7 @@ user_log['date_max'] = pd.to_datetime(user_log['date_max'].astype(str),
 
 members_trans = members.merge(transactions, how='inner', on='msno')
 data = members_trans.merge(train, how='inner', on='msno')
-data_test = pd.merge(test, transactions, how='left', on='msno')
-
-print(len(data))
-print(len(data_test))
+data_test = members_trans.merge(test, how='inner', on='msno')
 
 
 def assign_gender(item):
@@ -55,11 +52,15 @@ def assign_gender(item):
 
 
 data['gender'] = data['gender'].apply(assign_gender)
+data_test['gender'] = data_test['gender'].apply(assign_gender)
 
 data['discount'] = data['plan_list_price'] - data['actual_amount_paid']
+data_test['discount'] = data_test['plan_list_price'] - data_test['actual_amount_paid']
 
 newdf = data.join(
     pd.get_dummies(data['payment_method_id']))  # creating a new columns for paymenth method id dummyvariable
+newdf_test = data_test.join(
+    pd.get_dummies(data_test['payment_method_id']))  # creating a new columns for paymenth method id dummyvariable
 
 payment_method_id = {}
 for i in data['payment_method_id'].unique():
@@ -69,19 +70,32 @@ for i in data['payment_method_id'].unique():
 newdf = newdf.rename(columns=payment_method_id)  # renaming the new columns
 del newdf['payment_method_id']  # deleting the extra columns
 
+payment_method_id = {}
+for i in data_test['payment_method_id'].unique():
+    payment_method_id.update(
+        {i: 'payment_method_id{}'.format(i)})  # create a dictionary to automatic renaming of columns
+
+newdf_test = newdf_test.rename(columns=payment_method_id)  # renaming the new columns
+del newdf_test['payment_method_id']  # deleting the extra columns
+
 # print('Data Column after payment_method_id')
 # print(newdf.columns)
 
 newdf = newdf.join(pd.get_dummies(newdf['gender']))  # creating a new columns for paymenth method id dummyvariable
+newdf_test = newdf_test.join(pd.get_dummies(newdf_test['gender']))
 
 gender = {}
 gender.update({True: 'gender_provided'})  # create a dictionary to automatic renaming of columns
 gender.update({False: 'gender_not_provided'})
 newdf = newdf.rename(columns=gender)  # renaming the new columns
 del newdf['gender']  # deleting the extra columns
+newdf_test = newdf_test.rename(columns=gender)  # renaming the new columns
+del newdf_test['gender']  # deleting the extra columns
 
 newdf = newdf.join(
     pd.get_dummies(newdf['registered_via']))  # creating a new columns for paymenth method id dummyvariable
+newdf_test = newdf_test.join(
+    pd.get_dummies(newdf_test['registered_via']))  # creating a new columns for paymenth method id dummyvariable
 
 registered_via = {}
 for i in data['registered_via'].unique():
@@ -92,6 +106,16 @@ del newdf['registered_via']  # deleting the extra columns
 
 newdf = newdf.join(pd.get_dummies(newdf['city']))  # creating a new columns for paymenth method id dummyvariable
 
+registered_via = {}
+for i in data_test['registered_via'].unique():
+    registered_via.update({i: 'registered_via{}'.format(i)})  # create a dictionary to automatic renaming of columns
+
+newdf_test = newdf_test.rename(columns=registered_via)  # renaming the new columns
+del newdf_test['registered_via']  # deleting the extra columns
+
+newdf = newdf.join(pd.get_dummies(newdf['city']))  # creating a new columns for paymenth method id dummyvariable
+newdf_test = newdf_test.join(pd.get_dummies(newdf_test['city']))
+
 city = {}
 for i in data['city'].unique():
     city.update({i: 'city{}'.format(i)})  # create a dictionary to automatic renaming of columns
@@ -99,14 +123,15 @@ for i in data['city'].unique():
 newdf = newdf.rename(columns=city)  # renaming the new columns
 del newdf['city']  # deleting the extra columns
 
+city = {}
+for i in data_test['city'].unique():
+    city.update({i: 'city{}'.format(i)})  # create a dictionary to automatic renaming of columns
 
-def reject_outliers(data, m=2):
-    return data[abs(data - np.mean(data)) < m * np.std(data)]
-
+newdf_test = newdf_test.rename(columns=city)  # renaming the new columns
+del newdf_test['city']  # deleting the extra columns
 
 bd_mean = np.mean(newdf['bd'])
 newdf[(newdf['bd'] < 0) | (newdf['bd'] > 100)].loc[:, 'bd'] = bd_mean  # filling the odd aged people with value
-
 newdf['count_of_recharge'] = 1
 
 newdf_grouped = newdf.groupby('msno').agg({'bd': np.mean, 'registration_init_time': min,
@@ -158,6 +183,68 @@ newdf_grouped = newdf.groupby('msno').agg({'bd': np.mean, 'registration_init_tim
                                            'city18': np.mean,
                                            'city19': np.mean, 'city20': np.mean, 'city21': np.mean, 'city22': np.mean})
 
+bd_mean = np.mean(newdf_test['bd'])
+newdf_test[(newdf_test['bd'] < 0) | (newdf_test['bd'] > 100)].loc[:,
+'bd'] = bd_mean  # filling the odd aged people with value
+newdf_test['count_of_recharge'] = 1
+
+print('Test column')
+print(newdf_test.columns)
+
+newdf_test_grouped = newdf_test.groupby('msno').agg({'bd': np.mean, 'registration_init_time': min,
+                                                     'payment_plan_days': np.mean, 'plan_list_price': np.mean,
+                                                     'count_of_recharge': 'sum', 'actual_amount_paid': np.mean,
+                                                     'is_auto_renew': np.mean, 'transaction_date': min,
+                                                     'membership_expire_date': max,
+                                                     'is_cancel': np.mean, 'is_churn': min, 'discount': 'sum',
+                                                     # 'payment_method_id2': np.mean,
+                                                     'payment_method_id3': sum,
+                                                     # 'payment_method_id4': np.sum,
+                                                     # 'payment_method_id5': np.sum,
+                                                     'payment_method_id6': np.sum,
+                                                     'payment_method_id8': np.sum,
+                                                     'payment_method_id10': np.sum,
+                                                     'payment_method_id11': np.sum, 'payment_method_id12': np.sum,
+                                                     'payment_method_id13': np.sum,
+                                                     'payment_method_id14': np.sum, 'payment_method_id15': np.sum,
+                                                     'payment_method_id16': np.sum,
+                                                     'payment_method_id17': np.sum, 'payment_method_id18': np.sum,
+                                                     'payment_method_id19': np.sum,
+                                                     'payment_method_id20': np.sum,
+                                                     'payment_method_id21': np.sum,
+                                                     'payment_method_id22': np.sum,
+                                                     'payment_method_id23': np.sum,
+                                                     # 'payment_method_id24': np.sum,
+                                                     # 'payment_method_id25': np.sum,
+                                                     'payment_method_id26': np.sum, 'payment_method_id27': np.sum,
+                                                     'payment_method_id28': np.sum,
+                                                     'payment_method_id29': np.sum, 'payment_method_id30': np.sum,
+                                                     'payment_method_id31': np.sum,
+                                                     'payment_method_id32': np.sum, 'payment_method_id33': np.sum,
+                                                     'payment_method_id34': np.sum,
+                                                     'payment_method_id35': np.sum, 'payment_method_id36': np.sum,
+                                                     'payment_method_id37': np.sum,
+                                                     'payment_method_id38': np.sum, 'payment_method_id39': np.sum,
+                                                     'payment_method_id40': np.sum,
+                                                     'payment_method_id41': np.sum, 'gender_not_provided': np.mean,
+                                                     'gender_provided': np.mean,
+                                                     'registered_via3': np.mean, 'registered_via4': np.mean,
+                                                     'registered_via7': np.mean,
+                                                     'registered_via9': np.mean, 'registered_via13': np.mean,
+                                                     'city1': np.mean,
+                                                     'city3': np.mean,
+                                                     'city4': np.mean, 'city5': np.mean, 'city6': np.mean,
+                                                     'city7': np.mean,
+                                                     'city8': np.mean,
+                                                     'city9': np.mean, 'city10': np.mean, 'city11': np.mean,
+                                                     'city12': np.mean,
+                                                     'city13': np.mean,
+                                                     'city14': np.mean, 'city15': np.mean, 'city16': np.mean,
+                                                     'city17': np.mean,
+                                                     'city18': np.mean,
+                                                     'city19': np.mean, 'city20': np.mean, 'city21': np.mean,
+                                                     'city22': np.mean})
+
 newdf_grouped[newdf_grouped.columns[-28:]] = newdf_grouped[newdf_grouped.columns[-28:]].applymap(
     lambda x: 1 if x > 0 else 0).apply(lambda x: x.astype('int8'))  # converting 0/1 for city
 
@@ -174,6 +261,28 @@ newdf_grouped['days_to_buy_membership'] = newdf_grouped['transaction_date'] - ne
 newdf_grouped['days_to_buy_membership'] = (newdf_grouped['days_to_buy_membership'] / np.timedelta64(1, 'D')).astype(int)
 
 newdf_grouped = pd.merge(newdf_grouped, user_log, how='outer', left_index=True, right_index=True)
+
+newdf_test_grouped[newdf_test_grouped.columns[-28:]] = newdf_test_grouped[newdf_test_grouped.columns[-28:]].applymap(
+    lambda x: 1 if x > 0 else 0).apply(lambda x: x.astype('int8'))  # converting 0/1 for city
+
+newdf_test_grouped[newdf_test_grouped.columns[12:-28]] = newdf_test_grouped[newdf_test_grouped.columns[12:-28]].apply(
+    lambda x: x.astype('int8'))
+
+newdf_test_grouped['discount'] = newdf_test_grouped['discount'].astype('int16')
+
+newdf_test_grouped[newdf_test_grouped.columns[2:5]] = newdf_test_grouped[newdf_test_grouped.columns[2:5]].apply(
+    lambda x: round(x).astype('int16'))
+
+newdf_test_grouped['days_to_buy_membership'] = newdf_test_grouped['transaction_date'] - newdf_test_grouped[
+    'registration_init_time']
+
+newdf_test_grouped['days_to_buy_membership'] = (
+newdf_test_grouped['days_to_buy_membership'] / np.timedelta64(1, 'D')).astype(int)
+
+newdf_test_grouped = pd.merge(newdf_test_grouped, user_log, how='left', left_index=True, right_index=True)
+
+print('Length of newdf test grouped')
+print(len(newdf_test_grouped))
 
 # Use XGBoost
 
