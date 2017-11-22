@@ -113,7 +113,6 @@ for i in data_test['registered_via'].unique():
 newdf_test = newdf_test.rename(columns=registered_via)  # renaming the new columns
 del newdf_test['registered_via']  # deleting the extra columns
 
-newdf = newdf.join(pd.get_dummies(newdf['city']))  # creating a new columns for paymenth method id dummyvariable
 newdf_test = newdf_test.join(pd.get_dummies(newdf_test['city']))
 
 city = {}
