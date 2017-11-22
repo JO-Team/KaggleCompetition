@@ -41,6 +41,10 @@ user_log['date_max'] = pd.to_datetime(user_log['date_max'].astype(str),
 
 members_trans = members.merge(transactions, how='inner', on='msno')
 data = members_trans.merge(train, how='inner', on='msno')
+data_test = members_trans.merge(test, how='inner', on='msno')
+
+print(len(data))
+print(len(data_test))
 
 
 def assign_gender(item):
@@ -52,7 +56,6 @@ def assign_gender(item):
 
 data['gender'] = data['gender'].apply(assign_gender)
 
-# Feature discount
 data['discount'] = data['plan_list_price'] - data['actual_amount_paid']
 
 newdf = data.join(
@@ -170,15 +173,7 @@ newdf_grouped['days_to_buy_membership'] = newdf_grouped['transaction_date'] - ne
 
 newdf_grouped['days_to_buy_membership'] = (newdf_grouped['days_to_buy_membership'] / np.timedelta64(1, 'D')).astype(int)
 
-print(newdf_grouped.columns)
-print(user_log.columns)
-
 newdf_grouped = pd.merge(newdf_grouped, user_log, how='outer', left_index=True, right_index=True)
-
-print('The data column is:')
-print(newdf_grouped.dtypes)
-
-print(newdf_grouped.head())
 
 # Use XGBoost
 
