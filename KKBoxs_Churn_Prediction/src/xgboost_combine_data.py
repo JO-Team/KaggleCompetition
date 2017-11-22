@@ -195,7 +195,9 @@ newdf_test_grouped = newdf_test.groupby('msno').agg({'bd': np.mean, 'registratio
                                                      'count_of_recharge': 'sum', 'actual_amount_paid': np.mean,
                                                      'is_auto_renew': np.mean, 'transaction_date': min,
                                                      'membership_expire_date': max,
-                                                     'is_cancel': np.mean, 'is_churn': min, 'discount': 'sum',
+                                                     'is_cancel': np.mean,
+                                                     'is_churn': min,
+                                                     'discount': 'sum',
                                                      # 'payment_method_id2': np.mean,
                                                      'payment_method_id3': sum,
                                                      # 'payment_method_id4': np.sum,
@@ -309,10 +311,13 @@ for i in range(fold):
     model = xgb.train(params, xgb.DMatrix(x1, y1), 1500, watchlist, feval=xgb_score, maximize=False, verbose_eval=50,
                       early_stopping_rounds=50)  # use 1500
     if i != 0:
-        pred += model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
+        pred += model.predict(xgb.DMatrix(newdf_test_grouped[cols]), ntree_limit=model.best_ntree_limit)
     else:
-        pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
+        pred = model.predict(xgb.DMatrix(newdf_test_grouped[cols]), ntree_limit=model.best_ntree_limit)
 pred /= fold
 
-test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v3_with_user_log.csv', index=False)
+print('Len of final output')
+print(len(newdf_test_grouped))
+
+newdf_test_grouped['is_churn'] = pred.clip(0.0000001, 0.999999)
+newdf_test_grouped[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v3_with_user_log.csv', index=False)
