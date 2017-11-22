@@ -41,7 +41,7 @@ user_log['date_max'] = pd.to_datetime(user_log['date_max'].astype(str),
 
 members_trans = members.merge(transactions, how='inner', on='msno')
 data = members_trans.merge(train, how='inner', on='msno')
-data_test = members_trans.merge(test, how='inner', on='msno')
+data_test = test.merge(members_trans, how='left', on='msno')
 
 print(len(data))
 print(len(data_test))
