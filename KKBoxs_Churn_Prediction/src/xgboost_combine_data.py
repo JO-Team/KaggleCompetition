@@ -281,10 +281,25 @@ newdf_test_grouped['days_to_buy_membership'] = (
 newdf_test_grouped['days_to_buy_membership'] / np.timedelta64(1, 'D')).astype(int)
 
 newdf_test_grouped = pd.merge(newdf_test_grouped, user_log, how='left', left_index=True, right_index=True)
+newdf_test_grouped = pd.merge(test, newdf_test_grouped, how='left', left_on='msno', right_on='msno')
 
-print('Length of newdf test grouped')
+print('############################')
+print('Train DF Head')
+print(newdf_grouped.head())
+print('############################')
+print('Test DF Head')
+print(newdf_test_grouped.head())
+print('############################')
+print("Train DF length")
+print(len(newdf_grouped))
+print('############################')
+print("Test DF length")
 print(len(newdf_test_grouped))
+print('############################')
+print('Submission length')
+print(len(test))
 
+"""
 # Use XGBoost
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
@@ -321,3 +336,5 @@ print(len(newdf_test_grouped))
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 test[['msno', 'is_churn']].to_csv('submission_xgboost_combine_data_baseline_members_v3_with_user_log.csv', index=False)
+
+"""
