@@ -148,5 +148,5 @@ for i in range(fold):
     else:
         pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
 pred /= fold
-test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno','is_churn']].to_csv('submission_v3.csv', index=False)
+test['is_churn'] = pred.clip(0.0000001, 0.9)  # 0.999999
+test[['msno','is_churn']].to_csv('submission_clip_0.9.csv', index=False)
