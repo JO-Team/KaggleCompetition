@@ -15,4 +15,4 @@ processed_user_log = user_log.groupby(user_log.index).agg(func)
 print(len(processed_user_log))
 processed_user_log.columns = processed_user_log.columns.get_level_values(0)
 
-processed_user_log.to_csv("../input/processed_user_log_v2.csv", index=False)
+processed_user_log.to_csv("../input/processed_user_log_all.csv", index=False)

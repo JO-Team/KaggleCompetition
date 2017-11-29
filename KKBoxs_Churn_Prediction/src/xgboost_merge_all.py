@@ -71,4 +71,4 @@ for i in range(fold):
 pred /= fold
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_merge_data.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_merge_data_test.csv', index=False)
