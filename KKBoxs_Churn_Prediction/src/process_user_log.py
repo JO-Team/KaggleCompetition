@@ -1,4 +1,5 @@
 import time
+
 import pandas as pd
 
 
@@ -25,20 +26,15 @@ for i in range(10):
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del (user_log_chunk)
 
-
 result.columns = ['_'.join(col).strip() for col in result.columns.values]
 
 func = {'date_min': ['min'], 'date_max': ['max'], 'date_count': ['count'],
         'num_25_sum': ['sum'], 'num_50_sum': ['sum'],
         'num_75_sum': ['sum'], 'num_985_sum': ['sum'],
         'num_100_sum': ['sum'], 'num_unq_sum': ['sum'], 'total_secs_sum': ['sum']}
-processed_user_log = result.groupby(result.index).agg(func)
-print(len(processed_user_log))
-processed_user_log.columns = processed_user_log.columns.get_level_values(0)
-print(processed_user_log.head())
-
-processed_user_log.to_csv("../input/processed_user_log.csv")
-
+processed_user_log_v1 = result.groupby(result.index).agg(func)
+processed_user_log_v1.columns = processed_user_log_v1.columns.get_level_values(0)
+print(len(processed_user_log_v1))
 
 size = 1e6
 reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size, index_col=['msno'])
@@ -46,23 +42,23 @@ start_time = time.time()
 for i in range(18):
     user_log_chunk = next(reader)
     if (i == 0):
-        result = process_user_log(user_log_chunk)
+        result_v2 = process_user_log(user_log_chunk)
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     else:
-        result = result.append(process_user_log(user_log_chunk))
+        result_v2 = result_v2.append(process_user_log(user_log_chunk))
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del (user_log_chunk)
 
-
-result.columns = ['_'.join(col).strip() for col in result.columns.values]
+result_v2.columns = ['_'.join(col).strip() for col in result_v2.columns.values]
 
 func = {'date_min': ['min'], 'date_max': ['max'], 'date_count': ['count'],
         'num_25_sum': ['sum'], 'num_50_sum': ['sum'],
         'num_75_sum': ['sum'], 'num_985_sum': ['sum'],
         'num_100_sum': ['sum'], 'num_unq_sum': ['sum'], 'total_secs_sum': ['sum']}
-processed_user_log = result.groupby(result.index).agg(func)
-print(len(processed_user_log))
-processed_user_log.columns = processed_user_log.columns.get_level_values(0)
-print(processed_user_log.head())
+processed_user_log_v2 = result_v2.groupby(result_v2.index).agg(func)
+print(len(processed_user_log_v2))
 
-processed_user_log.to_csv("../input/processed_user_log_v2.csv")
+processed_user_log = processed_user_log_v1.append(processed_user_log_v2)
+processed_user_log = processed_user_log.groupby(processed_user_log.index).agg(func)
+print(len(processed_user_log))
+processed_user_log.to_csv("../input/processed_user_log_all.csv")
