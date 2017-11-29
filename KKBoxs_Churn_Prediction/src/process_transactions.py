@@ -69,4 +69,4 @@ newdf_grouped = newdf.groupby('msno').agg({
 print(newdf_grouped.head())
 print(len(newdf_grouped))
 
-newdf_grouped.to_csv('../input/processed_transaction_all.csv', index=False)
+newdf_grouped.to_csv('../input/processed_transaction_all.csv')

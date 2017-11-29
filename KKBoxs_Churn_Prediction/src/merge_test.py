@@ -1,8 +1,8 @@
 import pandas as pd
 
-user_log_v1 = pd.read_csv('../input/processed_user_log.csv')
+user_log_v1 = pd.read_csv('../input/processed_user_log_v1.csv', index_col='msno')
 print(len(user_log_v1))
-user_log_v2 = pd.read_csv('../input/processed_user_log_v2.csv')
+user_log_v2 = pd.read_csv('../input/processed_user_log_v2.csv', index_col='msno')
 print(len(user_log_v2))
 
 user_log = user_log_v1.append(user_log_v2, ignore_index=True)
@@ -15,4 +15,4 @@ processed_user_log = user_log.groupby(user_log.index).agg(func)
 print(len(processed_user_log))
 processed_user_log.columns = processed_user_log.columns.get_level_values(0)
 
-processed_user_log.to_csv("../input/processed_user_log_all.csv", index=False)
+processed_user_log.to_csv("../input/processed_user_log_all.csv")

@@ -35,7 +35,7 @@ processed_user_log = result.groupby(result.index).agg(func)
 print(len(processed_user_log))
 processed_user_log.columns = processed_user_log.columns.get_level_values(0)
 
-processed_user_log.to_csv("../input/processed_user_log.csv")
+processed_user_log.to_csv("../input/processed_user_log_v1.csv")
 
 size = 1e6
 reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size, index_col=['msno'])
