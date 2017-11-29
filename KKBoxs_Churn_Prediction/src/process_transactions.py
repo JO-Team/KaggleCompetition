@@ -4,7 +4,7 @@ import pandas as pd
 transactions_v1 = pd.read_csv('../input/transactions.csv')
 transactions_v2 = pd.read_csv('../input/transactions_v2.csv')
 
-transactions = transactions_v1.append(transactions_v2)
+transactions = transactions_v1.append(transactions_v2, ignore_index=True)
 
 # h=change the type of these series
 transactions['payment_method_id'] = transactions['payment_method_id'].astype('int8')
@@ -69,4 +69,4 @@ newdf_grouped = newdf.groupby('msno').agg({
 print(newdf_grouped.head())
 print(len(newdf_grouped))
 
-newdf_grouped.to_csv('../input/processed_transaction_all.csv')
+newdf_grouped.to_csv('../input/processed_transaction_all.csv', index=False)

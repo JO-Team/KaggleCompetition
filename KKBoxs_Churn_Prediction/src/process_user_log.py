@@ -58,7 +58,7 @@ func = {'date_min': ['min'], 'date_max': ['max'], 'date_count': ['count'],
 processed_user_log_v2 = result_v2.groupby(result_v2.index).agg(func)
 print(len(processed_user_log_v2))
 
-processed_user_log = processed_user_log_v1.append(processed_user_log_v2)
+processed_user_log = processed_user_log_v1.append(processed_user_log_v2, ignore_index=True)
 processed_user_log = processed_user_log.groupby(processed_user_log.index).agg(func)
 print(len(processed_user_log))
-processed_user_log.to_csv("../input/processed_user_log_all.csv")
+processed_user_log.to_csv("../input/processed_user_log_all.csv", index=False)
