@@ -281,7 +281,7 @@ newdf_test_grouped['days_to_buy_membership'] = (
 newdf_test_grouped['days_to_buy_membership'] / np.timedelta64(1, 'D')).astype(int)
 
 newdf_test_grouped = pd.merge(newdf_test_grouped, user_log, how='left', left_index=True, right_index=True)
-newdf_test_grouped = pd.merge(test, newdf_test_grouped, how='left', left_on='msno', right_on='msno')
+newdf_test_grouped = pd.merge(test, newdf_test_grouped, how='left', left_index=True, right_index=True)
 
 print('############################')
 print('Train DF Head')
