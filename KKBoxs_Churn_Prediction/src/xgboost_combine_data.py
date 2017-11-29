@@ -280,7 +280,15 @@ newdf_test_grouped['days_to_buy_membership'] = newdf_test_grouped['transaction_d
 newdf_test_grouped['days_to_buy_membership'] = (
 newdf_test_grouped['days_to_buy_membership'] / np.timedelta64(1, 'D')).astype(int)
 
+print('############################')
+print('Test DF Head Before merge 1')
+print(newdf_test_grouped.head())
+print('############################')
+
 newdf_test_grouped = pd.merge(newdf_test_grouped, user_log, how='left', left_index=True, right_index=True)
+print('Test DF Head Before merge 2')
+print(newdf_test_grouped.head())
+print('############################')
 newdf_test_grouped = pd.merge(test, newdf_test_grouped, how='left', left_index=True, right_index=True)
 
 print('############################')
