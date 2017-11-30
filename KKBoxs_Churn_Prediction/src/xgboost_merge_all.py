@@ -49,9 +49,6 @@ train = train.drop(['transaction_date', 'membership_expire_date', 'expiration_da
 test = test.drop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
 # Delete date for now
 
-print(train.head())
-print(test.head())
-
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
 fold = 1
@@ -76,4 +73,4 @@ for i in range(fold):
 pred /= fold
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_merge_data_test.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_merge.csv', index=False)
