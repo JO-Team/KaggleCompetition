@@ -25,18 +25,23 @@ train_v2 = pd.read_csv('../input/train_v2.csv')
 train = train_v1.append(train_v2, ignore_index=True)
 
 test = pd.read_csv('../input/sample_submission_v2.csv')
-print(len(test))
+
 # Merge Data
 
 train = pd.merge(train, transactions, how='left', on='msno')
 test = pd.merge(test, transactions, how='left', on='msno')
-print(len(test))
+
 train = pd.merge(train, user_log, how='left', on='msno')
 test = pd.merge(test, user_log, how='left', on='msno')
-print(len(test))
+
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
-print(len(test))
+
+# Drop duplicates first
+test = test.drop_duplicates('msno')
+
+print(test.head(10))
+
 gender = {'male': 1, 'female': 2}
 train['gender'] = train['gender'].map(gender)
 test['gender'] = test['gender'].map(gender)
@@ -64,7 +69,7 @@ for i in range(fold):
     x1, x2, y1, y2 = sklearn.model_selection.train_test_split(train[cols], train['is_churn'], test_size=0.3,
                                                               random_state=i)
     watchlist = [(xgb.DMatrix(x1, y1), 'train'), (xgb.DMatrix(x2, y2), 'valid')]
-    model = xgb.train(params, xgb.DMatrix(x1, y1), 100, watchlist, feval=xgb_score, maximize=False, verbose_eval=50,
+    model = xgb.train(params, xgb.DMatrix(x1, y1), 1500, watchlist, feval=xgb_score, maximize=False, verbose_eval=50,
                       early_stopping_rounds=50)  # use 1500
     if i != 0:
         pred += model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
@@ -73,4 +78,5 @@ for i in range(fold):
 pred /= fold
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
-test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_merge_test.csv', index=False)
+print(len(test))
+test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_merge_drop_dup.csv', index=False)
