@@ -12,19 +12,19 @@ def xgb_score(preds, dtrain):
 
 gc.enable()
 
-transactions = pd.read_csv('../input/processed_transaction_all.csv', nrows=1000)
+transactions = pd.read_csv('../input/processed_transaction_all.csv')
 
-members_v1 = pd.read_csv('../input/members.csv', nrows=1000)
-members_v2 = pd.read_csv('../input/members_v2.csv', nrows=1000)
+members_v1 = pd.read_csv('../input/members.csv')
+members_v2 = pd.read_csv('../input/members_v2.csv')
 members = members_v1.append(members_v2, ignore_index=True)
 
-user_log = pd.read_csv('../input/processed_user_log_all.csv', nrows=1000)
+user_log = pd.read_csv('../input/processed_user_log_all.csv')
 
-train_v1 = pd.read_csv('../input/train.csv', nrows=1000)
-train_v2 = pd.read_csv('../input/train_v2.csv', nrows=1000)
+train_v1 = pd.read_csv('../input/train.csv')
+train_v2 = pd.read_csv('../input/train_v2.csv')
 train = train_v1.append(train_v2, ignore_index=True)
 
-test = pd.read_csv('../input/sample_submission_v2.csv', nrows=1000)
+test = pd.read_csv('../input/sample_submission_v2.csv')
 
 # Merge Data
 
@@ -43,6 +43,9 @@ test['gender'] = test['gender'].map(gender)
 
 train = train.fillna(0)
 test = test.fillna(0)
+
+print(train.head())
+print(test.head())
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
