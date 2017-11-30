@@ -45,12 +45,8 @@ train = train.fillna(0)
 test = test.fillna(0)
 
 # Delete date for now
-del train['transaction_date']
-del train['membership_expire_date']
-del train['expiration_date']
-del test['transaction_date']
-del test['membership_expire_date']
-del test['expiration_date']
+train = train.dtop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
+test = test.dtop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
 # Delete date for now
 
 print(train.head())
