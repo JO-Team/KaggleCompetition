@@ -40,6 +40,9 @@ test = pd.merge(test, members, how='left', on='msno')
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
 
+print(train.columns)
+print(test.columns)
+
 gender = {'male': 1, 'female': 2}
 train['gender'] = train['gender'].map(gender)
 test['gender'] = test['gender'].map(gender)
