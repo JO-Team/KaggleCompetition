@@ -79,9 +79,9 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
         'max_depth': 7,
     }
 
-    bst = lgb.train(params, train_data, 1500, valid_sets=[val_data], early_stopping_rounds=10)
+    bst = lgb.train(params, train_data, 1500, valid_sets=[val_data], early_stopping_rounds=50)
 
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
-test.to_csv('submission_lightgbm_combine_data_baseline.csv', index=False)
+test.to_csv('submission_lightgbm_baseline.csv', index=False)
