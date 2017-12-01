@@ -41,8 +41,6 @@ test = pd.merge(test, members, how='left', on='msno')
 # Drop duplicates first
 test = test.drop_duplicates('msno')
 
-print(test.head(10))
-
 gender = {'male': 1, 'female': 2}
 train['gender'] = train['gender'].map(gender)
 test['gender'] = test['gender'].map(gender)
@@ -78,10 +76,10 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
         'feature_fraction': 0.9,
         'feature_fraction_seed': 1,
         'max_bin': 128,
-        'max_depth': 10,
+        'max_depth': 7,
     }
 
-    bst = lgb.train(params, train_data, 100, valid_sets=[val_data])
+    bst = lgb.train(params, train_data, 1500, valid_sets=[val_data], early_stopping_rounds=10)
 
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions

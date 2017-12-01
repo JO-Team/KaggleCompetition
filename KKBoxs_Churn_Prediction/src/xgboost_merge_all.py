@@ -40,8 +40,6 @@ test = pd.merge(test, members, how='left', on='msno')
 # Drop duplicates first
 test = test.drop_duplicates('msno')
 
-print(test.head(10))
-
 gender = {'male': 1, 'female': 2}
 train['gender'] = train['gender'].map(gender)
 test['gender'] = test['gender'].map(gender)
