@@ -51,6 +51,8 @@ corr = train.corr()
 print('Train Data Set Correlation:')
 print(corr)
 
+corr.to_csv('baseline_corr.csv', index=False)
+
 # Generate a mask for the upper triangle
 mask = np.zeros_like(corr, dtype=np.bool)
 mask[np.triu_indices_from(mask)] = True
