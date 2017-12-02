@@ -54,7 +54,7 @@ test = test.drop(['transaction_date', 'membership_expire_date', 'expiration_date
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
-fold = 10
+fold = 1
 for i in range(fold):
     params = {
         'eta': 0.002,  # use 0.002
@@ -77,4 +77,4 @@ pred /= fold
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 print(len(test))
-test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_eta_0.002_round_1500_fold_10.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_eta_0.002_round_1500.csv', index=False)
