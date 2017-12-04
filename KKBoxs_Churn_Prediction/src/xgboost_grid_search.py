@@ -77,9 +77,9 @@ X = train[cols]
 params = {
     'min_child_weight': [1, 5, 10],
     'gamma': [0.5, 1, 1.5, 2, 5],
-    'subsample': [0.6, 0.8, 1.0],
     'colsample_bytree': [0.6, 0.8, 1.0],
-    'max_depth': [3, 4, 5, 6, 7]
+    'max_depth': [3, 4, 5, 6, 7],
+    'subsample': [0.7, 0.75, 0.8]
 }
 
 xgb = xgb.XGBClassifier(learning_rate=0.002, n_estimators=600, objective='binary:logistic',
