@@ -57,7 +57,7 @@ cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 fold = 1
 for i in range(fold):
     params = {
-        'eta': 0.002,  # use 0.002
+        'eta': 0.02,  # use 0.002
         'max_depth': 7,
         'objective': 'binary:logistic',
         'eval_metric': 'logloss',
@@ -79,4 +79,4 @@ pred /= fold
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 print(len(test))
-test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_eta_0.002_round_2000.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_eta_0.02_round_2000.csv', index=False)
