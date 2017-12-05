@@ -82,7 +82,7 @@ params = {
     'subsample': [0.7, 0.75, 0.8]
 }
 
-xgb = xgb.XGBClassifier(learning_rate=0.002, n_estimators=600, objective='binary:logistic',
+model = xgb.XGBClassifier(learning_rate=0.002, n_estimators=600, objective='binary:logistic',
                         silent=True, nthread=1)
 
 folds = 3
@@ -90,7 +90,7 @@ param_comb = 5
 
 skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=1001)
 
-random_search = RandomizedSearchCV(xgb, param_distributions=params, n_iter=param_comb, scoring='neg_log_loss', n_jobs=4,
+random_search = RandomizedSearchCV(model, param_distributions=params, n_iter=param_comb, scoring='neg_log_loss', n_jobs=4,
                                    cv=skf.split(X, Y), verbose=3, random_state=1001)
 
 # Here we go
@@ -114,7 +114,7 @@ test['is_churn'] = pred.clip(0.0000001, 0.999999)
 print(len(test))
 test[['msno', 'is_churn']].to_csv('submission_xgboost_random_serach_best_param.csv', index=False)
 
-grid = GridSearchCV(estimator=xgb, param_grid=params, scoring='neg_log_loss', n_jobs=4, cv=skf.split(X, Y), verbose=3)
+grid = GridSearchCV(estimator=model, param_grid=params, scoring='neg_log_loss', n_jobs=4, cv=skf.split(X, Y), verbose=3)
 grid.fit(X, Y)
 print('\n All results:')
 print(grid.cv_results_)
