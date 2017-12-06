@@ -56,9 +56,27 @@ cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
 fold = 1
 for i in range(fold):
+    '''
+    XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
+                  colsample_bytree=1.0, gamma=1, learning_rate=0.002,
+                  max_delta_step=0, max_depth=6, min_child_weight=5, missing=None,
+                  n_estimators=600, n_jobs=1, nthread=1, objective='binary:logistic',
+                  random_state=0, reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
+                  seed=None, silent=True, subsample=0.75)
+    '''
     params = {
-        'eta': 0.02,  # use 0.002
-        'max_depth': 7,
+        'base_score': 0.5,
+        'eta': 0.002,  # use 0.002
+        'max_depth': 6,
+        'booster': 'gbtree',
+        'colsample_bylevel': 1,
+        'colsample_bytree': 1.0,
+        'gamma': 1,
+        'max_child_weight': 5,
+        'n_estimators': 600,
+        'reg_alpha': '0',
+        'reg_lambda': '1',
+        'scale_pos_weight': 1,
         'objective': 'binary:logistic',
         'eval_metric': 'logloss',
         'seed': i,
@@ -79,4 +97,4 @@ pred /= fold
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 print(len(test))
-test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_eta_0.02_round_2000.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_baseline_best_parameter_eta_0.002_round_2500.csv', index=False)
