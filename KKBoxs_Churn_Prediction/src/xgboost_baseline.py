@@ -54,46 +54,41 @@ test = test.drop(['transaction_date', 'membership_expire_date', 'expiration_date
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
-fold = 1
-for i in range(fold):
-    '''
-    XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
-                  colsample_bytree=1.0, gamma=1, learning_rate=0.002,
-                  max_delta_step=0, max_depth=6, min_child_weight=5, missing=None,
-                  n_estimators=600, n_jobs=1, nthread=1, objective='binary:logistic',
-                  random_state=0, reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
-                  seed=None, silent=True, subsample=0.75)
-    '''
-    params = {
-        'base_score': 0.5,
-        'eta': 0.002,  # use 0.002
-        'max_depth': 6,
-        'booster': 'gbtree',
-        'colsample_bylevel': 1,
-        'colsample_bytree': 1.0,
-        'gamma': 1,
-        'max_child_weight': 5,
-        'n_estimators': 600,
-        'reg_alpha': '0',
-        'reg_lambda': '1',
-        'scale_pos_weight': 1,
-        'objective': 'binary:logistic',
-        'eval_metric': 'logloss',
-        'seed': i,
-        'silent': True
-    }
-    x1, x2, y1, y2 = sklearn.model_selection.train_test_split(train[cols], train['is_churn'], test_size=0.3,
-                                                              random_state=i)
-    watchlist = [(xgb.DMatrix(x1, y1), 'train'), (xgb.DMatrix(x2, y2), 'valid')]
-    cv_output = xgb.cv(params, xgb.DMatrix(x1, y1), num_boost_round=2500, early_stopping_rounds=20, verbose_eval=50,
-                       show_stdv=False)
-    model = xgb.train(params, xgb.DMatrix(x1, y1), 2500, watchlist, feval=xgb_score, maximize=False, verbose_eval=50,
-                      early_stopping_rounds=50)  # use 1500
-    if i != 0:
-        pred += model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
-    else:
-        pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
-pred /= fold
+'''
+XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
+              colsample_bytree=1.0, gamma=1, learning_rate=0.002,
+              max_delta_step=0, max_depth=6, min_child_weight=5, missing=None,
+              n_estimators=600, n_jobs=1, nthread=1, objective='binary:logistic',
+              random_state=0, reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
+              seed=None, silent=True, subsample=0.75)
+'''
+params = {
+    'base_score': 0.5,
+    'eta': 0.002,  # use 0.002
+    'max_depth': 6,
+    'booster': 'gbtree',
+    'colsample_bylevel': 1,
+    'colsample_bytree': 1.0,
+    'gamma': 1,
+    'max_child_weight': 5,
+    'n_estimators': 600,
+    'reg_alpha': '0',
+    'reg_lambda': '1',
+    'scale_pos_weight': 1,
+    'objective': 'binary:logistic',
+    'eval_metric': 'logloss',
+    'seed': 2017,
+    'silent': True
+}
+x1, x2, y1, y2 = sklearn.model_selection.train_test_split(train[cols], train['is_churn'], test_size=0.3,
+                                                          random_state=2017)
+watchlist = [(xgb.DMatrix(x1, y1), 'train'), (xgb.DMatrix(x2, y2), 'valid')]
+cv_output = xgb.cv(params, xgb.DMatrix(x1, y1), num_boost_round=2500, early_stopping_rounds=20, verbose_eval=50,
+                   show_stdv=False)
+model = xgb.train(params, xgb.DMatrix(x1, y1), 2500, watchlist, feval=xgb_score, maximize=False, verbose_eval=50,
+                  early_stopping_rounds=50)  # use 1500
+
+pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 print(len(test))

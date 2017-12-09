@@ -41,7 +41,7 @@ params = {
     'silent': True
 }
 x1, x2, y1, y2 = sklearn.model_selection.train_test_split(train[cols], train['is_churn'], test_size=0.3,
-                                                          random_state=i)
+                                                          random_state=2017)
 watchlist = [(xgb.DMatrix(x1, y1), 'train'), (xgb.DMatrix(x2, y2), 'valid')]
 model = xgb.train(params, xgb.DMatrix(x1, y1), 2000, watchlist, feval=xgb_score, maximize=False, verbose_eval=50,
                   early_stopping_rounds=50)

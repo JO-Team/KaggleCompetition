@@ -68,8 +68,8 @@ train = pd.merge(train, train_total_50_sum, on=['msno'], how='left')
 train = pd.merge(train, train_total_75_sum, on=['msno'], how='left')
 train = pd.merge(train, train_total_985_sum, on=['msno'], how='left')
 train = pd.merge(train, train_total_100_sum, on=['msno'], how='left')
-train = pd.merge(train,train_total_unq_sum,on=['msno'],how='left')
-train = pd.merge(train,train_total_secs_sum,on=['msno'],how='left')
+train = pd.merge(train, train_total_unq_sum, on=['msno'], how='left')
+train = pd.merge(train, train_total_secs_sum, on=['msno'], how='left')
 train['total_sum'] = train['total_25_sum'] + train['total_50_sum'] + train['total_75_sum'] + train['total_985_sum'] + \
                      train['total_100_sum']
 # 一个月的听歌习惯
@@ -96,8 +96,8 @@ test = pd.merge(test, test_total_50_sum, on=['msno'], how='left')
 test = pd.merge(test, test_total_75_sum, on=['msno'], how='left')
 test = pd.merge(test, test_total_985_sum, on=['msno'], how='left')
 test = pd.merge(test, test_total_100_sum, on=['msno'], how='left')
-test = pd.merge(test,test_total_unq_sum,on=['msno'],how='left')
-test = pd.merge(test,test_total_secs_sum,on=['msno'],how='left')
+test = pd.merge(test, test_total_unq_sum, on=['msno'], how='left')
+test = pd.merge(test, test_total_secs_sum, on=['msno'], how='left')
 test['total_sum'] = test['total_25_sum'] + test['total_50_sum'] + test['total_75_sum'] + test['total_985_sum'] + test[
     'total_100_sum']
 # 一个月的听歌习惯
