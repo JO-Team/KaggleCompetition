@@ -6,7 +6,6 @@ import pandas as pd
 gc.enable()
 
 # Read Data
-
 user_log_v1 = pd.read_csv('../input/user_logs.csv')
 user_log_v2 = pd.read_csv('../input/user_logs_v2.csv')
 
@@ -25,7 +24,6 @@ train = train_v1.append(train_v2, ignore_index=True)
 test = pd.read_csv('../input/sample_submission_v2.csv')
 
 # Merge Data
-
 train = pd.merge(train, transactions, how='left', on='msno')
 test = pd.merge(test, transactions, how='left', on='msno')
 
@@ -110,6 +108,11 @@ test['daily_play'] = test['total_sum'] / test['log_day']
 # 平均每天听歌时间
 test['daily_listentime'] = test['total_secs_sum'] / test['log_day']
 
+# Test
+print(train.columns)
+print(test.columns)
+print(len(test))
+
 # Output the file
-train.to_csv("../input/train_final.csv")
-test.to_csv("../input/test_final.csv")
+train.to_csv("../input/train_final.csv", index=False)
+test.to_csv("../input/test_final.csv", index=False)
