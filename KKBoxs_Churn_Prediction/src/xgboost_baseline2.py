@@ -118,47 +118,6 @@ test['daily_listentime'] = test['total_secs_sum'] / test['log_day']
 
 
 
-
-#用户每天的活跃角度
-#1.每天听歌总数
-train['daily_total_num'] = train['num_25']+train['num_50']+train['num_75']+train['num_985']+train['num_100']
-test['daily_total_num'] = test['num_25']+test['num_50']+test['num_75']+test['num_985']+test['num_100']
-
-#2.每天听歌是循环播放还是试听,每首歌歌播放次数
-train['daily_permusic_time'] = train['daily_total_num'] / train['num_unq']
-test['daily_permusic_time'] = test['daily_total_num'] / test['num_unq']
-
-#3.用户每天的听音乐习惯，是海量试听，还是细细聆听，每种长度占比
-train['daily_25ratio'] = train['num_25'] / train['daily_total_num']
-train['daily_50ratio'] = train['num_50'] / train['daily_total_num']
-train['daily_75ratio'] = train['num_75'] / train['daily_total_num']
-train['daily_985ratio'] = train['num_985'] / train['daily_total_num']
-train['daily_100ratio'] = train['num_100'] / train['daily_total_num']
-
-test['daily_25ratio'] = test['num_25'] / test['daily_total_num']
-test['daily_50ratio'] = test['num_50'] / test['daily_total_num']
-test['daily_75ratio'] = test['num_75'] / test['daily_total_num']
-test['daily_985ratio'] = test['num_985'] / test['daily_total_num']
-test['daily_100ratio'] = test['num_100'] / test['daily_total_num']
-
-#4.每天平均每首歌的时间
-train['daily_listentime'] = train['daily_total_num'] / train['total_secs']
-test['daily_listentime'] = test['daily_total_num'] / test['total_secs']
-
-#用户一段时间的活跃角度
-#1. 总的听歌天数
-total_day = train.groupby(['msno']).date.agg({'total_day':'count'})
-
-#1.总的听歌数
-total_num = train.groupby(['msno']).daily_total_num.agg({'total_num':np.sum})
-
-
-
-
-#用户的消费角度
-
-
-
 # Delete date for now
 train = train.drop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
 test = test.drop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
