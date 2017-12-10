@@ -292,20 +292,20 @@ start_time = time.time()
 for i in range(10):
     user_log_chunk = next(reader)
     if (i == 0):
-        train_final = process_train_user_log(user_log_chunk)
-        test_final = process_test_user_log(user_log_chunk)
+        train_final = process_train_user_log(user_log_chunk, train)
+        test_final = process_test_user_log(user_log_chunk, test)
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     else:
-        train_final = train_final.append(process_train_user_log(user_log_chunk))
-        test_final = test_final.append(process_test_user_log(user_log_chunk))
+        train_final = train_final.append(process_train_user_log(user_log_chunk, train))
+        test_final = test_final.append(process_test_user_log(user_log_chunk, test))
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del (user_log_chunk)
 
 train_final.columns = ['_'.join(col).strip() for col in train_final.columns.values]
 test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
-train_final = process_train_user_log(train_final)
-test_final = process_test_user_log(test_final)
+train_final = process_train_user_log(train_final, train)
+test_final = process_test_user_log(test_final, test)
 
 print(len(train_final))
 train_final.columns = train_final.columns.get_level_values(0)
@@ -323,20 +323,20 @@ start_time = time.time()
 for i in range(18):
     user_log_chunk = next(reader)
     if (i == 0):
-        train_final = process_train_user_log(user_log_chunk)
-        test_final = process_test_user_log(user_log_chunk)
+        train_final = process_train_user_log(user_log_chunk, train)
+        test_final = process_test_user_log(user_log_chunk, test)
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     else:
-        train_final = train_final.append(process_train_user_log(user_log_chunk))
-        test_final = test_final.append(process_test_user_log(user_log_chunk))
+        train_final = train_final.append(process_train_user_log(user_log_chunk, train))
+        test_final = test_final.append(process_test_user_log(user_log_chunk, test))
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del (user_log_chunk)
 
 train_final.columns = ['_'.join(col).strip() for col in train_final.columns.values]
 test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
-train_final = process_train_user_log(train_final)
-test_final = process_test_user_log(test_final)
+train_final = process_train_user_log(train_final, train)
+test_final = process_test_user_log(test_final, test)
 
 print(len(train_final))
 train_final.columns = train_final.columns.get_level_values(0)
@@ -355,7 +355,7 @@ train_final = train_final_v1.append(train_final_v2, ignore_index=True)
 del train_final_v1
 del train_final_v2
 
-train_final = process_train_user_log(train_final)
+train_final = process_train_user_log(train_final, train)
 train_final.columns = train_final.columns.get_level_values(0)
 train_final.to_csv("../input/processed_features_train_final.csv")
 
@@ -368,7 +368,7 @@ test_final = test_final_v1.append(test_final_v2, ignore_index=True)
 del test_final_v1
 del test_final_v2
 
-test_final = process_test_user_log(test_final)
+test_final = process_test_user_log(test_final, test)
 test_final.columns = test_final.columns.get_level_values(0)
 test_final.to_csv("../input/processed_features_test_final.csv")
 
