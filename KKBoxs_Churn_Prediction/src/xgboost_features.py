@@ -52,4 +52,4 @@ pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 print(len(test))
-test[['msno', 'is_churn']].to_csv('submission_xgboost_features_eta_0.002_round_2500_Dec_8.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_features_eta_0.002_round_2500_Dec_9.csv', index=False)
