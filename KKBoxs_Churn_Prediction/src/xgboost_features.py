@@ -43,11 +43,13 @@ params = {
 x1, x2, y1, y2 = sklearn.model_selection.train_test_split(train[cols], train['is_churn'], test_size=0.3,
                                                           random_state=2017)
 watchlist = [(xgb.DMatrix(x1, y1), 'train'), (xgb.DMatrix(x2, y2), 'valid')]
-model = xgb.train(params, xgb.DMatrix(x1, y1), 2000, watchlist, feval=xgb_score, maximize=False, verbose_eval=50,
+cv_output = xgb.cv(params, xgb.DMatrix(x1, y1), num_boost_round=2500, early_stopping_rounds=20, verbose_eval=50,
+                   show_stdv=False)
+model = xgb.train(params, xgb.DMatrix(x1, y1), 2500, watchlist, feval=xgb_score, maximize=False, verbose_eval=50,
                   early_stopping_rounds=50)
 
 pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit)
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 print(len(test))
-test[['msno', 'is_churn']].to_csv('submission_xgboost_features_eta_0.002_round_2000_Dec_8.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_features_eta_0.002_round_2500_Dec_8.csv', index=False)
