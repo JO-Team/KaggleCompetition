@@ -27,6 +27,7 @@ train['gender'] = train['gender'].map(gender)
 train = train.fillna(0)
 
 ###############Feature engineering####################
+print('State 1: Start Featrur Engineering...')
 # 划分近一个月的数据为数据集28天
 train = train[(train['date'] < 20170301) & (train['date'] > 20170131)]
 # test = test[(test['date'] < 20170329) & (test['date'] > 20170228)]
@@ -71,6 +72,8 @@ train['daily_play'] = train['total_sum'] / train['log_day']
 # 平均每天听歌时间
 train['daily_listentime'] = train['total_secs_sum'] / train['log_day']
 
+print('State 2: Featrur Engineering...')
+
 # train数据两个礼拜的变化
 train_one_week = train[(train['date'] < 20170220) & (train['date'] > 20170212)]
 train_two_week = train[(train['date'] < 20170227) & (train['date'] > 20170219)]
@@ -109,6 +112,8 @@ gc.collect()
 train_two_week['two_week_sum'] = train_one_week['total_25_sum'] + train_one_week['total_50_sum'] + train_one_week[
     'total_75_sum'] \
                                  + train_one_week['total_985_sum'] + train_one_week['total_100_sum']
+
+print('State 3: Featrur Engineering...')
 
 train = pd.merge(train, train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
 train = pd.merge(train, train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
@@ -171,6 +176,8 @@ gc.collect()
 train['semimonth_secs_sum_ratio'] = train['two_semimonth_secs_sum'] / train['one_semimonth_secs_sum']
 # 第二个半月听歌数与第一个半月比较
 train['semimonth_sum_ratio'] = train['two_semimonth_sum'] / train['one_semimonth_sum']
+
+print('State 4: Featrur Engineering...')
 
 print(train.columns)
 print(len(train))
