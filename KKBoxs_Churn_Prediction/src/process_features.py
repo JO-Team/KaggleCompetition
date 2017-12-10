@@ -55,6 +55,8 @@ train_log_day = train.groupby(['msno']).date.agg({'log_day': 'count'})
 test_log_day = test.groupby(['msno']).date.agg({'log_day': 'count'})
 train = pd.merge(train, train_log_day, on=['msno'], how='left')
 test = pd.merge(test, test_log_day, on=['msno'], how='left')
+del train_log_day,test_log_day
+gc.collect()
 
 # 一个月的听歌汇总
 train_total_25_sum = train.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
@@ -71,6 +73,8 @@ train = pd.merge(train, train_total_985_sum, on=['msno'], how='left')
 train = pd.merge(train, train_total_100_sum, on=['msno'], how='left')
 train = pd.merge(train,train_total_unq_sum,on=['msno'],how='left')
 train = pd.merge(train,train_total_secs_sum,on=['msno'],how='left')
+del train_total_25_sum,train_total_50_sum,train_total_75_sum,train_total_985_sum,train_total_100_sum,train_total_unq_sum,train_total_secs_sum
+gc.collect()
 train['total_sum'] = train['total_25_sum'] + train['total_50_sum'] + train['total_75_sum'] + train['total_985_sum'] + \
                      train['total_100_sum']
 # 一个月的听歌习惯
@@ -100,6 +104,9 @@ train_one_week = pd.merge(train_one_week,train_one_week_total_50_sum,on=['msno']
 train_one_week = pd.merge(train_one_week,train_one_week_total_75_sum,on=['msno'],how='left')
 train_one_week = pd.merge(train_one_week,train_one_week_total_985_sum,on=['msno'],how='left')
 train_one_week = pd.merge(train_one_week,train_one_week_total_100_sum,on=['msno'],how='left')
+train_one_week = pd.merge(train_one_week,train_one_week_total_secs_sum,on=['msno'],how='left')
+del train_one_week_total_25_sum,train_one_week_total_50_sum,train_one_week_total_75_sum,train_one_week_total_985_sum,train_one_week_total_100_sum,train_one_week_total_secs_sum
+gc.collect()
 train_one_week['one_week_sum'] = train_one_week['total_25_sum']+train_one_week['total_50_sum']+train_one_week['total_75_sum']+train['total_985_sum']+train['total_100_sum']
 
 
@@ -114,11 +121,16 @@ train_two_week = pd.merge(train_two_week,train_two_week_total_50_sum,on=['msno']
 train_two_week = pd.merge(train_two_week,train_two_week_total_75_sum,on=['msno'],how='left')
 train_two_week = pd.merge(train_two_week,train_two_week_total_985_sum,on=['msno'],how='left')
 train_two_week = pd.merge(train_two_week,train_two_week_total_100_sum,on=['msno'],how='left')
+train_two_week = pd.merge(train_two_week,train_two_week_total_secs_sum,on=['msno'],how='left')
+del train_two_week_total_25_sum,train_two_week_total_50_sum,train_two_week_total_75_sum,train_two_week_total_985_sum,train_two_week_total_100_sum,train_two_week_total_secs_sum
+gc.collect()
 train_two_week['two_week_sum'] = train_one_week['total_25_sum']+train_one_week['total_50_sum']+train_one_week['total_75_sum']\
                                  +train_one_week['total_985_sum']+train_one_week['total_100_sum']
 
 train = pd.merge(train,train_one_week[['msno','one_week_secs_sum','one_week_sum']],on=['msno'],how='left')
 train = pd.merge(train,train_two_week[['msno','two_week_secs_sum','two_week_sum']],on=['msno'],how='left')
+del train_one_week,train_two_week
+gc.collect()
 #第四周听歌时间与第三周比较
 train['week_secs_sum_ratio'] = train['two_week_secs_sum'] / train['one_week_secs_sum']
 #第四周听歌数与第三周比较
@@ -139,6 +151,9 @@ train_one_semimonth = pd.merge(train_one_semimonth,train_one_semimonth_total_50_
 train_one_semimonth = pd.merge(train_one_semimonth,train_one_semimonth_total_75_sum,on=['msno'],how='left')
 train_one_semimonth = pd.merge(train_one_semimonth,train_one_semimonth_total_985_sum,on=['msno'],how='left')
 train_one_semimonth = pd.merge(train_one_semimonth,train_one_semimonth_total_100_sum,on=['msno'],how='left')
+train_one_semimonth = pd.merge(train_one_semimonth,train_one_semimonth_total_secs_sum,on=['msno'],how='left')
+del train_one_semimonth_total_25_sum,train_one_semimonth_total_50_sum,train_one_semimonth_total_75_sum,train_one_semimonth_total_985_sum,train_one_semimonth_total_100_sum,train_one_semimonth_total_secs_sum
+gc.collect()
 train_one_semimonth['one_semimonth_sum'] = train_one_semimonth['total_25_sum']+train_one_semimonth['total_50_sum']\
                                       +train_one_semimonth['total_75_sum']+train_one_semimonth['total_985_sum']+train_one_semimonth['total_100_sum']
 
@@ -154,11 +169,16 @@ train_two_semimonth = pd.merge(train_two_semimonth,train_two_semimonth_total_50_
 train_two_semimonth = pd.merge(train_two_semimonth,train_two_semimonth_total_75_sum,on=['msno'],how='left')
 train_two_semimonth = pd.merge(train_two_semimonth,train_two_semimonth_total_985_sum,on=['msno'],how='left')
 train_two_semimonth = pd.merge(train_two_semimonth,train_two_semimonth_total_100_sum,on=['msno'],how='left')
+train_two_semimonth = pd.merge(train_two_semimonth,train_two_semimonth_total_secs_sum,on=['msno'],how='left')
+del train_two_semimonth_total_25_sum,train_two_semimonth_total_50_sum,train_two_semimonth_total_75_sum,train_two_semimonth_total_985_sum,train_two_semimonth_total_100_sum,train_two_semimonth_total_secs_sum
+gc.collect()
 train_two_semimonth['two_semimonth_sum'] = train_two_semimonth['total_25_sum']+train_two_semimonth['total_50_sum']\
                                            +train_two_semimonth['total_75_sum']+train_two_semimonth['total_985_sum']+train_two_semimonth['total_100_sum']
 
 train = pd.merge(train,train_one_semimonth[['msno','one_semimonth_secs_sum','one_semimonth_sum']],on=['msno'],how='left')
 train = pd.merge(train,train_two_semimonth[['msno','two_semimonth_secs_sum','two_semimonth_sum']],on=['msno'],how='left')
+del train_one_semimonth,train_two_semimonth
+gc.collect()
 #第二个半月听歌时间与第一个半月比较
 train['semimonth_secs_sum_ratio'] = train['two_semimonth_secs_sum'] / train['one_semimonth_secs_sum']
 #第二个半月听歌数与第一个半月比较
@@ -180,6 +200,8 @@ test = pd.merge(test, test_total_985_sum, on=['msno'], how='left')
 test = pd.merge(test, test_total_100_sum, on=['msno'], how='left')
 test = pd.merge(test,test_total_unq_sum,on=['msno'],how='left')
 test = pd.merge(test,test_total_secs_sum,on=['msno'],how='left')
+del test_total_25_sum,test_total_50_sum,test_total_75_sum,test_total_985_sum,test_total_100_sum,test_total_unq_sum,test_total_secs_sum
+gc.collect()
 test['total_sum'] = test['total_25_sum'] + test['total_50_sum'] + test['total_75_sum'] + test['total_985_sum'] + test[
     'total_100_sum']
 # 一个月的听歌习惯
@@ -209,6 +231,9 @@ test_one_week = pd.merge(test_one_week,test_one_week_total_50_sum,on=['msno'],ho
 test_one_week = pd.merge(test_one_week,test_one_week_total_75_sum,on=['msno'],how='left')
 test_one_week = pd.merge(test_one_week,test_one_week_total_985_sum,on=['msno'],how='left')
 test_one_week = pd.merge(test_one_week,test_one_week_total_100_sum,on=['msno'],how='left')
+test_one_week = pd.merge(test_one_week,test_one_week_total_secs_sum,on=['msno'],how='left')
+del test_one_week_total_25_sum,test_one_week_total_50_sum,test_one_week_total_75_sum,test_one_week_total_985_sum,test_one_week_total_100_sum,test_one_week_total_secs_sum
+gc.collect()
 test_one_week['one_week_sum'] = test_one_week['total_25_sum']+test_one_week['total_50_sum']+test_one_week['total_75_sum']+test['total_985_sum']+test['total_100_sum']
 
 
@@ -223,11 +248,16 @@ test_two_week = pd.merge(test_two_week,test_two_week_total_50_sum,on=['msno'],ho
 test_two_week = pd.merge(test_two_week,test_two_week_total_75_sum,on=['msno'],how='left')
 test_two_week = pd.merge(test_two_week,test_two_week_total_985_sum,on=['msno'],how='left')
 test_two_week = pd.merge(test_two_week,test_two_week_total_100_sum,on=['msno'],how='left')
+test_two_week = pd.merge(test_two_week,test_two_week_total_secs_sum,on=['msno'],how='left')
+del test_two_week_total_25_sum,test_two_week_total_50_sum,test_two_week_total_75_sum,test_two_week_total_985_sum,test_two_week_total_100_sum,test_two_week_total_secs_sum
+gc.collect()
 test_two_week['two_week_sum'] = test_one_week['total_25_sum']+test_one_week['total_50_sum']+test_one_week['total_75_sum']\
                                  +test_one_week['total_985_sum']+test_one_week['total_100_sum']
 
 test = pd.merge(test,test_one_week[['msno','one_week_secs_sum','one_week_sum']],on=['msno'],how='left')
 test = pd.merge(test,test_two_week[['msno','two_week_secs_sum','two_week_sum']],on=['msno'],how='left')
+del test_one_week,test_two_week
+gc.collect()
 #第四周听歌时间与第三周比较
 test['week_secs_sum_ratio'] = test['two_week_secs_sum'] / test['one_week_secs_sum']
 #第四周听歌数与第三周比较
@@ -248,6 +278,9 @@ test_one_semimonth = pd.merge(test_one_semimonth,test_one_semimonth_total_50_sum
 test_one_semimonth = pd.merge(test_one_semimonth,test_one_semimonth_total_75_sum,on=['msno'],how='left')
 test_one_semimonth = pd.merge(test_one_semimonth,test_one_semimonth_total_985_sum,on=['msno'],how='left')
 test_one_semimonth = pd.merge(test_one_semimonth,test_one_semimonth_total_100_sum,on=['msno'],how='left')
+test_one_semimonth = pd.merge(test_one_semimonth,test_one_semimonth_total_secs_sum,on=['msno'],how='left')
+del test_one_semimonth_total_25_sum,test_one_semimonth_total_50_sum,test_one_semimonth_total_75_sum,test_one_semimonth_total_985_sum,test_one_semimonth_total_100_sum,test_one_semimonth_total_secs_sum
+gc.collect()
 test_one_semimonth['one_semimonth_sum'] = test_one_semimonth['total_25_sum']+test_one_semimonth['total_50_sum']\
                                       +test_one_semimonth['total_75_sum']+test_one_semimonth['total_985_sum']+test_one_semimonth['total_100_sum']
 
@@ -263,11 +296,16 @@ test_two_semimonth = pd.merge(test_two_semimonth,test_two_semimonth_total_50_sum
 test_two_semimonth = pd.merge(test_two_semimonth,test_two_semimonth_total_75_sum,on=['msno'],how='left')
 test_two_semimonth = pd.merge(test_two_semimonth,test_two_semimonth_total_985_sum,on=['msno'],how='left')
 test_two_semimonth = pd.merge(test_two_semimonth,test_two_semimonth_total_100_sum,on=['msno'],how='left')
+test_two_semimonth = pd.merge(test_two_semimonth,test_two_semimonth_total_secs_sum,on=['msno'],how='left')
+del test_two_semimonth_total_25_sum,test_two_semimonth_total_50_sum,test_two_semimonth_total_75_sum,test_two_semimonth_total_985_sum,test_two_semimonth_total_100_sum,test_two_semimonth_total_secs_sum
+gc.collect()
 test_two_semimonth['two_semimonth_sum'] = test_two_semimonth['total_25_sum']+test_two_semimonth['total_50_sum']\
                                            +test_two_semimonth['total_75_sum']+test_two_semimonth['total_985_sum']+test_two_semimonth['total_100_sum']
 
 test = pd.merge(test,test_one_semimonth[['msno','one_semimonth_secs_sum','one_semimonth_sum']],on=['msno'],how='left')
 test = pd.merge(test,test_two_semimonth[['msno','two_semimonth_secs_sum','two_semimonth_sum']],on=['msno'],how='left')
+del test_one_semimonth,test_two_semimonth
+gc.collect()
 #第二个半月听歌时间与第一个半月比较
 test['semimonth_secs_sum_ratio'] = test['two_semimonth_secs_sum'] / test['one_semimonth_secs_sum']
 #第二个半月听歌数与第一个半月比较
