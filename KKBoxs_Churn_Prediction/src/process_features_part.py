@@ -9,6 +9,7 @@ def process_train_user_log(train):
     ###############Feature engineering####################
     # 划分近一个月的数据为数据集28天
     train = train[(train['date'] < 20170301) & (train['date'] > 20170131)]
+    print(train.columns)
 
     # 用户一个月的活跃角度
     # 一个月的登陆天数
