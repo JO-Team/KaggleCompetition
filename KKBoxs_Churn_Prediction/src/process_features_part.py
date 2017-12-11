@@ -18,6 +18,8 @@ def process_train_user_log(train):
     print(train_log_day.columns)
     train = pd.merge(train, train_log_day, on=['msno'], how='left')
 
+    print(train.head(5))
+
     # 一个月的听歌汇总
     train_total_25_sum = train.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
     train_total_50_sum = train.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
@@ -257,7 +259,7 @@ def process_test_user_log(test):
 gc.enable()
 
 size = 4e6  # 1 million
-reader = pd.read_csv('../input/user_logs.csv', chunksize=size, index_col=['msno'])
+reader = pd.read_csv('../input/user_logs.csv', chunksize=size)
 start_time = time.time()
 for i in range(100):
     user_log_chunk = next(reader)
@@ -289,7 +291,7 @@ del train_final
 del test_final
 
 size = 1e6
-reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size, index_col=['msno'])
+reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size)
 start_time = time.time()
 for i in range(18):
     user_log_chunk = next(reader)
