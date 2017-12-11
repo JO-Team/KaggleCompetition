@@ -25,10 +25,13 @@ feature_list = [
     'msno','payment_method_id','payment_plan_days','plan_list_price','actual_amount_paid','is_auto_renew',
     'is_cancel','city','bd','gender','registered_via','is_churn',
     #advanced features
+    #user_log
     'log_day','total_25_sum','total_50_sum','total_75_sum','total_985_sum','total_100_sum','total_unq_sum','total_secs_sum',
     'total_sum','total_25ratio','total_100ratio','persong_play','persong_time','daily_play','daily_listentime',
     'one_week_sum','two_week_sum','one_week_secs_sum','two_week_secs_sum','week_secs_sum_ratio','week_sum_ratio',
-    'one_semimonth_sum','two_semimonth_sum','one_semimonth_secs_sum','two_semimonth_secs_sum','semimonth_secs_sum_ratio','semimonth_sum_ratio'
+    'one_semimonth_sum','two_semimonth_sum','one_semimonth_secs_sum','two_semimonth_secs_sum','semimonth_secs_sum_ratio','semimonth_sum_ratio',
+    #transactions
+    'discount','amt_per_day','is_discount','membership_days'
 ]
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
