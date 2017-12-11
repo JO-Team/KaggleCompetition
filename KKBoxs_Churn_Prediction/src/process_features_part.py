@@ -42,7 +42,7 @@ def process_train_user_log(train):
     # 听歌每首歌平均播放时间
     train['persong_time'] = train['total_secs_sum_monthly'] / train['total_sum_monthly']
     # 平均每天听歌数量
-    train['daily_play'] = train['total_sum_monthly_monthly'] / train['log_day']
+    train['daily_play'] = train['total_sum_monthly'] / train['log_day']
     # 平均每天听歌时间
     train['daily_listentime'] = train['total_secs_sum_monthly'] / train['log_day']
 
