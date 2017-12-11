@@ -12,7 +12,7 @@ def process_train_user_log(train):
 
     # 用户一个月的活跃角度
     # 一个月的登陆天数
-    train_log_day = train.groupby(['msno'], as_index=False).date.agg({'log_day': 'count'})
+    train_log_day = train.groupby('msno', as_index=False).date.agg({'log_day': 'count'})
     print(train_log_day.head(5))
     train = pd.merge(train, train_log_day, on=['msno'], how='left')
     print('label')
@@ -254,10 +254,10 @@ def process_test_user_log(test):
 
 gc.enable()
 
-size = 4e7  # 1 million
+size = 4e6  # 1 million
 reader = pd.read_csv('../input/user_logs.csv', chunksize=size, index_col=['msno'])
 start_time = time.time()
-for i in range(10):
+for i in range(100):
     user_log_chunk = next(reader)
     if (i == 0):
         train_final = process_train_user_log(user_log_chunk)
