@@ -12,17 +12,17 @@ def process_train_user_log(train):
 
     # 用户一个月的活跃角度
     # 一个月的登陆天数
-    train_log_day = train.groupby(['msno']).date.agg({'log_day': 'count'})
+    train_log_day = train.groupby(['msno'], as_index=False).date.agg({'log_day': 'count'})
     train = pd.merge(train, train_log_day, on=['msno'], how='left')
-
+    print('label')
     # 一个月的听歌汇总
-    train_total_25_sum = train.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    train_total_50_sum = train.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    train_total_75_sum = train.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    train_total_985_sum = train.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    train_total_100_sum = train.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
-    train_total_unq_sum = train.groupby(['msno']).num_unq.agg({'total_unq_sum': np.sum})
-    train_total_secs_sum = train.groupby(['msno']).total_secs.agg({'total_secs_sum': np.sum})
+    train_total_25_sum = train.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    train_total_50_sum = train.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    train_total_75_sum = train.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    train_total_985_sum = train.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    train_total_100_sum = train.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
+    train_total_unq_sum = train.groupby(['msno'], as_index=False).num_unq.agg({'total_unq_sum': np.sum})
+    train_total_secs_sum = train.groupby(['msno'], as_index=False).total_secs.agg({'total_secs_sum': np.sum})
     train = pd.merge(train, train_total_25_sum, on=['msno'], how='left')
     train = pd.merge(train, train_total_50_sum, on=['msno'], how='left')
     train = pd.merge(train, train_total_75_sum, on=['msno'], how='left')
@@ -49,11 +49,11 @@ def process_train_user_log(train):
     train_one_week = train[(train['date'] < 20170220) & (train['date'] > 20170212)]
     train_two_week = train[(train['date'] < 20170227) & (train['date'] > 20170219)]
 
-    train_one_week_total_25_sum = train_one_week.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    train_one_week_total_50_sum = train_one_week.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    train_one_week_total_75_sum = train_one_week.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    train_one_week_total_985_sum = train_one_week.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    train_one_week_total_100_sum = train_one_week.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
+    train_one_week_total_25_sum = train_one_week.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    train_one_week_total_50_sum = train_one_week.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    train_one_week_total_75_sum = train_one_week.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    train_one_week_total_985_sum = train_one_week.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    train_one_week_total_100_sum = train_one_week.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
     # train_one_week_total_secs_sum = train_one_week.groupby(['msno']).total_secs.agg({'one_week_secs_sum': np.sum})
     train_one_week = pd.merge(train_one_week, train_one_week_total_25_sum, on=['msno'], how='left')
     train_one_week = pd.merge(train_one_week, train_one_week_total_50_sum, on=['msno'], how='left')
@@ -63,11 +63,11 @@ def process_train_user_log(train):
     train_one_week['one_week_sum'] = train_one_week['total_25_sum'] + train_one_week['total_50_sum'] + train_one_week[
         'total_75_sum'] + train['total_985_sum'] + train['total_100_sum']
 
-    train_two_week_total_25_sum = train_two_week.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    train_two_week_total_50_sum = train_two_week.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    train_two_week_total_75_sum = train_two_week.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    train_two_week_total_985_sum = train_two_week.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    train_two_week_total_100_sum = train_two_week.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
+    train_two_week_total_25_sum = train_two_week.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    train_two_week_total_50_sum = train_two_week.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    train_two_week_total_75_sum = train_two_week.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    train_two_week_total_985_sum = train_two_week.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    train_two_week_total_100_sum = train_two_week.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
     # train_two_week_total_secs_sum = train_two_week.groupby(['msno']).total_secs.agg({'two_week_secs_sum': np.sum})
     train_two_week = pd.merge(train_two_week, train_two_week_total_25_sum, on=['msno'], how='left')
     train_two_week = pd.merge(train_two_week, train_two_week_total_50_sum, on=['msno'], how='left')
@@ -89,11 +89,11 @@ def process_train_user_log(train):
     train_one_semimonth = train[(train['date'] < 20170215) & (train['date'] > 20170131)]
     train_two_semimonth = train[(train['date'] < 20170301) & (train['date'] > 20170214)]
 
-    train_one_semimonth_total_25_sum = train_one_semimonth.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    train_one_semimonth_total_50_sum = train_one_semimonth.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    train_one_semimonth_total_75_sum = train_one_semimonth.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    train_one_semimonth_total_985_sum = train_one_semimonth.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    train_one_semimonth_total_100_sum = train_one_semimonth.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
+    train_one_semimonth_total_25_sum = train_one_semimonth.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    train_one_semimonth_total_50_sum = train_one_semimonth.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    train_one_semimonth_total_75_sum = train_one_semimonth.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    train_one_semimonth_total_985_sum = train_one_semimonth.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    train_one_semimonth_total_100_sum = train_one_semimonth.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
     # train_one_semimonth_total_secs_sum = train_one_semimonth.groupby(['msno']).total_secs.agg({'one_semimonth_secs_sum': np.sum})
     train_one_semimonth = pd.merge(train_one_semimonth, train_one_semimonth_total_25_sum, on=['msno'], how='left')
     train_one_semimonth = pd.merge(train_one_semimonth, train_one_semimonth_total_50_sum, on=['msno'], how='left')
@@ -104,11 +104,11 @@ def process_train_user_log(train):
                                                + train_one_semimonth['total_75_sum'] + train_one_semimonth[
                                                    'total_985_sum'] + train_one_semimonth['total_100_sum']
 
-    train_two_semimonth_total_25_sum = train_two_semimonth.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    train_two_semimonth_total_50_sum = train_two_semimonth.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    train_two_semimonth_total_75_sum = train_two_semimonth.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    train_two_semimonth_total_985_sum = train_two_semimonth.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    train_two_semimonth_total_100_sum = train_two_semimonth.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
+    train_two_semimonth_total_25_sum = train_two_semimonth.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    train_two_semimonth_total_50_sum = train_two_semimonth.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    train_two_semimonth_total_75_sum = train_two_semimonth.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    train_two_semimonth_total_985_sum = train_two_semimonth.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    train_two_semimonth_total_100_sum = train_two_semimonth.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
     # train_two_semimonth_total_secs_sum = train_two_semimonth.groupby(['msno']).total_secs.agg({'two_semimonth_secs_sum': np.sum})
     train_two_semimonth = pd.merge(train_two_semimonth, train_two_semimonth_total_25_sum, on=['msno'], how='left')
     train_two_semimonth = pd.merge(train_two_semimonth, train_two_semimonth_total_50_sum, on=['msno'], how='left')
@@ -135,13 +135,13 @@ def process_test_user_log(test):
     ###############Feature engineering####################
     # 对3月份test数据的处理
 
-    test_total_25_sum = test.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    test_total_50_sum = test.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    test_total_75_sum = test.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    test_total_985_sum = test.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    test_total_100_sum = test.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
-    test_total_unq_sum = test.groupby(['msno']).num_unq.agg({'total_unq_sum': np.sum})
-    test_total_secs_sum = test.groupby(['msno']).total_secs.agg({'total_secs_sum': np.sum})
+    test_total_25_sum = test.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    test_total_50_sum = test.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    test_total_75_sum = test.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    test_total_985_sum = test.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    test_total_100_sum = test.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
+    test_total_unq_sum = test.groupby(['msno'], as_index=False).num_unq.agg({'total_unq_sum': np.sum})
+    test_total_secs_sum = test.groupby(['msno'], as_index=False).total_secs.agg({'total_secs_sum': np.sum})
     test = pd.merge(test, test_total_25_sum, on=['msno'], how='left')
     test = pd.merge(test, test_total_50_sum, on=['msno'], how='left')
     test = pd.merge(test, test_total_75_sum, on=['msno'], how='left')
@@ -168,11 +168,11 @@ def process_test_user_log(test):
     test_one_week = test[(test['date'] < 20170320) & (test['date'] > 20170312)]
     test_two_week = test[(test['date'] < 20170327) & (test['date'] > 20170319)]
 
-    test_one_week_total_25_sum = test_one_week.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    test_one_week_total_50_sum = test_one_week.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    test_one_week_total_75_sum = test_one_week.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    test_one_week_total_985_sum = test_one_week.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    test_one_week_total_100_sum = test_one_week.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
+    test_one_week_total_25_sum = test_one_week.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    test_one_week_total_50_sum = test_one_week.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    test_one_week_total_75_sum = test_one_week.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    test_one_week_total_985_sum = test_one_week.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    test_one_week_total_100_sum = test_one_week.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
     # test_one_week_total_secs_sum = test_one_week.groupby(['msno']).total_secs.agg({'one_week_secs_sum': np.sum})
     test_one_week = pd.merge(test_one_week, test_one_week_total_25_sum, on=['msno'], how='left')
     test_one_week = pd.merge(test_one_week, test_one_week_total_50_sum, on=['msno'], how='left')
@@ -182,11 +182,11 @@ def process_test_user_log(test):
     test_one_week['one_week_sum'] = test_one_week['total_25_sum'] + test_one_week['total_50_sum'] + test_one_week[
         'total_75_sum'] + test['total_985_sum'] + test['total_100_sum']
 
-    test_two_week_total_25_sum = test_two_week.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    test_two_week_total_50_sum = test_two_week.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    test_two_week_total_75_sum = test_two_week.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    test_two_week_total_985_sum = test_two_week.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    test_two_week_total_100_sum = test_two_week.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
+    test_two_week_total_25_sum = test_two_week.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    test_two_week_total_50_sum = test_two_week.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    test_two_week_total_75_sum = test_two_week.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    test_two_week_total_985_sum = test_two_week.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    test_two_week_total_100_sum = test_two_week.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
     # test_two_week_total_secs_sum = test_two_week.groupby(['msno']).total_secs.agg({'two_week_secs_sum': np.sum})
     test_two_week = pd.merge(test_two_week, test_two_week_total_25_sum, on=['msno'], how='left')
     test_two_week = pd.merge(test_two_week, test_two_week_total_50_sum, on=['msno'], how='left')
@@ -207,11 +207,11 @@ def process_test_user_log(test):
     test_one_semimonth = test[(test['date'] < 20170315) & (test['date'] > 20170228)]
     test_two_semimonth = test[(test['date'] < 20170329) & (test['date'] > 20170314)]
 
-    test_one_semimonth_total_25_sum = test_one_semimonth.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    test_one_semimonth_total_50_sum = test_one_semimonth.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    test_one_semimonth_total_75_sum = test_one_semimonth.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    test_one_semimonth_total_985_sum = test_one_semimonth.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    test_one_semimonth_total_100_sum = test_one_semimonth.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
+    test_one_semimonth_total_25_sum = test_one_semimonth.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    test_one_semimonth_total_50_sum = test_one_semimonth.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    test_one_semimonth_total_75_sum = test_one_semimonth.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    test_one_semimonth_total_985_sum = test_one_semimonth.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    test_one_semimonth_total_100_sum = test_one_semimonth.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
     # test_one_semimonth_total_secs_sum = test_one_semimonth.groupby(['msno']).total_secs.agg( {'one_semimonth_secs_sum': np.sum})
     test_one_semimonth = pd.merge(test_one_semimonth, test_one_semimonth_total_25_sum, on=['msno'], how='left')
     test_one_semimonth = pd.merge(test_one_semimonth, test_one_semimonth_total_50_sum, on=['msno'], how='left')
@@ -222,11 +222,11 @@ def process_test_user_log(test):
                                               + test_one_semimonth['total_75_sum'] + test_one_semimonth[
                                                   'total_985_sum'] + test_one_semimonth['total_100_sum']
 
-    test_two_semimonth_total_25_sum = test_two_semimonth.groupby(['msno']).num_25.agg({'total_25_sum': np.sum})
-    test_two_semimonth_total_50_sum = test_two_semimonth.groupby(['msno']).num_50.agg({'total_50_sum': np.sum})
-    test_two_semimonth_total_75_sum = test_two_semimonth.groupby(['msno']).num_75.agg({'total_75_sum': np.sum})
-    test_two_semimonth_total_985_sum = test_two_semimonth.groupby(['msno']).num_985.agg({'total_985_sum': np.sum})
-    test_two_semimonth_total_100_sum = test_two_semimonth.groupby(['msno']).num_100.agg({'total_100_sum': np.sum})
+    test_two_semimonth_total_25_sum = test_two_semimonth.groupby(['msno'], as_index=False).num_25.agg({'total_25_sum': np.sum})
+    test_two_semimonth_total_50_sum = test_two_semimonth.groupby(['msno'], as_index=False).num_50.agg({'total_50_sum': np.sum})
+    test_two_semimonth_total_75_sum = test_two_semimonth.groupby(['msno'], as_index=False).num_75.agg({'total_75_sum': np.sum})
+    test_two_semimonth_total_985_sum = test_two_semimonth.groupby(['msno'], as_index=False).num_985.agg({'total_985_sum': np.sum})
+    test_two_semimonth_total_100_sum = test_two_semimonth.groupby(['msno'], as_index=False).num_100.agg({'total_100_sum': np.sum})
     # test_two_semimonth_total_secs_sum = test_two_semimonth.groupby(['msno']).total_secs.agg({'two_semimonth_secs_sum': np.sum})
     test_two_semimonth = pd.merge(test_two_semimonth, test_two_semimonth_total_25_sum, on=['msno'], how='left')
     test_two_semimonth = pd.merge(test_two_semimonth, test_two_semimonth_total_50_sum, on=['msno'], how='left')
