@@ -10,21 +10,10 @@ gc.enable()
 user_log_v1 = pd.read_csv('../input/user_logs.csv')
 user_log_v2 = pd.read_csv('../input/user_logs_v2.csv')
 
-user_log = user_log_v1.append(user_log_v2)
+train = user_log_v1.append(user_log_v2)
 
-members_v1 = pd.read_csv('../input/members.csv')
-members_v2 = pd.read_csv('../input/members_v2.csv')
-train = members_v1.append(members_v2, ignore_index=True)
-
-train = pd.merge(train, user_log, how='left', on='msno')
-
-del user_log, members_v1, members_v2
+del user_log_v1, user_log_v2
 gc.collect()
-
-gender = {'male': 1, 'female': 2}
-train['gender'] = train['gender'].map(gender)
-
-train = train.fillna(0)
 
 ###############Feature engineering####################
 print('State 1: Start Featrur Engineering...')
@@ -183,4 +172,4 @@ print(train.columns)
 print(len(train))
 
 # Output the file
-train.to_csv("../input/members_userlog_final.csv", index=False)
+train.to_csv("../input/processed_userlog_final.csv", index=False)
