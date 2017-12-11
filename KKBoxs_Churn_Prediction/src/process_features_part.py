@@ -22,6 +22,9 @@ def process_train_user_log(train, istest):
     else:
         train = pd.merge(train, train_log_day, on=['msno'], how='left')
 
+    del train_log_day
+    gc.collect()
+
     # 一个月的听歌汇总
     train_total_25_sum = train.groupby(['msno']).num_25.agg({'total_25_sum_monthly': np.sum}).reset_index()
     train_total_50_sum = train.groupby(['msno']).num_50.agg({'total_50_sum_monthly': np.sum}).reset_index()
@@ -47,6 +50,9 @@ def process_train_user_log(train, istest):
         train = pd.merge(train, train_total_100_sum, on=['msno'], how='left')
         train = pd.merge(train, train_total_unq_sum, on=['msno'], how='left')
         train = pd.merge(train, train_total_secs_sum, on=['msno'], how='left')
+
+    del train_total_25_sum, train_total_50_sum, train_total_75_sum, train_total_985_sum, train_total_100_sum, train_total_unq_sum, train_total_secs_sum
+    gc.collect()
 
     train['total_sum_monthly'] = train['total_25_sum_monthly'] + train['total_50_sum_monthly'] + train[
         'total_75_sum_monthly'] + train[
@@ -92,6 +98,9 @@ def process_train_user_log(train, istest):
         train_one_week['one_week_secs_sum'] = train_one_week['one_week_secs_sum_y']
         train_one_week = train_one_week.drop('one_week_secs_sum_y', axis=1)
 
+    del train_one_week_total_25_sum, train_one_week_total_50_sum, train_one_week_total_75_sum, train_one_week_total_985_sum, train_one_week_total_100_sum, train_one_week_total_secs_sum
+    gc.collect()
+
     train_two_week_total_25_sum = train_two_week.groupby(['msno']).num_25.agg({'total_25_sum': np.sum}).reset_index()
     train_two_week_total_50_sum = train_two_week.groupby(['msno']).num_50.agg({'total_50_sum': np.sum}).reset_index()
     train_two_week_total_75_sum = train_two_week.groupby(['msno']).num_75.agg({'total_75_sum': np.sum}).reset_index()
@@ -111,6 +120,9 @@ def process_train_user_log(train, istest):
     if 'two_week_secs_sum_y' in train_two_week.columns:
         train_two_week['two_week_secs_sum'] = train_two_week['two_week_secs_sum_y']
         train_two_week = train_two_week.drop('two_week_secs_sum_y', axis=1)
+
+    del train_two_week_total_25_sum, train_two_week_total_50_sum, train_two_week_total_75_sum, train_two_week_total_985_sum, train_two_week_total_100_sum, train_two_week_total_secs_sum
+    gc.collect()
 
     if 'one_week_secs_sum' in train.columns:
         train = pd.merge(train.drop(['one_week_secs_sum', 'one_week_sum'], axis=1),
@@ -160,6 +172,9 @@ def process_train_user_log(train, istest):
         train_one_semimonth['one_semimonth_secs_sum'] = train_one_semimonth['one_semimonth_secs_sum_y']
         train_one_semimonth = train_one_semimonth.drop('one_semimonth_secs_sum_y', axis=1)
 
+    del train_one_semimonth_total_25_sum, train_one_semimonth_total_50_sum, train_one_semimonth_total_75_sum, train_one_semimonth_total_985_sum, train_one_semimonth_total_100_sum, train_one_semimonth_total_secs_sum
+    gc.collect()
+
     train_two_semimonth_total_25_sum = train_two_semimonth.groupby(['msno']).num_25.agg(
         {'total_25_sum': np.sum}).reset_index()
     train_two_semimonth_total_50_sum = train_two_semimonth.groupby(['msno']).num_50.agg(
@@ -181,6 +196,7 @@ def process_train_user_log(train, istest):
     train_two_semimonth['two_semimonth_sum'] = train_two_semimonth['total_25_sum'] + train_two_semimonth['total_50_sum'] \
                                                + train_two_semimonth['total_75_sum'] + train_two_semimonth[
                                                    'total_985_sum'] + train_two_semimonth['total_100_sum']
+
     if 'two_semimonth_secs_sum_y' in train_two_semimonth.columns:
         train_two_semimonth['two_semimonth_secs_sum'] = train_two_semimonth['two_semimonth_secs_sum_y']
         train_two_semimonth = train_two_semimonth.drop('two_semimonth_secs_sum_y', axis=1)
@@ -206,6 +222,9 @@ def process_train_user_log(train, istest):
         train = pd.merge(train, train_two_semimonth[['msno', 'two_semimonth_secs_sum', 'two_semimonth_sum']],
                          on=['msno'],
                          how='left')
+
+    del train_two_semimonth_total_25_sum, train_two_semimonth_total_50_sum, train_two_semimonth_total_75_sum, train_two_semimonth_total_985_sum, train_two_semimonth_total_100_sum, train_two_semimonth_total_secs_sum
+    gc.collect()
 
     # 第二个半月听歌时间与第一个半月比较
     train['semimonth_secs_sum_ratio'] = train['two_semimonth_secs_sum'] / train['one_semimonth_secs_sum']
@@ -250,8 +269,8 @@ train_final.columns = train_final.columns.get_level_values(0)
 test_final.columns = test_final.columns.get_level_values(0)
 
 print('Done')
-#train_final.to_csv("../input/processed_features_train_final_v1.csv")
-#test_final.to_csv("../input/processed_features_test_final_v1.csv")
+# train_final.to_csv("../input/processed_features_train_final_v1.csv")
+# test_final.to_csv("../input/processed_features_test_final_v1.csv")
 
 del train_final
 del test_final
