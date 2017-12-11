@@ -14,7 +14,11 @@ def process_train_user_log(train):
     # 用户一个月的活跃角度
     # 一个月的登陆天数
     train_log_day = train.groupby(['msno']).date.agg({'log_day': 'count'}).reset_index()
-    train = pd.merge(train, train_log_day, on=['msno'], how='left')
+    if 'log_day' in train.columns:
+        train = pd.merge(train.drop(['log_day'], axis=1), train_log_day, on=['msno'], how='left')
+    else:
+        train = pd.merge(train, train_log_day, on=['msno'], how='left')
+
 
     # 一个月的听歌汇总
     train_total_25_sum = train.groupby(['msno']).num_25.agg({'total_25_sum_monthly': np.sum}).reset_index()
@@ -388,8 +392,6 @@ for i in range(10):
 
 # train_final.columns = ['_'.join(col).strip() for col in train_final.columns.values]
 # test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
-
-print(train_final.columns)
 
 train_final = process_train_user_log(train_final)
 test_final = process_test_user_log(test_final)
