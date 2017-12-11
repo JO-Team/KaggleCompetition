@@ -395,11 +395,11 @@ for i in range(10):
     user_log_chunk = next(reader)
     if (i == 0):
         train_final = process_train_user_log(user_log_chunk)
-        test_final = process_test_user_log(user_log_chunk)
+        # test_final = process_test_user_log(user_log_chunk)
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     else:
         train_final = train_final.append(process_train_user_log(user_log_chunk))
-        test_final = test_final.append(process_test_user_log(user_log_chunk))
+        # test_final = test_final.append(process_test_user_log(user_log_chunk))
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del (user_log_chunk)
 
@@ -407,20 +407,20 @@ for i in range(10):
 # test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
 train_final = process_train_user_log(train_final)
-test_final = process_test_user_log(test_final)
+# test_final = process_test_user_log(test_final)
 
 print(len(train_final))
 print(train_final.columns)
-print(len(test_final))
-print(test_final.columns)
+# print(len(test_final))
+# print(test_final.columns)
 train_final.columns = train_final.columns.get_level_values(0)
-test_final.columns = test_final.columns.get_level_values(0)
+# test_final.columns = test_final.columns.get_level_values(0)
 
 train_final.to_csv("../input/processed_features_train_final_v1.csv")
-test_final.to_csv("../input/processed_features_test_final_v1.csv")
+# test_final.to_csv("../input/processed_features_test_final_v1.csv")
 
 del train_final
-del test_final
+# del test_final
 
 size = 1e6
 reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size)
@@ -429,11 +429,11 @@ for i in range(18):
     user_log_chunk = next(reader)
     if (i == 0):
         train_final = process_train_user_log(user_log_chunk)
-        test_final = process_test_user_log(user_log_chunk)
+        # test_final = process_test_user_log(user_log_chunk)
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     else:
         train_final = train_final.append(process_train_user_log(user_log_chunk))
-        test_final = test_final.append(process_test_user_log(user_log_chunk))
+        # test_final = test_final.append(process_test_user_log(user_log_chunk))
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del user_log_chunk
 
@@ -441,18 +441,18 @@ for i in range(18):
 # test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
 train_final = process_train_user_log(train_final)
-test_final = process_test_user_log(test_final)
+# test_final = process_test_user_log(test_final)
 
 print(len(train_final))
-print(len(test_final))
+# print(len(test_final))
 train_final.columns = train_final.columns.get_level_values(0)
-test_final.columns = test_final.columns.get_level_values(0)
+# test_final.columns = test_final.columns.get_level_values(0)
 
 train_final.to_csv("../input/processed_features_train_final_v2.csv")
-test_final.to_csv("../input/processed_features_test_final_v2.csv")
+# test_final.to_csv("../input/processed_features_test_final_v2.csv")
 
 del train_final
-del test_final
+# del test_final
 
 train_final_v1 = pd.read_csv('../input/processed_features_train_final_v1.csv')
 train_final_v2 = pd.read_csv('../input/processed_features_train_final_v2.csv')
@@ -467,6 +467,7 @@ train_final.to_csv("../input/processed_features_train_final.csv")
 
 del train_final
 
+'''
 test_final_v1 = pd.read_csv('../input/processed_features_test_final_v1.csv')
 test_final_v2 = pd.read_csv('../input/processed_features_test_final_v2.csv')
 
@@ -479,3 +480,4 @@ test_final.columns = test_final.columns.get_level_values(0)
 test_final.to_csv("../input/processed_features_test_final.csv")
 
 del test_final
+'''
