@@ -63,7 +63,7 @@ def process_train_user_log(train):
     train_one_week = pd.merge(train_one_week, train_one_week_total_100_sum, on=['msno'], how='left')
     print(train_one_week)
     train_one_week['one_week_sum'] = train_one_week['total_25_sum'] + train_one_week['total_50_sum'] + train_one_week[
-        'total_75_sum'] + train['total_985_sum'] + train['total_100_sum']
+        'total_75_sum'] + train_one_week['total_985_sum'] + train_one_week['total_100_sum']
 
     train_two_week_total_25_sum = train_two_week.groupby(['msno']).num_25.agg({'total_25_sum': np.sum}).reset_index()
     train_two_week_total_50_sum = train_two_week.groupby(['msno']).num_50.agg({'total_50_sum': np.sum}).reset_index()
@@ -76,9 +76,8 @@ def process_train_user_log(train):
     train_two_week = pd.merge(train_two_week, train_two_week_total_75_sum, on=['msno'], how='left')
     train_two_week = pd.merge(train_two_week, train_two_week_total_985_sum, on=['msno'], how='left')
     train_two_week = pd.merge(train_two_week, train_two_week_total_100_sum, on=['msno'], how='left')
-    train_two_week['two_week_sum'] = train_one_week['total_25_sum'] + train_one_week['total_50_sum'] + train_one_week[
-        'total_75_sum'] \
-                                     + train_one_week['total_985_sum'] + train_one_week['total_100_sum']
+    train_two_week['two_week_sum'] = train_two_week['total_25_sum'] + train_two_week['total_50_sum'] + train_two_week[
+        'total_75_sum'] + train_two_week['total_985_sum'] + train_two_week['total_100_sum']
 
     train = pd.merge(train, train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
     train = pd.merge(train, train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
@@ -192,7 +191,7 @@ def process_test_user_log(test):
     test_one_week = pd.merge(test_one_week, test_one_week_total_985_sum, on=['msno'], how='left')
     test_one_week = pd.merge(test_one_week, test_one_week_total_100_sum, on=['msno'], how='left')
     test_one_week['one_week_sum'] = test_one_week['total_25_sum'] + test_one_week['total_50_sum'] + test_one_week[
-        'total_75_sum'] + test['total_985_sum'] + test['total_100_sum']
+        'total_75_sum'] + test_one_week['total_985_sum'] + test_one_week['total_100_sum']
 
     test_two_week_total_25_sum = test_two_week.groupby(['msno']).num_25.agg({'total_25_sum': np.sum}).reset_index()
     test_two_week_total_50_sum = test_two_week.groupby(['msno']).num_50.agg({'total_50_sum': np.sum}).reset_index()
@@ -205,8 +204,8 @@ def process_test_user_log(test):
     test_two_week = pd.merge(test_two_week, test_two_week_total_75_sum, on=['msno'], how='left')
     test_two_week = pd.merge(test_two_week, test_two_week_total_985_sum, on=['msno'], how='left')
     test_two_week = pd.merge(test_two_week, test_two_week_total_100_sum, on=['msno'], how='left')
-    test_two_week['two_week_sum'] = test_one_week['total_25_sum'] + test_one_week['total_50_sum'] + test_one_week[
-        'total_75_sum'] + test_one_week['total_985_sum'] + test_one_week['total_100_sum']
+    test_two_week['two_week_sum'] = test_two_week['total_25_sum'] + test_two_week['total_50_sum'] + test_two_week[
+        'total_75_sum'] + test_two_week['total_985_sum'] + test_two_week['total_100_sum']
 
     test = pd.merge(test, test_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
     test = pd.merge(test, test_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
