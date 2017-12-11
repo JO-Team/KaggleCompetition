@@ -17,13 +17,13 @@ def process_train_user_log(train):
     train = pd.merge(train, train_log_day, on=['msno'], how='left')
 
     # 一个月的听歌汇总
-    train_total_25_sum = train.groupby(['msno']).num_25.agg({'total_25_sum': np.sum}).reset_index()
-    train_total_50_sum = train.groupby(['msno']).num_50.agg({'total_50_sum': np.sum}).reset_index()
-    train_total_75_sum = train.groupby(['msno']).num_75.agg({'total_75_sum': np.sum}).reset_index()
-    train_total_985_sum = train.groupby(['msno']).num_985.agg({'total_985_sum': np.sum}).reset_index()
-    train_total_100_sum = train.groupby(['msno']).num_100.agg({'total_100_sum': np.sum}).reset_index()
-    train_total_unq_sum = train.groupby(['msno']).num_unq.agg({'total_unq_sum': np.sum}).reset_index()
-    train_total_secs_sum = train.groupby(['msno']).total_secs.agg({'total_secs_sum': np.sum}).reset_index()
+    train_total_25_sum = train.groupby(['msno']).num_25.agg({'total_25_sum_monthly': np.sum}).reset_index()
+    train_total_50_sum = train.groupby(['msno']).num_50.agg({'total_50_sum_monthly': np.sum}).reset_index()
+    train_total_75_sum = train.groupby(['msno']).num_75.agg({'total_75_sum_monthly': np.sum}).reset_index()
+    train_total_985_sum = train.groupby(['msno']).num_985.agg({'total_985_sum_monthly': np.sum}).reset_index()
+    train_total_100_sum = train.groupby(['msno']).num_100.agg({'total_100_sum_monthly': np.sum}).reset_index()
+    train_total_unq_sum = train.groupby(['msno']).num_unq.agg({'total_unq_sum_monthly': np.sum}).reset_index()
+    train_total_secs_sum = train.groupby(['msno']).total_secs.agg({'total_secs_sum_monthly': np.sum}).reset_index()
     train = pd.merge(train, train_total_25_sum, on=['msno'], how='left')
     train = pd.merge(train, train_total_50_sum, on=['msno'], how='left')
     train = pd.merge(train, train_total_75_sum, on=['msno'], how='left')
@@ -31,9 +31,9 @@ def process_train_user_log(train):
     train = pd.merge(train, train_total_100_sum, on=['msno'], how='left')
     train = pd.merge(train, train_total_unq_sum, on=['msno'], how='left')
     train = pd.merge(train, train_total_secs_sum, on=['msno'], how='left')
-    train['total_sum'] = train['total_25_sum'] + train['total_50_sum'] + train['total_75_sum'] + train[
-        'total_985_sum'] + \
-                         train['total_100_sum']
+    train['total_sum_monthly'] = train['total_25_sum_monthly'] + train['total_50_sum_monthly'] + train['total_75_sum_monthly'] + train[
+        'total_985_sum_monthly'] + \
+                         train['total_100_sum_monthly']
     # 一个月的听歌习惯
     train['total_25ratio'] = train['total_25_sum'] / train['total_sum']
     train['total_100ratio'] = train['total_100_sum'] / train['total_sum']
