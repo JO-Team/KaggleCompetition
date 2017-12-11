@@ -34,6 +34,7 @@ feature_list = [
     'discount','amt_per_day','is_discount','membership_days',
     'transaction_date_year','transaction_date_month','transaction_date_day',
     'membership_expire_date_year','membership_expire_date_month','membership_expire_date_day'
+    #members
 ]
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
