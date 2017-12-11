@@ -386,8 +386,8 @@ for i in range(10):
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del (user_log_chunk)
 
-train_final.columns = ['_'.join(col).strip() for col in train_final.columns.values]
-test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
+# train_final.columns = ['_'.join(col).strip() for col in train_final.columns.values]
+# test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
 print(train_final.columns)
 
@@ -422,8 +422,8 @@ for i in range(18):
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del user_log_chunk
 
-train_final.columns = ['_'.join(col).strip() for col in train_final.columns.values]
-test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
+# train_final.columns = ['_'.join(col).strip() for col in train_final.columns.values]
+# test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
 train_final = process_train_user_log(train_final)
 test_final = process_test_user_log(test_final)
