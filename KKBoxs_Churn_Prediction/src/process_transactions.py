@@ -66,9 +66,11 @@ newdf_grouped = newdf.groupby('msno').agg({
     'payment_method_id40': np.sum,
     'payment_method_id41': np.sum})
 
+#################################################################################################################
+
 newdf_grouped = newdf_grouped.sort_values(by=['transaction_date'], ascending=[False]).reset_index(drop=True)
 newdf_grouped = newdf_grouped.drop_duplicates(subset=['msno'], keep='first')
- 
+
 #discount
 newdf_grouped['discount'] = newdf_grouped['plan_list_price'] - newdf_grouped['actual_amount_paid']
 #amt_per_day
@@ -79,6 +81,23 @@ newdf_grouped['is_discount'] = newdf_grouped.discount.apply(lambda x: 1 if x > 0
 newdf_grouped['membership_days'] = pd.to_datetime(newdf_grouped['membership_expire_date']).subtract(pd.to_datetime(
         newdf_grouped['transaction_date'])).dt.days.astype(int)
 
+newdf_grouped['transaction_date_year'] = newdf_grouped['transaction_date'].apply(lambda x: int(str(x)[:4]))
+newdf_grouped['transaction_date_month'] = newdf_grouped['transaction_date'].apply(lambda x: int(str(x)[4:6]))
+newdf_grouped['transaction_date_day'] = newdf_grouped['transaction_date'].apply(lambda x: int(str(x)[-2:]))
+
+newdf_grouped['membership_expire_date_year'] = newdf_grouped['membership_expire_date'].apply(lambda x: int(str(x)[:4]))
+newdf_grouped['membership_expire_date_month'] = newdf_grouped['membership_expire_date'].apply(lambda x: int(str(x)[4:6]))
+newdf_grouped['membership_expire_date_day'] = newdf_grouped['membership_expire_date'].apply(lambda x: int(str(x)[-2:]))
+
+newdf_grouped['transaction_date_year'] = newdf_grouped['transaction_date_year'].astype(np.int16)
+newdf_grouped['transaction_date_month'] = newdf_grouped['transaction_date_month'].astype(np.int8)
+newdf_grouped['transaction_date_day'] = newdf_grouped['transaction_date_day'].astype(np.int8)
+
+newdf_grouped['membership_expire_date_year'] = newdf_grouped['membership_expire_date_year'].astype(np.int16)
+newdf_grouped['membership_expire_date_month'] = newdf_grouped['membership_expire_date_month'].astype(np.int8)
+newdf_grouped['membership_expire_date_day'] = newdf_grouped['membership_expire_date_day'].astype(np.int8)
+
+#################################################################################################################
 print(newdf_grouped.head())
 print(len(newdf_grouped))
 
