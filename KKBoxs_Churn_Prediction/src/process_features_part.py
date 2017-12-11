@@ -372,9 +372,9 @@ warnings.warn = ignore_warn
 gc.enable()
 
 size = 4e5  # 1 million
-reader = pd.read_csv('../input/user_logs.csv', chunksize=size)
+reader = pd.read_csv('../input/user_logs.csv', chunksize=size, nrows=4e6)
 start_time = time.time()
-for i in range(1000):
+for i in range(10):
     user_log_chunk = next(reader)
     if (i == 0):
         train_final = process_train_user_log(user_log_chunk)
