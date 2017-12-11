@@ -35,16 +35,16 @@ def process_train_user_log(train):
         'total_985_sum_monthly'] + \
                          train['total_100_sum_monthly']
     # 一个月的听歌习惯
-    train['total_25ratio'] = train['total_25_sum'] / train['total_sum']
-    train['total_100ratio'] = train['total_100_sum'] / train['total_sum']
+    train['total_25ratio'] = train['total_25_sum_monthly'] / train['total_sum_monthly']
+    train['total_100ratio'] = train['total_100_sum_monthly'] / train['total_sum_monthly']
     # 听歌是循环播放还是试听,每首歌播放次数
-    train['persong_play'] = train['total_sum'] / train['total_unq_sum']
+    train['persong_play'] = train['total_sum_monthly'] / train['total_unq_sum_monthly']
     # 听歌每首歌平均播放时间
-    train['persong_time'] = train['total_secs_sum'] / train['total_sum']
+    train['persong_time'] = train['total_secs_sum_monthly'] / train['total_sum_monthly']
     # 平均每天听歌数量
-    train['daily_play'] = train['total_sum'] / train['log_day']
+    train['daily_play'] = train['total_sum_monthly_monthly'] / train['log_day']
     # 平均每天听歌时间
-    train['daily_listentime'] = train['total_secs_sum'] / train['log_day']
+    train['daily_listentime'] = train['total_secs_sum_monthly'] / train['log_day']
 
     # train数据两个礼拜的变化
     train_one_week = train[(train['date'] < 20170220) & (train['date'] > 20170212)]
