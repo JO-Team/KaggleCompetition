@@ -170,9 +170,9 @@ def process_train_user_log(train):
     train_two_semimonth['two_semimonth_sum'] = train_two_semimonth['total_25_sum'] + train_two_semimonth['total_50_sum'] \
                                                + train_two_semimonth['total_75_sum'] + train_two_semimonth[
                                                    'total_985_sum'] + train_two_semimonth['total_100_sum']
-    if 'two_semimonth_sum_y' in train_two_semimonth.columns:
-        train_two_semimonth['two_semimonth_sum'] = train_two_semimonth['two_semimonth_sum_y']
-        train_two_semimonth = train_two_semimonth.drop('two_semimonth_sum_y', axis=1)
+    if 'two_semimonth_secs_sum_y' in train_two_semimonth.columns:
+        train_two_semimonth['two_semimonth_secs_sum'] = train_two_semimonth['two_semimonth_secs_sum_y']
+        train_two_semimonth = train_two_semimonth.drop('two_semimonth_secs_sum_y', axis=1)
 
     train = pd.merge(train, train_one_semimonth[['msno', 'one_semimonth_secs_sum', 'one_semimonth_sum']], on=['msno'],
                      how='left')
