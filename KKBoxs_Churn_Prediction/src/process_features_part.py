@@ -101,10 +101,10 @@ def process_train_user_log(train):
         'total_75_sum'] + train_two_week['total_985_sum'] + train_two_week['total_100_sum']
 
     if 'one_week_secs_sum' in train.columns:
-        train = pd.merge(train.drop(['one_week_secs_sum_y', 'one_week_sum'], axis=1),
+        train = pd.merge(train.drop(['one_week_secs_sum', 'one_week_sum'], axis=1),
                          train_one_week[['msno', 'one_week_secs_sum_y', 'one_week_sum']], on=['msno'], how='left')
         train = pd.merge(train.drop(['two_week_secs_sum', 'two_week_sum'], axis=1),
-                         train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
+                         train_two_week[['msno', 'two_week_secs_sum_y', 'two_week_sum']], on=['msno'], how='left')
     else:
         train = pd.merge(train, train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
         train = pd.merge(train, train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
@@ -170,11 +170,11 @@ def process_train_user_log(train):
 
     if 'one_semimonth_secs_sum' in train.columns:
         train = pd.merge(train.drop(['one_semimonth_secs_sum', 'one_semimonth_sum'], axis=1),
-                         train_one_semimonth[['msno', 'one_semimonth_secs_sum', 'one_semimonth_sum']],
+                         train_one_semimonth[['msno', 'one_semimonth_secs_sum_y', 'one_semimonth_sum']],
                          on=['msno'],
                          how='left')
         train = pd.merge(train.drop(['two_semimonth_secs_sum', 'two_semimonth_sum'], axis=1),
-                         train_two_semimonth[['msno', 'two_semimonth_secs_sum', 'two_semimonth_sum']],
+                         train_two_semimonth[['msno', 'two_semimonth_secs_sum_y', 'two_semimonth_sum']],
                          on=['msno'],
                          how='left')
     else:
@@ -396,7 +396,7 @@ for i in range(10):
 # test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
 train_final = process_train_user_log(train_final)
-test_final = process_test_user_log(test_final)
+# test_final = process_test_user_log(test_final)
 
 print(len(train_final))
 print(train_final.columns)
@@ -430,7 +430,7 @@ for i in range(18):
 # test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
 train_final = process_train_user_log(train_final)
-# test_final = process_test_user_log(test_final)
+test_final = process_test_user_log(test_final)
 
 print(len(train_final))
 print(len(test_final))
@@ -438,7 +438,7 @@ train_final.columns = train_final.columns.get_level_values(0)
 test_final.columns = test_final.columns.get_level_values(0)
 
 train_final.to_csv("../input/processed_features_train_final_v2.csv")
-# test_final.to_csv("../input/processed_features_test_final_v2.csv")
+test_final.to_csv("../input/processed_features_test_final_v2.csv")
 
 del train_final
 del test_final
