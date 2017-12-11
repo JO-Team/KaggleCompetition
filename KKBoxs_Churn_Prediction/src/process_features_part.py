@@ -19,7 +19,6 @@ def process_train_user_log(train):
     else:
         train = pd.merge(train, train_log_day, on=['msno'], how='left')
 
-
     # 一个月的听歌汇总
     train_total_25_sum = train.groupby(['msno']).num_25.agg({'total_25_sum_monthly': np.sum}).reset_index()
     train_total_50_sum = train.groupby(['msno']).num_50.agg({'total_50_sum_monthly': np.sum}).reset_index()
@@ -102,9 +101,9 @@ def process_train_user_log(train):
 
     if 'one_week_secs_sum' in train.columns:
         train = pd.merge(train.drop(['one_week_secs_sum', 'one_week_sum'], axis=1),
-                         train_one_week[['msno', 'one_week_secs_sum_y', 'one_week_sum']], on=['msno'], how='left')
+                         train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
         train = pd.merge(train.drop(['two_week_secs_sum', 'two_week_sum'], axis=1),
-                         train_two_week[['msno', 'two_week_secs_sum_y', 'two_week_sum']], on=['msno'], how='left')
+                         train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
     else:
         train = pd.merge(train, train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
         train = pd.merge(train, train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
@@ -170,11 +169,11 @@ def process_train_user_log(train):
 
     if 'one_semimonth_secs_sum' in train.columns:
         train = pd.merge(train.drop(['one_semimonth_secs_sum', 'one_semimonth_sum'], axis=1),
-                         train_one_semimonth[['msno', 'one_semimonth_secs_sum_y', 'one_semimonth_sum']],
+                         train_one_semimonth[['msno', 'one_semimonth_secs_sum', 'one_semimonth_sum']],
                          on=['msno'],
                          how='left')
         train = pd.merge(train.drop(['two_semimonth_secs_sum', 'two_semimonth_sum'], axis=1),
-                         train_two_semimonth[['msno', 'two_semimonth_secs_sum_y', 'two_semimonth_sum']],
+                         train_two_semimonth[['msno', 'two_semimonth_secs_sum', 'two_semimonth_sum']],
                          on=['msno'],
                          how='left')
     else:
@@ -396,7 +395,7 @@ for i in range(10):
 # test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
 train_final = process_train_user_log(train_final)
-# test_final = process_test_user_log(test_final)
+test_final = process_test_user_log(test_final)
 
 print(len(train_final))
 print(train_final.columns)
