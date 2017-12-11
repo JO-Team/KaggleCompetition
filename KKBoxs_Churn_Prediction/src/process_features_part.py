@@ -1,5 +1,6 @@
 import gc
 import time
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -60,6 +61,7 @@ def process_train_user_log(train):
     train_one_week = pd.merge(train_one_week, train_one_week_total_75_sum, on=['msno'], how='left')
     train_one_week = pd.merge(train_one_week, train_one_week_total_985_sum, on=['msno'], how='left')
     train_one_week = pd.merge(train_one_week, train_one_week_total_100_sum, on=['msno'], how='left')
+    print(train_one_week)
     train_one_week['one_week_sum'] = train_one_week['total_25_sum'] + train_one_week['total_50_sum'] + train_one_week[
         'total_75_sum'] + train['total_985_sum'] + train['total_100_sum']
 
@@ -270,6 +272,11 @@ def process_test_user_log(test):
 
 
 # Deal with first part
+def ignore_warn(*args, **kwargs):
+    pass
+
+
+warnings.warn = ignore_warn
 
 gc.enable()
 
