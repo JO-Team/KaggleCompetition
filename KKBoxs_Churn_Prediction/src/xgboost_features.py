@@ -31,7 +31,9 @@ feature_list = [
     'one_week_sum','two_week_sum','one_week_secs_sum','two_week_secs_sum','week_secs_sum_ratio','week_sum_ratio',
     'one_semimonth_sum','two_semimonth_sum','one_semimonth_secs_sum','two_semimonth_secs_sum','semimonth_secs_sum_ratio','semimonth_sum_ratio',
     #transactions
-    'discount','amt_per_day','is_discount','membership_days'
+    'discount','amt_per_day','is_discount','membership_days',
+    'transaction_date_year','transaction_date_month','transaction_date_day',
+    'membership_expire_date_year','membership_expire_date_month','membership_expire_date_day'
 ]
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
