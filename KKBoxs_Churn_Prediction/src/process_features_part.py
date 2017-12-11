@@ -1,13 +1,11 @@
 import time
 
+import gc
 import numpy as np
 import pandas as pd
 
 
-def process_train_user_log(chunk, train):
-    # Merge First
-    train = pd.merge(chunk, train, how='left', on='msno')
-
+def process_train_user_log(train):
     ###############Feature engineering####################
     # 划分近一个月的数据为数据集28天
     train = train[(train['date'] < 20170301) & (train['date'] > 20170131)]
@@ -133,10 +131,7 @@ def process_train_user_log(chunk, train):
     return train
 
 
-def process_test_user_log(chunk, test):
-    # Merge First
-    test = pd.merge(chunk, test, how='left', on='msno')
-
+def process_test_user_log(test):
     ###############Feature engineering####################
     # 对3月份test数据的处理
 
@@ -254,37 +249,9 @@ def process_test_user_log(chunk, test):
     return test
 
 
-# Read Data Apart from user_log
-transactions = pd.read_csv('../input/processed_transaction_all.csv')
-
-members_v1 = pd.read_csv('../input/members.csv')
-members_v2 = pd.read_csv('../input/members_v2.csv')
-members = members_v1.append(members_v2, ignore_index=True)
-
-train_v1 = pd.read_csv('../input/train.csv')
-train_v2 = pd.read_csv('../input/train_v2.csv')
-train = train_v1.append(train_v2, ignore_index=True)
-
-test = pd.read_csv('../input/sample_submission_v2.csv')
-
-# Merge Data
-train = pd.merge(train, transactions, how='left', on='msno')
-test = pd.merge(test, transactions, how='left', on='msno')
-
-train = pd.merge(train, members, how='left', on='msno')
-test = pd.merge(test, members, how='left', on='msno')
-
-# Drop duplicates first
-test = test.drop_duplicates('msno')
-
-gender = {'male': 1, 'female': 2}
-train['gender'] = train['gender'].map(gender)
-test['gender'] = test['gender'].map(gender)
-
-train = train.fillna(0)
-test = test.fillna(0)
-
 # Deal with first part
+
+gc.enable()
 
 size = 4e7  # 1 million
 reader = pd.read_csv('../input/user_logs.csv', chunksize=size, index_col=['msno'])
@@ -292,22 +259,23 @@ start_time = time.time()
 for i in range(10):
     user_log_chunk = next(reader)
     if (i == 0):
-        train_final = process_train_user_log(user_log_chunk, train)
-        test_final = process_test_user_log(user_log_chunk, test)
+        train_final = process_train_user_log(user_log_chunk)
+        test_final = process_test_user_log(user_log_chunk)
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     else:
-        train_final = train_final.append(process_train_user_log(user_log_chunk, train))
-        test_final = test_final.append(process_test_user_log(user_log_chunk, test))
+        train_final = train_final.append(process_train_user_log(user_log_chunk))
+        test_final = test_final.append(process_test_user_log(user_log_chunk))
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del (user_log_chunk)
 
 train_final.columns = ['_'.join(col).strip() for col in train_final.columns.values]
 test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
-train_final = process_train_user_log(train_final, train)
-test_final = process_test_user_log(test_final, test)
+train_final = process_train_user_log(train_final)
+test_final = process_test_user_log(test_final)
 
 print(len(train_final))
+print(len(test_final))
 train_final.columns = train_final.columns.get_level_values(0)
 test_final.columns = test_final.columns.get_level_values(0)
 
@@ -323,22 +291,23 @@ start_time = time.time()
 for i in range(18):
     user_log_chunk = next(reader)
     if (i == 0):
-        train_final = process_train_user_log(user_log_chunk, train)
-        test_final = process_test_user_log(user_log_chunk, test)
+        train_final = process_train_user_log(user_log_chunk)
+        test_final = process_test_user_log(user_log_chunk)
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     else:
-        train_final = train_final.append(process_train_user_log(user_log_chunk, train))
-        test_final = test_final.append(process_test_user_log(user_log_chunk, test))
+        train_final = train_final.append(process_train_user_log(user_log_chunk))
+        test_final = test_final.append(process_test_user_log(user_log_chunk))
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
-    del (user_log_chunk)
+    del user_log_chunk
 
 train_final.columns = ['_'.join(col).strip() for col in train_final.columns.values]
 test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
-train_final = process_train_user_log(train_final, train)
-test_final = process_test_user_log(test_final, test)
+train_final = process_train_user_log(train_final)
+test_final = process_test_user_log(test_final)
 
 print(len(train_final))
+print(len(test_final))
 train_final.columns = train_final.columns.get_level_values(0)
 test_final.columns = test_final.columns.get_level_values(0)
 
@@ -355,7 +324,7 @@ train_final = train_final_v1.append(train_final_v2, ignore_index=True)
 del train_final_v1
 del train_final_v2
 
-train_final = process_train_user_log(train_final, train)
+train_final = process_train_user_log(train_final)
 train_final.columns = train_final.columns.get_level_values(0)
 train_final.to_csv("../input/processed_features_train_final.csv")
 
@@ -368,7 +337,7 @@ test_final = test_final_v1.append(test_final_v2, ignore_index=True)
 del test_final_v1
 del test_final_v2
 
-test_final = process_test_user_log(test_final, test)
+test_final = process_test_user_log(test_final)
 test_final.columns = test_final.columns.get_level_values(0)
 test_final.to_csv("../input/processed_features_test_final.csv")
 
