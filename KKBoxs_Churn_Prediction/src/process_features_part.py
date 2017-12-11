@@ -73,6 +73,7 @@ def process_train_user_log(train):
     train_one_week_total_100_sum = train_one_week.groupby(['msno']).num_100.agg({'total_100_sum': np.sum}).reset_index()
     train_one_week_total_secs_sum = train_one_week.groupby(['msno']).total_secs.agg(
         {'one_week_secs_sum': np.sum}).reset_index()
+
     train_one_week = pd.merge(train_one_week, train_one_week_total_25_sum, on=['msno'], how='left')
     train_one_week = pd.merge(train_one_week, train_one_week_total_50_sum, on=['msno'], how='left')
     train_one_week = pd.merge(train_one_week, train_one_week_total_75_sum, on=['msno'], how='left')
@@ -89,6 +90,7 @@ def process_train_user_log(train):
     train_two_week_total_100_sum = train_two_week.groupby(['msno']).num_100.agg({'total_100_sum': np.sum}).reset_index()
     train_two_week_total_secs_sum = train_two_week.groupby(['msno']).total_secs.agg(
         {'two_week_secs_sum': np.sum}).reset_index()
+
     train_two_week = pd.merge(train_two_week, train_two_week_total_25_sum, on=['msno'], how='left')
     train_two_week = pd.merge(train_two_week, train_two_week_total_50_sum, on=['msno'], how='left')
     train_two_week = pd.merge(train_two_week, train_two_week_total_75_sum, on=['msno'], how='left')
@@ -99,10 +101,8 @@ def process_train_user_log(train):
         'total_75_sum'] + train_two_week['total_985_sum'] + train_two_week['total_100_sum']
 
     if 'one_week_secs_sum' in train.columns:
-        print(train_one_week.columns)
-        print(train.columns)
-        train = pd.merge(train.drop(['one_week_secs_sum', 'one_week_sum'], axis=1),
-                         train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
+        train = pd.merge(train.drop(['one_week_secs_sum_y', 'one_week_sum'], axis=1),
+                         train_one_week[['msno', 'one_week_secs_sum_y', 'one_week_sum']], on=['msno'], how='left')
         train = pd.merge(train.drop(['two_week_secs_sum', 'two_week_sum'], axis=1),
                          train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
     else:
@@ -430,7 +430,7 @@ for i in range(18):
 # test_final.columns = ['_'.join(col).strip() for col in test_final.columns.values]
 
 train_final = process_train_user_log(train_final)
-test_final = process_test_user_log(test_final)
+# test_final = process_test_user_log(test_final)
 
 print(len(train_final))
 print(len(test_final))
@@ -438,7 +438,7 @@ train_final.columns = train_final.columns.get_level_values(0)
 test_final.columns = test_final.columns.get_level_values(0)
 
 train_final.to_csv("../input/processed_features_train_final_v2.csv")
-test_final.to_csv("../input/processed_features_test_final_v2.csv")
+# test_final.to_csv("../input/processed_features_test_final_v2.csv")
 
 del train_final
 del test_final
