@@ -388,8 +388,8 @@ warnings.warn = ignore_warn
 
 gc.enable()
 
-size = 4e5  # 1 million
-reader = pd.read_csv('../input/user_logs.csv', chunksize=size, nrows=4e6)
+size = 4e7  # 1 million
+reader = pd.read_csv('../input/user_logs.csv', chunksize=size)
 start_time = time.time()
 for i in range(10):
     user_log_chunk = next(reader)
