@@ -81,6 +81,9 @@ def process_train_user_log(train):
     train_one_week = pd.merge(train_one_week, train_one_week_total_secs_sum, on=['msno'], how='left')
     train_one_week['one_week_sum'] = train_one_week['total_25_sum'] + train_one_week['total_50_sum'] + train_one_week[
         'total_75_sum'] + train_one_week['total_985_sum'] + train_one_week['total_100_sum']
+    if 'one_week_secs_sum_y' in train_one_week.columns:
+        train_one_week['one_week_secs_sum'] = train_one_week['one_week_secs_sum_y']
+        train_one_week = train_one_week.drop('one_week_secs_sum_y', axis=1)
 
     train_two_week_total_25_sum = train_two_week.groupby(['msno']).num_25.agg({'total_25_sum': np.sum}).reset_index()
     train_two_week_total_50_sum = train_two_week.groupby(['msno']).num_50.agg({'total_50_sum': np.sum}).reset_index()
@@ -98,6 +101,9 @@ def process_train_user_log(train):
     train_two_week = pd.merge(train_two_week, train_two_week_total_secs_sum, on=['msno'], how='left')
     train_two_week['two_week_sum'] = train_two_week['total_25_sum'] + train_two_week['total_50_sum'] + train_two_week[
         'total_75_sum'] + train_two_week['total_985_sum'] + train_two_week['total_100_sum']
+    if 'two_week_secs_sum_y' in train_two_week.columns:
+        train_two_week['two_week_secs_sum'] = train_two_week['two_week_secs_sum_y']
+        train_two_week = train_one_week.drop('two_week_secs_sum_y', axis=1)
 
     if 'one_week_secs_sum' in train.columns:
         train = pd.merge(train.drop(['one_week_secs_sum', 'one_week_sum'], axis=1),
