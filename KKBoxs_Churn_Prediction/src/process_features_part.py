@@ -143,7 +143,7 @@ def process_train_user_log(train, istest):
 
         train = pd.merge(train, train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
 
-        del train_one_week
+        del train_two_week
         gc.collect()
 
     # 第四周听歌时间与第三周比较
