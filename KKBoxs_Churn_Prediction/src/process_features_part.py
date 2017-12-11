@@ -103,7 +103,7 @@ def process_train_user_log(train):
         'total_75_sum'] + train_two_week['total_985_sum'] + train_two_week['total_100_sum']
     if 'two_week_secs_sum_y' in train_two_week.columns:
         train_two_week['two_week_secs_sum'] = train_two_week['two_week_secs_sum_y']
-        train_two_week = train_one_week.drop('two_week_secs_sum_y', axis=1)
+        train_two_week = train_two_week.drop('two_week_secs_sum_y', axis=1)
 
     if 'one_week_secs_sum' in train.columns:
         train = pd.merge(train.drop(['one_week_secs_sum', 'one_week_sum'], axis=1),
