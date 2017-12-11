@@ -9,7 +9,6 @@ import pandas as pd
 def process_train_user_log(train, istest):
     ###############Feature engineering####################
     # 划分近一个月的数据为数据集28天
-    print('0')
     if istest == 0:
         train = train[(train['date'] < 20170301) & (train['date'] > 20170131)]
     else:
@@ -27,7 +26,6 @@ def process_train_user_log(train, istest):
     gc.collect()
 
     # 一个月的听歌汇总
-    print('1')
     train_total_25_sum = train.groupby(['msno']).num_25.agg({'total_25_sum_monthly': np.sum}).reset_index()
     train_total_50_sum = train.groupby(['msno']).num_50.agg({'total_50_sum_monthly': np.sum}).reset_index()
     train_total_75_sum = train.groupby(['msno']).num_75.agg({'total_75_sum_monthly': np.sum}).reset_index()
@@ -56,7 +54,6 @@ def process_train_user_log(train, istest):
     del train_total_25_sum, train_total_50_sum, train_total_75_sum, train_total_985_sum, train_total_100_sum, train_total_unq_sum, train_total_secs_sum
     gc.collect()
 
-    print('2')
     train['total_sum_monthly'] = train['total_25_sum_monthly'] + train['total_50_sum_monthly'] + train[
         'total_75_sum_monthly'] + train[
                                      'total_985_sum_monthly'] + \
@@ -74,7 +71,6 @@ def process_train_user_log(train, istest):
     train['daily_listentime'] = train['total_secs_sum_monthly'] / train['log_day']
 
     # train数据两个礼拜的变化
-    print('3')
     if istest == 0:
         train_one_week = train[(train['date'] < 20170220) & (train['date'] > 20170212)]
         train_two_week = train[(train['date'] < 20170227) & (train['date'] > 20170219)]
@@ -105,7 +101,6 @@ def process_train_user_log(train, istest):
     del train_one_week_total_25_sum, train_one_week_total_50_sum, train_one_week_total_75_sum, train_one_week_total_985_sum, train_one_week_total_100_sum, train_one_week_total_secs_sum
     gc.collect()
 
-    print('4')
     train_two_week_total_25_sum = train_two_week.groupby(['msno']).num_25.agg({'total_25_sum': np.sum}).reset_index()
     train_two_week_total_50_sum = train_two_week.groupby(['msno']).num_50.agg({'total_50_sum': np.sum}).reset_index()
     train_two_week_total_75_sum = train_two_week.groupby(['msno']).num_75.agg({'total_75_sum': np.sum}).reset_index()
@@ -133,11 +128,23 @@ def process_train_user_log(train, istest):
     if 'one_week_secs_sum' in train.columns:
         train = pd.merge(train.drop(['one_week_secs_sum', 'one_week_sum'], axis=1),
                          train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
+        del train_one_week
+        gc.collect()
+
         train = pd.merge(train.drop(['two_week_secs_sum', 'two_week_sum'], axis=1),
                          train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
+        del train_two_week
+        gc.collect()
     else:
         train = pd.merge(train, train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
+
+        del train_one_week
+        gc.collect()
+
         train = pd.merge(train, train_two_week[['msno', 'two_week_secs_sum', 'two_week_sum']], on=['msno'], how='left')
+
+        del train_one_week
+        gc.collect()
 
     # 第四周听歌时间与第三周比较
     train['week_secs_sum_ratio'] = train['two_week_secs_sum'] / train['one_week_secs_sum']
@@ -234,7 +241,6 @@ def process_train_user_log(train, istest):
     del train_two_semimonth_total_25_sum, train_two_semimonth_total_50_sum, train_two_semimonth_total_75_sum, train_two_semimonth_total_985_sum, train_two_semimonth_total_100_sum, train_two_semimonth_total_secs_sum
     gc.collect()
 
-    print('9')
     # 第二个半月听歌时间与第一个半月比较
     train['semimonth_secs_sum_ratio'] = train['two_semimonth_secs_sum'] / train['one_semimonth_secs_sum']
     # 第二个半月听歌数与第一个半月比较
