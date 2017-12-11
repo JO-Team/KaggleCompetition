@@ -124,7 +124,6 @@ def process_train_user_log(train, istest):
     del train_two_week_total_25_sum, train_two_week_total_50_sum, train_two_week_total_75_sum, train_two_week_total_985_sum, train_two_week_total_100_sum, train_two_week_total_secs_sum
     gc.collect()
 
-    print('6')
     if 'one_week_secs_sum' in train.columns:
         train = pd.merge(train.drop(['one_week_secs_sum', 'one_week_sum'], axis=1),
                          train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']], on=['msno'], how='left')
@@ -151,7 +150,6 @@ def process_train_user_log(train, istest):
     # 第四周听歌数与第三周比较
     train['week_sum_ratio'] = train['two_week_sum'] / train['one_week_sum']
 
-    print('7')
     # train数据两个半月的变化
     if istest == 0:
         train_one_semimonth = train[(train['date'] < 20170215) & (train['date'] > 20170131)]
@@ -189,7 +187,6 @@ def process_train_user_log(train, istest):
     del train_one_semimonth_total_25_sum, train_one_semimonth_total_50_sum, train_one_semimonth_total_75_sum, train_one_semimonth_total_985_sum, train_one_semimonth_total_100_sum, train_one_semimonth_total_secs_sum
     gc.collect()
 
-    print('8')
     train_two_semimonth_total_25_sum = train_two_semimonth.groupby(['msno']).num_25.agg(
         {'total_25_sum': np.sum}).reset_index()
     train_two_semimonth_total_50_sum = train_two_semimonth.groupby(['msno']).num_50.agg(
@@ -257,7 +254,7 @@ def ignore_warn(*args, **kwargs):
 warnings.warn = ignore_warn
 
 gc.enable()
-
+'''
 size = 4e6  # 1 million
 reader = pd.read_csv('../input/user_logs.csv', chunksize=size, nrows=4e7)
 start_time = time.time()
@@ -306,6 +303,8 @@ del test_final
 gc.collect()
 
 print('Done')
+
+'''
 
 '''
 train_size = len(train_final) / 10  # 1 million
@@ -366,7 +365,7 @@ del train_final_v2
 
 train_final = process_train_user_log(train_final)
 train_final.columns = train_final.columns.get_level_values(0)
-train_final.to_csv("../input/processed_features_train_final.csv")
+train_final.to_csv("../input/processed_features_train_v2_final.csv")
 
 del train_final
 
