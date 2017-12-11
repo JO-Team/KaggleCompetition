@@ -273,10 +273,10 @@ warnings.warn = ignore_warn
 
 gc.enable()
 
-size = 1e6
+size = 1e5
 reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size)
 start_time = time.time()
-for i in range(18):
+for i in range(180):
     user_log_chunk = next(reader)
     if i == 0:
         train_final = process_train_user_log(user_log_chunk, 0)
