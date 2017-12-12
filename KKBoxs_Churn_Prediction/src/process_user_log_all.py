@@ -20,23 +20,21 @@ def process_user_log(df):
             'num_25': ['sum'], 'num_50': ['sum'],
             'num_75': ['sum'], 'num_985': ['sum'],
             'num_100': ['sum'], 'num_unq': ['sum'], 'total_secs': ['sum']}
-    one_moneth = grouped_object.agg(func).reset_index()
-    one_moneth.columns = ['_'.join(col).strip() for col in one_moneth.columns.values]
-    one_moneth.rename(columns={'msno_': 'msno',
-                               'date_count': 'log_day_monthly',
-                               'num_25_sum': 'total_25_sum_monthly',
-                               'num_50_sum': 'total_50_sum_monthly',
-                               'num_75_sum': 'total_75_sum_monthly',
-                               'num_985_sum': 'total_985_sum_monthly',
-                               'num_100_sum': 'total_100_sum_monthly',
-                               'num_unq_sum': 'total_unq_sum_monthly',
-                               'total_secs_sum': 'total_secs_sum_monthly'}, inplace=True)
-    # print(one_moneth.columns)
+    one_month = grouped_object.agg(func).reset_index()
+    one_month.columns = ['_'.join(col).strip() for col in one_month.columns.values]
+    one_month.rename(columns={'msno_': 'msno',
+                              'date_count': 'log_day_monthly',
+                              'num_25_sum': 'total_25_sum_monthly',
+                              'num_50_sum': 'total_50_sum_monthly',
+                              'num_75_sum': 'total_75_sum_monthly',
+                              'num_985_sum': 'total_985_sum_monthly',
+                              'num_100_sum': 'total_100_sum_monthly',
+                              'num_unq_sum': 'total_unq_sum_monthly',
+                              'total_secs_sum': 'total_secs_sum_monthly'}, inplace=True)
 
     # Stage 2: Week Total Data
     # Divided DataFrame by Two Week
     one_week = df[(df['date'] < 20170220) & (df['date'] > 20170212)]
-    two_week = df[(df['date'] < 20170227) & (df['date'] > 20170219)]
 
     grouped_object = one_week.groupby('msno', sort=False)
     one_week = grouped_object.agg(func).reset_index()
@@ -51,7 +49,12 @@ def process_user_log(df):
                              'num_unq_sum': 'one_week_total_unq_sum',
                              'total_secs_sum': 'one_week_total_secs_sum'}, inplace=True)
 
-    one_moneth = pd.merge(one_moneth, one_week, on=['msno'], how='left')
+    one_month = pd.merge(one_month, one_week, on=['msno'], how='left')
+
+    del one_week
+    gc.collect()
+
+    two_week = df[(df['date'] < 20170227) & (df['date'] > 20170219)]
 
     grouped_object = two_week.groupby('msno', sort=False)
     two_week = grouped_object.agg(func).reset_index()
@@ -66,11 +69,13 @@ def process_user_log(df):
                              'num_unq_sum': 'two_week_total_unq_sum',
                              'total_secs_sum': 'two_week_total_secs_sum'}, inplace=True)
 
-    one_moneth = pd.merge(one_moneth, two_week, on=['msno'], how='left')
+    one_month = pd.merge(one_month, two_week, on=['msno'], how='left')
 
-    # Stage 1: Semimonth Total Data
+    del two_week
+    gc.collect()
+
+    # Stage 3: Semimonth Total Data
     one_semimonth = df[(df['date'] < 20170215) & (df['date'] > 20170131)]
-    two_semimonth = df[(df['date'] < 20170301) & (df['date'] > 20170214)]
 
     grouped_object = one_semimonth.groupby('msno', sort=False)
     one_semimonth = grouped_object.agg(func).reset_index()
@@ -85,7 +90,12 @@ def process_user_log(df):
                                   'num_unq_sum': 'one_semimonth_total_unq_sum',
                                   'total_secs_sum': 'one_semimonth_total_secs_sum'}, inplace=True)
 
-    one_moneth = pd.merge(one_moneth, one_semimonth, on=['msno'], how='left')
+    one_month = pd.merge(one_month, one_semimonth, on=['msno'], how='left')
+
+    del one_semimonth
+    gc.collect()
+
+    two_semimonth = df[(df['date'] < 20170301) & (df['date'] > 20170214)]
 
     grouped_object = two_semimonth.groupby('msno', sort=False)
     two_semimonth = grouped_object.agg(func).reset_index()
@@ -100,9 +110,12 @@ def process_user_log(df):
                                   'num_unq_sum': 'two_semimonth_total_unq_sum',
                                   'total_secs_sum': 'two_semimonth_total_secs_sum'}, inplace=True)
 
-    one_moneth = pd.merge(one_moneth, two_semimonth, on=['msno'], how='left')
+    one_month = pd.merge(one_month, two_semimonth, on=['msno'], how='left')
 
-    return one_moneth
+    del two_semimonth
+    gc.collect()
+
+    return one_month
 
 
 def process_user_log_together(df):
