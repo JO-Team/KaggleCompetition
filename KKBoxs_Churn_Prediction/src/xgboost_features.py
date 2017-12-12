@@ -12,8 +12,40 @@ def xgb_score(preds, dtrain):
 
 gc.enable()
 
-train = pd.read_csv('../input/train_final.csv')
-test = pd.read_csv('../input/test_final.csv')
+transactions = pd.read_csv('../input/processed_transaction_all.csv')
+
+members_v1 = pd.read_csv('../input/members.csv')
+members_v2 = pd.read_csv('../input/members_v2.csv')
+members = members_v1.append(members_v2, ignore_index=True)
+
+user_log = pd.read_csv('../input/processed_features_log_final_v2.csv')
+
+train_v1 = pd.read_csv('../input/train.csv')
+train_v2 = pd.read_csv('../input/train_v2.csv')
+train = train_v1.append(train_v2, ignore_index=True)
+
+test = pd.read_csv('../input/sample_submission_v2.csv')
+
+# Merge Data
+
+train = pd.merge(train, transactions, how='left', on='msno')
+test = pd.merge(test, transactions, how='left', on='msno')
+
+train = pd.merge(train, user_log, how='left', on='msno')
+test = pd.merge(test, user_log, how='left', on='msno')
+
+train = pd.merge(train, members, how='left', on='msno')
+test = pd.merge(test, members, how='left', on='msno')
+
+# Drop duplicates first
+test = test.drop_duplicates('msno')
+
+gender = {'male': 1, 'female': 2}
+train['gender'] = train['gender'].map(gender)
+test['gender'] = test['gender'].map(gender)
+
+train = train.fillna(0)
+test = test.fillna(0)
 
 # Delete date for now
 train = train.drop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
@@ -69,4 +101,4 @@ pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 print(len(test))
-test[['msno', 'is_churn']].to_csv('submission_xgboost_features_eta_0.002_round_2500_Dec_9.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_features_eta_0.002_round_2500_Dec_11.csv', index=False)
