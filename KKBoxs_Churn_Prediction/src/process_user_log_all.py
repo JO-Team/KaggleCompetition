@@ -23,7 +23,8 @@ def process_user_log(df):
             'num_75': ['sum'], 'num_985': ['sum'],
             'num_100': ['sum'], 'num_unq': ['sum'], 'total_secs': ['sum']}
     one_moneth = grouped_object.agg(func).reset_index()
-    print(one_moneth.columns)
+    train_final.columns = train_final.columns.get_level_values(0)
+    print(one_moneth.head(5))
 
     # Stage 2: Week Total Data
     # Divided DataFrame by Two Week
@@ -32,11 +33,11 @@ def process_user_log(df):
 
     grouped_object = one_week.groupby('msno', sort=False)
     one_week = grouped_object.agg(func).reset_index()
-    print(one_week.columns)
+    # print(one_week.columns)
 
     grouped_object = two_week.groupby('msno', sort=False)
     two_week = grouped_object.agg(func).reset_index()
-    print(two_week.columns)
+    # print(two_week.columns)
 
     # Stage 1: Semimonth Total Data
     one_semimonth = df[(df['date'] < 20170215) & (df['date'] > 20170131)]
@@ -44,11 +45,11 @@ def process_user_log(df):
 
     grouped_object = one_semimonth.groupby('msno', sort=False)
     one_semimonth = grouped_object.agg(func).reset_index()
-    print(one_semimonth.columns)
+    # print(one_semimonth.columns)
 
     grouped_object = two_semimonth.groupby('msno', sort=False)
     two_semimonth = grouped_object.agg(func).reset_index()
-    print(two_semimonth.columns)
+    # print(two_semimonth.columns)
 
     return df
 
@@ -62,7 +63,7 @@ gc.enable()
 size = 1000
 reader = pd.read_csv('../input/user_log_feb.csv', chunksize=size, nrows=10000)
 start_time = time.time()
-for i in range(17):
+for i in range(16):
     user_log_chunk = next(reader)
     if i == 0:
         train_final = process_user_log(user_log_chunk)
