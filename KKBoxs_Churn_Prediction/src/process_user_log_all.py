@@ -23,7 +23,8 @@ def process_user_log(df):
             'num_75': ['sum'], 'num_985': ['sum'],
             'num_100': ['sum'], 'num_unq': ['sum'], 'total_secs': ['sum']}
     one_moneth = grouped_object.agg(func).reset_index()
-    # train_final.columns = train_final.columns.get_level_values(0)
+    one_moneth.columns = ['_'.join(col).strip() for col in one_moneth.columns.values]
+    print(one_moneth.columns)
     print(one_moneth.head(5))
 
     # Stage 2: Week Total Data
@@ -63,7 +64,7 @@ gc.enable()
 size = 1000
 reader = pd.read_csv('../input/user_log_feb.csv', chunksize=size, nrows=10000)
 start_time = time.time()
-for i in range(16):
+for i in range(10): # 17
     user_log_chunk = next(reader)
     if i == 0:
         train_final = process_user_log(user_log_chunk)
