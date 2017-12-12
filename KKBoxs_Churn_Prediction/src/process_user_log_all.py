@@ -1,8 +1,6 @@
 import gc
 import time
-import warnings
 
-import numpy as np
 import pandas as pd
 
 
@@ -18,15 +16,13 @@ def process_user_log(df):
 
     # Stage 1: One Month Total Data
     grouped_object = df.groupby('msno', sort=False)  # not sorting results in a minor speedup
-    func = {'date': ['min', 'max', 'count'],
+    func = {'date': ['count'],
             'num_25': ['sum'], 'num_50': ['sum'],
             'num_75': ['sum'], 'num_985': ['sum'],
             'num_100': ['sum'], 'num_unq': ['sum'], 'total_secs': ['sum']}
     one_moneth = grouped_object.agg(func).reset_index()
     one_moneth.columns = ['_'.join(col).strip() for col in one_moneth.columns.values]
     one_moneth.rename(columns={'msno_': 'msno',
-                               'date_min': 'data_min_monthly',
-                               'date_max': 'data_max_monthly',
                                'date_count': 'log_day_monthly',
                                'num_25_sum': 'total_25_sum_monthly',
                                'num_50_sum': 'total_50_sum_monthly',
@@ -35,8 +31,7 @@ def process_user_log(df):
                                'num_100_sum': 'total_100_sum_monthly',
                                'num_unq_sum': 'total_unq_sum_monthly',
                                'total_secs_sum': 'total_secs_sum_monthly'}, inplace=True)
-    print(one_moneth.columns)
-    print(one_moneth.head(5))
+    # print(one_moneth.columns)
 
     # Stage 2: Week Total Data
     # Divided DataFrame by Two Week
@@ -45,11 +40,31 @@ def process_user_log(df):
 
     grouped_object = one_week.groupby('msno', sort=False)
     one_week = grouped_object.agg(func).reset_index()
-    # print(one_week.columns)
+    one_week.columns = ['_'.join(col).strip() for col in one_week.columns.values]
+    one_week.rename(columns={'msno_': 'msno',
+                             'date_count': 'one_week_log_day',
+                             'num_25_sum': 'one_week_total_25_sum',
+                             'num_50_sum': 'one_week_total_50_sum',
+                             'num_75_sum': 'one_week_total_75_sum',
+                             'num_985_sum': 'one_week_total_985_sum',
+                             'num_100_sum': 'one_week_total_100_sum',
+                             'num_unq_sum': 'one_week_total_unq_sum',
+                             'total_secs_sum': 'one_week_total_secs_sum'}, inplace=True)
+    print(one_week.columns)
 
     grouped_object = two_week.groupby('msno', sort=False)
     two_week = grouped_object.agg(func).reset_index()
-    # print(two_week.columns)
+    two_week.columns = ['_'.join(col).strip() for col in two_week.columns.values]
+    two_week.rename(columns={'msno_': 'msno',
+                             'date_count': 'two_week_log_day',
+                             'num_25_sum': 'two_week_total_25_sum',
+                             'num_50_sum': 'two_week_total_50_sum',
+                             'num_75_sum': 'two_week_total_75_sum',
+                             'num_985_sum': 'two_week_total_985_sum',
+                             'num_100_sum': 'two_week_total_100_sum',
+                             'num_unq_sum': 'two_week_total_unq_sum',
+                             'total_secs_sum': 'two_week_total_secs_sum'}, inplace=True)
+    print(two_week.columns)
 
     # Stage 1: Semimonth Total Data
     one_semimonth = df[(df['date'] < 20170215) & (df['date'] > 20170131)]
@@ -57,17 +72,38 @@ def process_user_log(df):
 
     grouped_object = one_semimonth.groupby('msno', sort=False)
     one_semimonth = grouped_object.agg(func).reset_index()
-    # print(one_semimonth.columns)
+    one_semimonth.columns = ['_'.join(col).strip() for col in one_semimonth.columns.values]
+    one_semimonth.rename(columns={'msno_': 'msno',
+                                  'date_count': 'one_semimonth_log_day',
+                                  'num_25_sum': 'one_semimonth_total_25_sum',
+                                  'num_50_sum': 'one_semimonth_total_50_sum',
+                                  'num_75_sum': 'one_semimonth_total_75_sum',
+                                  'num_985_sum': 'one_semimonth_total_985_sum',
+                                  'num_100_sum': 'one_semimonth_total_100_sum',
+                                  'num_unq_sum': 'one_semimonth_total_unq_sum',
+                                  'total_secs_sum': 'one_semimonth_total_secs_sum'}, inplace=True)
+    print(one_semimonth.columns)
 
     grouped_object = two_semimonth.groupby('msno', sort=False)
     two_semimonth = grouped_object.agg(func).reset_index()
-    # print(two_semimonth.columns)
+    two_semimonth.columns = ['_'.join(col).strip() for col in two_semimonth.columns.values]
+    two_semimonth.rename(columns={'msno_': 'msno',
+                                  'date_count': 'two_semimonth_log_day',
+                                  'num_25_sum': 'two_semimonth_total_25_sum',
+                                  'num_50_sum': 'two_semimonth_total_50_sum',
+                                  'num_75_sum': 'two_semimonth_total_75_sum',
+                                  'num_985_sum': 'two_semimonth_total_985_sum',
+                                  'num_100_sum': 'two_semimonth_total_100_sum',
+                                  'num_unq_sum': 'two_semimonth_total_unq_sum',
+                                  'total_secs_sum': 'two_semimonth_total_secs_sum'}, inplace=True)
+    print(two_semimonth.columns)
 
     return df
 
 
 def process_user_log_together(df):
-    pass
+    return df
+
 
 gc.enable()
 
@@ -75,7 +111,7 @@ gc.enable()
 size = 1000
 reader = pd.read_csv('../input/user_log_feb.csv', chunksize=size, nrows=10000)
 start_time = time.time()
-for i in range(10): # 17
+for i in range(10):  # 17
     user_log_chunk = next(reader)
     if i == 0:
         train_final = process_user_log(user_log_chunk)
@@ -91,7 +127,7 @@ print(train_final.columns)
 train_final = process_user_log_together(train_final)
 # train_final.columns = train_final.columns.get_level_values(0)
 
-print(train_final.head(10))
+# print(train_final.head(10))
 
 # train_final.to_csv("../input/processed_user_log_feb.csv", index=False)
 
