@@ -23,7 +23,7 @@ def process_user_log(df):
             'num_75': ['sum'], 'num_985': ['sum'],
             'num_100': ['sum'], 'num_unq': ['sum'], 'total_secs': ['sum']}
     one_moneth = grouped_object.agg(func).reset_index()
-    train_final.columns = train_final.columns.get_level_values(0)
+    # train_final.columns = train_final.columns.get_level_values(0)
     print(one_moneth.head(5))
 
     # Stage 2: Week Total Data
