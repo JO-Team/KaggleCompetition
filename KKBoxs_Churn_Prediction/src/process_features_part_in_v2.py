@@ -66,7 +66,7 @@ def process_train_user_log(train, istest):
     train['daily_play'] = train['total_sum_monthly'] / train['log_day']
     # 平均每天听歌时间
     train['daily_listentime'] = train['total_secs_sum_monthly'] / train['log_day']
-
+    '''
     # train数据两个礼拜的变化
     train_one_week = train[(train['date'] < 20170320) & (train['date'] > 20170312)]
     train_two_week = train[(train['date'] < 20170331) & (train['date'] > 20170319)]
@@ -118,6 +118,7 @@ def process_train_user_log(train, istest):
         train_two_week['two_week_secs_sum'] = train_two_week['two_week_secs_sum_y']
         train_two_week = train_two_week.drop('two_week_secs_sum_y', axis=1)
 
+
     if 'one_week_secs_sum' in train.columns:
         train_one_week = train_one_week[['msno', 'one_week_secs_sum', 'one_week_sum']]
         train = train.drop(['one_week_secs_sum', 'one_week_sum', 'two_week_secs_sum', 'two_week_sum'], axis=1)
@@ -144,6 +145,7 @@ def process_train_user_log(train, istest):
 
         del train_two_week
         gc.collect()
+
 
     # 第四周听歌时间与第三周比较
     train['week_secs_sum_ratio'] = train['two_week_secs_sum'] / train['one_week_secs_sum']
@@ -260,7 +262,7 @@ def process_train_user_log(train, istest):
     train['semimonth_secs_sum_ratio'] = train['two_semimonth_secs_sum'] / train['one_semimonth_secs_sum']
     # 第二个半月听歌数与第一个半月比较
     train['semimonth_sum_ratio'] = train['two_semimonth_sum'] / train['one_semimonth_sum']
-
+    '''
     return train
 
 
@@ -273,10 +275,10 @@ warnings.warn = ignore_warn
 
 gc.enable()
 
-size = 1e5
+size = 1e6
 reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size)
 start_time = time.time()
-for i in range(180):
+for i in range(18):
     user_log_chunk = next(reader)
     if i == 0:
         train_final = process_train_user_log(user_log_chunk, 0)
@@ -292,32 +294,9 @@ print(train_final.columns)
 train_final = process_train_user_log(train_final, 0)
 train_final.columns = train_final.columns.get_level_values(0)
 
-train_final.to_csv("../input/processed_features_train_final_v2.csv", index=False)
+train_final.to_csv("../input/processed_features_log_final_v2.csv", index=False)
 
 del train_final
-gc.collect()
-
-reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size)
-start_time = time.time()
-for i in range(18):
-    user_log_chunk = next(reader)
-    if i == 0:
-        test_final = process_train_user_log(user_log_chunk, 1)
-        print("Loop ", i, "took %s seconds" % (time.time() - start_time))
-    else:
-        test_final = test_final.append(process_train_user_log(user_log_chunk, 1))
-        print("Loop ", i, "took %s seconds" % (time.time() - start_time))
-    del user_log_chunk
-
-print(len(test_final))
-print(test_final.columns)
-
-test_final = process_train_user_log(test_final, 1)
-test_final.columns = test_final.columns.get_level_values(0)
-
-test_final.to_csv("../input/processed_features_test_final_v2.csv", index=False)
-
-del test_final
 gc.collect()
 
 print('Done')
