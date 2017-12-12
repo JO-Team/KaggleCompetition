@@ -30,9 +30,7 @@ for i in range(10):
 
 print(len(train_final))
 print(train_final.columns)
-
-train_final = extract_feb_log(train_final)
-train_final.columns = train_final.columns.get_level_values(0)
+print(train_final.head(10))
 
 train_final.to_csv("../input/user_log_feb.csv", index=False)
 
