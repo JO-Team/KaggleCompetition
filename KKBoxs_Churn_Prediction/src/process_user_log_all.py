@@ -50,7 +50,8 @@ def process_user_log(df):
                              'num_100_sum': 'one_week_total_100_sum',
                              'num_unq_sum': 'one_week_total_unq_sum',
                              'total_secs_sum': 'one_week_total_secs_sum'}, inplace=True)
-    print(one_week.columns)
+
+    one_moneth = pd.merge(one_moneth, one_week, on=['msno'], how='left')
 
     grouped_object = two_week.groupby('msno', sort=False)
     two_week = grouped_object.agg(func).reset_index()
@@ -64,7 +65,8 @@ def process_user_log(df):
                              'num_100_sum': 'two_week_total_100_sum',
                              'num_unq_sum': 'two_week_total_unq_sum',
                              'total_secs_sum': 'two_week_total_secs_sum'}, inplace=True)
-    print(two_week.columns)
+
+    one_moneth = pd.merge(one_moneth, two_week, on=['msno'], how='left')
 
     # Stage 1: Semimonth Total Data
     one_semimonth = df[(df['date'] < 20170215) & (df['date'] > 20170131)]
@@ -82,7 +84,8 @@ def process_user_log(df):
                                   'num_100_sum': 'one_semimonth_total_100_sum',
                                   'num_unq_sum': 'one_semimonth_total_unq_sum',
                                   'total_secs_sum': 'one_semimonth_total_secs_sum'}, inplace=True)
-    print(one_semimonth.columns)
+
+    one_moneth = pd.merge(one_moneth, one_semimonth, on=['msno'], how='left')
 
     grouped_object = two_semimonth.groupby('msno', sort=False)
     two_semimonth = grouped_object.agg(func).reset_index()
@@ -96,12 +99,105 @@ def process_user_log(df):
                                   'num_100_sum': 'two_semimonth_total_100_sum',
                                   'num_unq_sum': 'two_semimonth_total_unq_sum',
                                   'total_secs_sum': 'two_semimonth_total_secs_sum'}, inplace=True)
-    print(two_semimonth.columns)
 
-    return df
+    one_moneth = pd.merge(one_moneth, two_semimonth, on=['msno'], how='left')
+
+    return one_moneth
 
 
 def process_user_log_together(df):
+    """
+    After union all chunk file, do sum again.
+    :param df:
+    :return:
+    """
+
+    grouped_object = df.groupby('msno', sort=False)  # not sorting results in a minor speedup
+    func = {'log_day_monthly': ['sum'],
+            'total_25_sum_monthly': ['sum'],
+            'total_50_sum_monthly': ['sum'],
+            'total_75_sum_monthly': ['sum'],
+            'total_985_sum_monthly': ['sum'],
+            'total_100_sum_monthly': ['sum'],
+            'total_unq_sum_monthly': ['sum'],
+            'total_secs_sum_monthly': ['sum'],
+            'one_week_log_day': ['sum'],
+            'one_week_total_25_sum': ['sum'],
+            'one_week_total_50_sum': ['sum'],
+            'one_week_total_75_sum': ['sum'],
+            'one_week_total_985_sum': ['sum'],
+            'one_week_total_100_sum': ['sum'],
+            'one_week_total_unq_sum': ['sum'],
+            'one_week_total_secs_sum': ['sum'],
+            'two_week_log_day': ['sum'],
+            'two_week_total_25_sum': ['sum'],
+            'two_week_total_50_sum': ['sum'],
+            'two_week_total_75_sum': ['sum'],
+            'two_week_total_985_sum': ['sum'],
+            'two_week_total_100_sum': ['sum'],
+            'two_week_total_unq_sum': ['sum'],
+            'two_week_total_secs_sum': ['sum'],
+            'one_semimonth_log_day': ['sum'],
+            'one_semimonth_total_25_sum': ['sum'],
+            'one_semimonth_total_50_sum': ['sum'],
+            'one_semimonth_total_75_sum': ['sum'],
+            'one_semimonth_total_985_sum': ['sum'],
+            'one_semimonth_total_100_sum': ['sum'],
+            'one_semimonth_total_unq_sum': ['sum'],
+            'one_semimonth_total_secs_sum': ['sum'],
+            'two_semimonth_log_day': ['sum'],
+            'two_semimonth_total_25_sum': ['sum'],
+            'two_semimonth_total_50_sum': ['sum'],
+            'two_semimonth_total_75_sum': ['sum'],
+            'two_semimonth_total_985_sum': ['sum'],
+            'two_semimonth_total_100_sum': ['sum'],
+            'two_semimonth_total_unq_sum': ['sum'],
+            'two_semimonth_total_secs_sum': ['sum']
+            }
+    one_moneth = grouped_object.agg(func).reset_index()
+    one_moneth.columns = ['_'.join(col).strip() for col in one_moneth.columns.values]
+    one_moneth.rename(columns={'log_day_monthly_sum': 'log_day_monthly',
+                               'total_25_sum_monthly_sum': 'total_25_sum_monthly',
+                               'total_50_sum_monthly_sum': 'total_50_sum_monthly',
+                               'total_75_sum_monthly_sum': 'total_75_sum_monthly',
+                               'total_985_sum_monthly_sum': 'total_985_sum_monthly',
+                               'total_100_sum_monthly_sum': 'total_100_sum_monthly',
+                               'total_unq_sum_monthly_sum': 'total_unq_sum_monthly',
+                               'total_secs_sum_monthly_sum': 'total_secs_sum_monthly',
+                               'one_week_log_day_sum': 'one_week_log_day',
+                               'one_week_total_25_sum_sum': 'one_week_total_25_sum',
+                               'one_week_total_50_sum_sum': 'one_week_total_50_sum',
+                               'one_week_total_75_sum_sum': 'one_week_total_75_sum',
+                               'one_week_total_985_sum_sum': 'one_week_total_985_sum',
+                               'one_week_total_100_sum_sum': 'one_week_total_100_sum',
+                               'one_week_total_unq_sum_sum': 'one_week_total_unq_sum',
+                               'one_week_total_secs_sum_sum': 'one_week_total_secs_sum',
+                               'two_week_log_day_sum': 'two_week_log_day',
+                               'two_week_total_25_sum_sum': 'two_week_total_25_sum',
+                               'two_week_total_50_sum_sum': 'two_week_total_50_sum',
+                               'two_week_total_75_sum_sum': 'two_week_total_75_sum',
+                               'two_week_total_985_sum_sum': 'two_week_total_985_sum',
+                               'two_week_total_100_sum_sum': 'two_week_total_100_sum',
+                               'two_week_total_unq_sum_sum': 'two_week_total_unq_sum',
+                               'two_week_total_secs_sum_sum': 'two_week_total_secs_sum',
+                               'one_semimonth_log_day_sum': 'one_semimonth_log_day',
+                               'one_semimonth_total_25_sum_sum': 'one_semimonth_total_25_sum',
+                               'one_semimonth_total_50_sum_sum': 'one_semimonth_total_50_sum',
+                               'one_semimonth_total_75_sum_sum': 'one_semimonth_total_75_sum',
+                               'one_semimonth_total_985_sum_sum': 'one_semimonth_total_985_sum',
+                               'one_semimonth_total_100_sum_sum': 'one_semimonth_total_100_sum',
+                               'one_semimonth_total_unq_sum_sum': 'one_semimonth_total_unq_sum',
+                               'one_semimonth_total_secs_sum_sum': 'one_semimonth_total_secs_sum',
+                               'two_semimonth_log_day_sum': 'two_semimonth_log_day',
+                               'two_semimonth_total_25_sum_sum': 'two_semimonth_total_25_sum',
+                               'two_semimonth_total_50_sum_sum': 'two_semimonth_total_50_sum',
+                               'two_semimonth_total_75_sum_sum': 'two_semimonth_total_75_sum',
+                               'two_semimonth_total_985_sum_sum': 'two_semimonth_total_985_sum',
+                               'two_semimonth_total_100_sum_sum': 'two_semimonth_total_100_sum',
+                               'two_semimonth_total_unq_sum_sum': 'two_semimonth_total_unq_sum',
+                               'two_semimonth_total_secs_sum_sum': 'two_semimonth_total_secs_sum'
+                               }, inplace=True)
+
     return df
 
 
@@ -127,7 +223,7 @@ print(train_final.columns)
 train_final = process_user_log_together(train_final)
 # train_final.columns = train_final.columns.get_level_values(0)
 
-# print(train_final.head(10))
+print(train_final.columns)
 
 # train_final.to_csv("../input/processed_user_log_feb.csv", index=False)
 
