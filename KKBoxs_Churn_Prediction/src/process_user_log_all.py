@@ -17,12 +17,12 @@ def process_user_log(df):
     # train = train[(train['date'] < 20170301) & (train['date'] > 20170131)]
 
     # Stage 1: One Month Total Data
-    grouped_object = df.groupby('msno', sort=False).reset_index()  # not sorting results in a minor speedup
+    grouped_object = df.groupby('msno', sort=False)  # not sorting results in a minor speedup
     func = {'date': ['min', 'max', 'count'],
             'num_25': ['sum'], 'num_50': ['sum'],
             'num_75': ['sum'], 'num_985': ['sum'],
             'num_100': ['sum'], 'num_unq': ['sum'], 'total_secs': ['sum']}
-    one_moneth = grouped_object.agg(func)
+    one_moneth = grouped_object.agg(func).reset_index()
     print(one_moneth.columns)
 
     # Stage 2: Week Total Data
@@ -30,24 +30,24 @@ def process_user_log(df):
     one_week = df[(df['date'] < 20170220) & (df['date'] > 20170212)]
     two_week = df[(df['date'] < 20170227) & (df['date'] > 20170219)]
 
-    grouped_object = one_week.groupby('msno', sort=False).reset_index()
-    one_week = grouped_object.agg(func)
+    grouped_object = one_week.groupby('msno', sort=False)
+    one_week = grouped_object.agg(func).reset_index()
     print(one_week.columns)
 
-    grouped_object = two_week.groupby('msno', sort=False).reset_index()
-    two_week = grouped_object.agg(func)
+    grouped_object = two_week.groupby('msno', sort=False)
+    two_week = grouped_object.agg(func).reset_index()
     print(two_week.columns)
 
     # Stage 1: Semimonth Total Data
     one_semimonth = df[(df['date'] < 20170215) & (df['date'] > 20170131)]
     two_semimonth = df[(df['date'] < 20170301) & (df['date'] > 20170214)]
 
-    grouped_object = one_semimonth.groupby('msno', sort=False).reset_index()
-    one_semimonth = grouped_object.agg(func)
+    grouped_object = one_semimonth.groupby('msno', sort=False)
+    one_semimonth = grouped_object.agg(func).reset_index()
     print(one_semimonth.columns)
 
-    grouped_object = two_semimonth.groupby('msno', sort=False).reset_index()
-    two_semimonth = grouped_object.agg(func)
+    grouped_object = two_semimonth.groupby('msno', sort=False)
+    two_semimonth = grouped_object.agg(func).reset_index()
     print(two_semimonth.columns)
 
     return df
