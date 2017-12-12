@@ -60,7 +60,7 @@ gc.enable()
 
 # size = 1e6
 size = 1000
-reader = pd.read_csv('../input/user_logs_feb.csv', chunksize=size, nrows=10000)
+reader = pd.read_csv('../input/user_log_feb.csv', chunksize=size, nrows=10000)
 start_time = time.time()
 for i in range(17):
     user_log_chunk = next(reader)
