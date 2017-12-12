@@ -34,9 +34,11 @@ newdf_grouped = newdf.groupby('msno').agg({
     'actual_amount_paid': np.mean,
     'is_auto_renew': np.mean, 'transaction_date': min,
     'membership_expire_date': max,
-    'is_cancel': np.mean,
+    'is_cancel': np.mean})
+
+'''
     'payment_method_id2': np.mean,
-    'payment_method_id3': sum,
+    'payment_method_id3': np.sum,
     'payment_method_id4': np.sum,
     'payment_method_id5': np.sum,
     'payment_method_id6': np.sum,
@@ -64,7 +66,8 @@ newdf_grouped = newdf.groupby('msno').agg({
     'payment_method_id37': np.sum,
     'payment_method_id38': np.sum, 'payment_method_id39': np.sum,
     'payment_method_id40': np.sum,
-    'payment_method_id41': np.sum})
+    'payment_method_id41': np.sum
+'''
 
 #################################################################################################################
 
