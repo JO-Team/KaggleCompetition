@@ -71,7 +71,7 @@ newdf_grouped = newdf.groupby('msno').agg({
 
 #################################################################################################################
 
-newdf_grouped = newdf_grouped.sort_values(by=['transaction_date'], ascending=[False]).reset_index(drop=True)
+newdf_grouped = newdf_grouped.sort_values(by=['transaction_date'], ascending=[False]).reset_index()
 print(newdf_grouped.head())
 newdf_grouped = newdf_grouped.drop_duplicates(subset=['msno'], keep='first')
 
