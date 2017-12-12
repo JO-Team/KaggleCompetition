@@ -24,6 +24,17 @@ def process_user_log(df):
             'num_100': ['sum'], 'num_unq': ['sum'], 'total_secs': ['sum']}
     one_moneth = grouped_object.agg(func).reset_index()
     one_moneth.columns = ['_'.join(col).strip() for col in one_moneth.columns.values]
+    one_moneth.rename(columns={'msno_': 'msno',
+                               'date_min': 'data_min_monthly',
+                               'date_max': 'data_max_monthly',
+                               'date_count': 'log_day_monthly',
+                               'num_25_sum': 'total_25_sum_monthly',
+                               'num_50_sum': 'total_50_sum_monthly',
+                               'num_75_sum': 'total_75_sum_monthly',
+                               'num_985_sum': 'total_985_sum_monthly',
+                               'num_100_sum': 'total_100_sum_monthly',
+                               'num_unq_sum': 'total_unq_sum_monthly',
+                               'total_secs_sum': 'total_secs_sum_monthly'}, inplace=True)
     print(one_moneth.columns)
     print(one_moneth.head(5))
 
@@ -78,7 +89,7 @@ print(len(train_final))
 print(train_final.columns)
 
 train_final = process_user_log_together(train_final)
-train_final.columns = train_final.columns.get_level_values(0)
+# train_final.columns = train_final.columns.get_level_values(0)
 
 print(train_final.head(10))
 
