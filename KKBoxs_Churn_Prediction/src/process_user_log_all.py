@@ -216,11 +216,10 @@ def process_user_log_together(df):
 
 gc.enable()
 
-# size = 1e6
-size = 1000
-reader = pd.read_csv('../input/user_log_feb.csv', chunksize=size, nrows=10000)
+size = 1e6
+reader = pd.read_csv('../input/user_log_feb.csv', chunksize=size)
 start_time = time.time()
-for i in range(10):  # 17
+for i in range(17):  # 17
     user_log_chunk = next(reader)
     if i == 0:
         train_final = process_user_log(user_log_chunk)
@@ -230,14 +229,8 @@ for i in range(10):  # 17
         print("Loop ", i, "took %s seconds" % (time.time() - start_time))
     del user_log_chunk
 
-print(len(train_final))
-print(train_final.columns)
-
 train_final = process_user_log_together(train_final)
-# train_final.columns = train_final.columns.get_level_values(0)
 
-print(train_final.columns)
-
-# train_final.to_csv("../input/processed_user_log_feb.csv", index=False)
+train_final.to_csv("../input/processed_user_log_feb.csv", index=False)
 
 print('Done')
