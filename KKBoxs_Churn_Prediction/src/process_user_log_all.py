@@ -9,7 +9,7 @@ import pandas as pd
 def process_user_log(train, istest):
     pass
 
-def process_user_log_all():
+def process_user_log_all(df, istest):
     pass
 
 # Deal with first part

@@ -18,7 +18,7 @@ members_v1 = pd.read_csv('../input/members.csv')
 members_v2 = pd.read_csv('../input/members_v2.csv')
 members = members_v1.append(members_v2, ignore_index=True)
 
-user_log = pd.read_csv('../input/processed_features_log_final_v2.csv')
+user_log = pd.read_csv('../input/processed_user_log_all.csv')
 
 train_v1 = pd.read_csv('../input/train.csv')
 train_v2 = pd.read_csv('../input/train_v2.csv')
@@ -101,4 +101,4 @@ pred = model.predict(xgb.DMatrix(test[cols]), ntree_limit=model.best_ntree_limit
 
 test['is_churn'] = pred.clip(0.0000001, 0.999999)
 print(len(test))
-test[['msno', 'is_churn']].to_csv('submission_xgboost_features_eta_0.002_round_2500_Dec_11.csv', index=False)
+test[['msno', 'is_churn']].to_csv('submission_xgboost_transaction_features_eta_0.002_round_2500_Dec_11.csv', index=False)
