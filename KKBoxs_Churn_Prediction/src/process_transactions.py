@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-transactions_v1 = pd.read_csv('../input/transactions.csv')
-transactions_v2 = pd.read_csv('../input/transactions_v2.csv')
+transactions_v1 = pd.read_csv('../input/transactions.csv', nrows=100)
+transactions_v2 = pd.read_csv('../input/transactions_v2.csv', nrows=100)
 
 transactions = transactions_v1.append(transactions_v2, ignore_index=True)
 
@@ -101,4 +101,4 @@ newdf_grouped['membership_expire_date_day'] = newdf_grouped['membership_expire_d
 print(newdf_grouped.head())
 print(len(newdf_grouped))
 
-newdf_grouped.to_csv('../input/processed_transaction_all.csv')
+# newdf_grouped.to_csv('../input/processed_transaction_features.csv')

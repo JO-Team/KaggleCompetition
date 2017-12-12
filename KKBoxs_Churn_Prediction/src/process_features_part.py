@@ -283,7 +283,7 @@ def ignore_warn(*args, **kwargs):
 warnings.warn = ignore_warn
 
 gc.enable()
-'''
+
 size = 4e6  # 1 million
 reader = pd.read_csv('../input/user_logs.csv', chunksize=size, nrows=4e7)
 start_time = time.time()
@@ -332,29 +332,6 @@ del test_final
 gc.collect()
 
 print('Done')
-
-'''
-
-'''
-train_size = len(train_final) / 10  # 1 million
-test_size = len(test_final) / 10  # 1 million
-
-train_final.to_csv("../input/processed_features_train_stage_1_v1.csv", index=False)
-test_final.to_csv("../input/processed_features_test_stage_1_v1.csv", index=False)
-
-
-reader = pd.read_csv('../input/processed_features_train_stage_1_v1.csv', chunksize=train_size, nrows=4e7)
-start_time = time.time()
-for i in range(10):
-    user_log_chunk = next(reader)
-    if i == 0:
-        train_final = process_train_user_log(user_log_chunk, 0)
-        print("Loop ", i, "took %s seconds" % (time.time() - start_time))
-    else:
-        train_final = train_final.append(process_train_user_log(user_log_chunk, 0))
-        print("Loop ", i, "took %s seconds" % (time.time() - start_time))
-    del user_log_chunk
-'''
 
 size = 1e6
 reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size)
