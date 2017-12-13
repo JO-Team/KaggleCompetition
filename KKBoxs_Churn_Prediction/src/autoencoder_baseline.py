@@ -4,7 +4,7 @@ import pandas as pd
 from keras import regularizers
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.layers import Input, Dense
-from keras.models import Model, load_model
+from keras.models import Model
 from sklearn.model_selection import train_test_split
 
 gc.enable()
@@ -77,7 +77,8 @@ autoencoder = Model(inputs=input_layer, outputs=decoder)
 
 # nb_epoch = 100
 nb_epoch = 1
-batch_size = 32
+# batch_size = 32
+batch_size = 5
 
 autoencoder.compile(optimizer='adam',
                     loss='mean_squared_error',
@@ -99,10 +100,12 @@ history = autoencoder.fit(X_train, X_train,
                           verbose=1,
                           callbacks=[checkpointer, tensorboard]).history
 
-autoencoder = load_model('model.h5')
+# autoencoder = load_model('model.h5')
 
-predictions = autoencoder.predict(test.drop(['is_churn'], axis=1).values)
+predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values)
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
+
 print(len(test))
+
 # test.to_csv('submission_autoencoder_features_user_log_transactions_baseline_Dec_13.csv', index=False)
