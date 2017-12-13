@@ -125,6 +125,8 @@ def process_user_log_together(df):
     :return:
     """
 
+    df.fillna(0)
+
     grouped_object = df.groupby('msno', sort=False)  # not sorting results in a minor speedup
     func = {'log_day_monthly': ['sum'],
             'total_25_sum_monthly': ['sum'],
