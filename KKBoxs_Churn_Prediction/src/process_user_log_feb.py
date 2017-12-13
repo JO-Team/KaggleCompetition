@@ -234,6 +234,6 @@ for i in range(17):  # 17
 
 user_log_feb = process_user_log_together(user_log_feb)
 
-user_log_feb.to_csv("../input/processed_user_log_feb_mini_batch.csv", index=False)
+user_log_feb.to_csv("../input/processed_user_log_feb.csv", index=False)
 
 print('Done')
