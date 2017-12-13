@@ -46,7 +46,7 @@ train['semimonth_secs_sum_ratio'] = train['two_semimonth_total_secs_sum'] / trai
 # 第二个半月听歌数与第一个半月比较
 train['semimonth_sum_ratio'] = train['two_semimonth_sum'] / train['one_semimonth_sum']
 
-train = train.replace(np.inf, 0, inplace=True)
+train.replace(np.inf, 0, inplace=True)
 
 print(train.columns)
 print(train.head(5))
