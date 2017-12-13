@@ -34,7 +34,7 @@ def process_user_log(df):
 
     # Stage 2: Week Total Data
     # Divided DataFrame by Two Week
-    one_week = df[(df['date'] < 20170220) & (df['date'] > 20170212)]
+    one_week = df[(df['date'] < 20170320) & (df['date'] > 20170312)]
 
     grouped_object = one_week.groupby('msno', sort=False)
     one_week = grouped_object.agg(func).reset_index()
@@ -54,7 +54,7 @@ def process_user_log(df):
     del one_week
     gc.collect()
 
-    two_week = df[(df['date'] < 20170227) & (df['date'] > 20170219)]
+    two_week = df[(df['date'] < 20170327) & (df['date'] > 20170319)]
 
     grouped_object = two_week.groupby('msno', sort=False)
     two_week = grouped_object.agg(func).reset_index()
@@ -75,7 +75,7 @@ def process_user_log(df):
     gc.collect()
 
     # Stage 3: Semimonth Total Data
-    one_semimonth = df[(df['date'] < 20170215) & (df['date'] > 20170131)]
+    one_semimonth = df[(df['date'] < 20170315) & (df['date'] > 20170228)]
 
     grouped_object = one_semimonth.groupby('msno', sort=False)
     one_semimonth = grouped_object.agg(func).reset_index()
@@ -95,7 +95,7 @@ def process_user_log(df):
     del one_semimonth
     gc.collect()
 
-    two_semimonth = df[(df['date'] < 20170301) & (df['date'] > 20170214)]
+    two_semimonth = df[(df['date'] < 20170329) & (df['date'] > 20170314)]
 
     grouped_object = two_semimonth.groupby('msno', sort=False)
     two_semimonth = grouped_object.agg(func).reset_index()
@@ -217,9 +217,9 @@ def process_user_log_together(df):
 gc.enable()
 
 size = 1e6
-reader = pd.read_csv('../input/user_log_feb.csv', chunksize=size)
+reader = pd.read_csv('../input/user_log_v2.csv', chunksize=size)
 start_time = time.time()
-for i in range(17):  # 17
+for i in range(18):  # 17
     user_log_chunk = next(reader)
     if i == 0:
         user_log_feb = process_user_log(user_log_chunk)
@@ -231,6 +231,6 @@ for i in range(17):  # 17
 
 user_log_feb = process_user_log_together(user_log_feb)
 
-user_log_feb.to_csv("../input/processed_user_log_feb.csv", index=False)
+user_log_feb.to_csv("../input/processed_user_log_mar.csv", index=False)
 
 print('Done')
