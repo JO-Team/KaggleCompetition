@@ -171,7 +171,8 @@ def process_user_log_together(df):
             }
     user_log_all = grouped_object.agg(func).reset_index()
     user_log_all.columns = ['_'.join(col).strip() for col in user_log_all.columns.values]
-    user_log_all.rename(columns={'log_day_monthly_sum': 'log_day_monthly',
+    user_log_all.rename(columns={'msno_': 'msno',
+                                 'log_day_monthly_sum': 'log_day_monthly',
                                  'total_25_sum_monthly_sum': 'total_25_sum_monthly',
                                  'total_50_sum_monthly_sum': 'total_50_sum_monthly',
                                  'total_75_sum_monthly_sum': 'total_75_sum_monthly',

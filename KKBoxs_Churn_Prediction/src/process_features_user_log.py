@@ -72,4 +72,4 @@ test = pd.read_csv('../input/processed_user_log_mar.csv')
 
 test = calculate_user_log_features(test)
 
-test.to_csv('../input/processed_features_user_log_feb.csv', index=False)
+test.to_csv('../input/processed_features_user_log_mar.csv', index=False)
