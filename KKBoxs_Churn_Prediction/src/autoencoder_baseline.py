@@ -53,11 +53,10 @@ test = test.drop(['transaction_date', 'membership_expire_date', 'expiration_date
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
 X_train, X_test = train_test_split(train, test_size=0.2, random_state=47)
-X_train = X_train[X_train['is_churn'] == 0]
-X_train = X_train.drop(['is_churn'], axis=1)
+X_train = X_train.drop(['msno', 'is_churn'], axis=1)
 
 y_test = X_test['is_churn']
-X_test = X_test.drop(['is_churn'], axis=1)
+X_test = X_test.drop(['msno', 'is_churn'], axis=1)
 
 X_train = X_train.values
 X_test = X_test.values
@@ -105,4 +104,5 @@ autoencoder = load_model('model.h5')
 predictions = autoencoder.predict(test.drop(['is_churn'], axis=1).values)
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
+print(len(test))
 # test.to_csv('submission_autoencoder_features_user_log_transactions_baseline_Dec_13.csv', index=False)
