@@ -1,6 +1,6 @@
 import pandas as pd
 
-train = pd.read_csv('../input/processed_user_log_feb.csv')
+train = pd.read_csv('../input/processed_user_log_feb_mini_batch.csv')
 
 train['total_monthly_sum'] = train['total_25_sum_monthly'] + train['total_50_sum_monthly'] + train[
     'total_75_sum_monthly'] + train['total_985_sum_monthly'] + train['total_100_sum_monthly']
