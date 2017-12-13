@@ -219,7 +219,7 @@ def process_user_log_together(df):
 gc.enable()
 
 size = 1e6
-reader = pd.read_csv('../input/user_log_v2.csv', chunksize=size)
+reader = pd.read_csv('../input/user_logs_v2.csv', chunksize=size)
 start_time = time.time()
 for i in range(18):  # 17
     user_log_chunk = next(reader)
