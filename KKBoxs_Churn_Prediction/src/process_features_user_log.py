@@ -47,6 +47,7 @@ train['semimonth_secs_sum_ratio'] = train['two_semimonth_total_secs_sum'] / trai
 train['semimonth_sum_ratio'] = train['two_semimonth_sum'] / train['one_semimonth_sum']
 
 train.replace(np.inf, 0, inplace=True)
+train = train.fillna(0)
 
 print(train.columns)
 print(train.head(5))
