@@ -75,10 +75,8 @@ decoder = Dense(input_dim, activation='relu')(decoder)
 
 autoencoder = Model(inputs=input_layer, outputs=decoder)
 
-# nb_epoch = 100
-nb_epoch = 1
-# batch_size = 32
-batch_size = 5
+nb_epoch = 100
+batch_size = 32
 
 autoencoder.compile(optimizer='adam',
                     loss='mean_squared_error',
@@ -106,6 +104,4 @@ predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
 
-print(len(test))
-
-# test.to_csv('submission_autoencoder_features_user_log_transactions_baseline_Dec_13.csv', index=False)
+test.to_csv('submission_autoencoder_features_user_log_transactions_baseline_Dec_13.csv', index=False)
