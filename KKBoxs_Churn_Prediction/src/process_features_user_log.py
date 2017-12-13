@@ -36,9 +36,9 @@ train['one_semimonth_sum'] = train['one_semimonth_total_25_sum'] + train['one_se
                              + train['one_semimonth_total_75_sum'] + train[
                                  'one_semimonth_total_985_sum'] + train['one_semimonth_total_100_sum']
 
-train['two_semimonth_sum'] = train['tw_semimonth_total_25_sum'] + train['tw_semimonth_total_50_sum'] \
-                             + train['tw_semimonth_total_75_sum'] + train[
-                                 'tw_semimonth_total_985_sum'] + train['tw_semimonth_total_100_sum']
+train['two_semimonth_sum'] = train['two_semimonth_total_25_sum'] + train['two_semimonth_total_50_sum'] \
+                             + train['two_semimonth_total_75_sum'] + train[
+                                 'two_semimonth_total_985_sum'] + train['two_semimonth_total_100_sum']
 
 # 第二个半月听歌时间与第一个半月比较
 train['semimonth_secs_sum_ratio'] = train['two_semimonth_total_secs_sum'] / train['one_semimonth_total_secs_sum']
@@ -46,5 +46,6 @@ train['semimonth_secs_sum_ratio'] = train['two_semimonth_total_secs_sum'] / trai
 train['semimonth_sum_ratio'] = train['two_semimonth_sum'] / train['one_semimonth_sum']
 
 print(train.columns)
+print(train.head(5))
 
 # train.to_csv('../input/processed_features_user_log_feb.csv', index=False)
