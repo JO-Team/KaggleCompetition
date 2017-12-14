@@ -15,6 +15,7 @@ members = members_v1.append(members_v2, ignore_index=True)
 
 user_log_train = pd.read_csv('../input/processed_features_user_log_feb.csv')
 user_log_test = pd.read_csv('../input/processed_features_user_log_mar.csv')
+user_log_all = pd.read_csv('../input/processed_user_log_all.csv')
 
 train_v1 = pd.read_csv('../input/train.csv')
 train_v2 = pd.read_csv('../input/train_v2.csv')
@@ -30,8 +31,14 @@ test = pd.merge(test, transactions, how='left', on='msno')
 train = pd.merge(train, user_log_train, how='left', on='msno')
 test = pd.merge(test, user_log_test, how='left', on='msno')
 
+train = pd.merge(train, user_log_all, how='left', on='msno')
+test = pd.merge(test, user_log_all, how='left', on='msno')
+
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
+
+del transactions, members_v1, members_v2, members, user_log_train, user_log_test, user_log_all, train_v1, train_v2
+gc.collect()
 
 # Drop duplicates first
 test = test.drop_duplicates('msno')
@@ -98,4 +105,4 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
-test.to_csv('submission_lightgbm_features_user_log_transactions_eta_0.002_round_2000_Dec_13.csv', index=False)
+test.to_csv('submission_lightgbm_features_all_eta_0.002_round_2000_Dec_13.csv', index=False)
