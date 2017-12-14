@@ -56,6 +56,7 @@ cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
 X_train, X_test = train_test_split(train, test_size=0.2, random_state=47)
 X_train = X_train.drop(['msno', 'is_churn'], axis=1)
+y_train = X_train['is_churn']
 
 y_test = X_test['is_churn']
 X_test = X_test.drop(['msno', 'is_churn'], axis=1)
@@ -91,11 +92,13 @@ tensorboard = TensorBoard(log_dir='./log',
                           write_graph=True,
                           write_images=True)
 
-history = autoencoder.fit(X_train, X_train,
+print(X_train.shape)
+
+history = autoencoder.fit(X_train, y_train,
                           epochs=nb_epoch,
                           batch_size=batch_size,
                           shuffle=True,
-                          validation_data=(X_test, X_test),
+                          validation_data=(X_test, y_test),
                           verbose=10,
                           callbacks=[checkpointer, tensorboard]).history
 
