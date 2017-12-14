@@ -1,6 +1,5 @@
 import gc
 
-import numpy as np
 import pandas as pd
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.layers import Dense
@@ -54,7 +53,22 @@ cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
 # train['is_churn'] = keras.utils.to_categorical(train['is_churn'], num_classes=2)
 
-X_train, X_test = train_test_split(train, test_size=0.2, random_state=47)
+train_0 = train[train['is_churn'] == 0]
+
+print(len(train_0))
+
+train_1 = train[train['is_churn'] == 1]
+train_append = train_1
+
+for i in range(9):
+    train_append.append()
+
+print(len(train_1))
+print(len(train_append))
+
+train = train_0.append(train_append)
+
+X_train, X_test = train_test_split(train, test_size=0.2, random_state=47, shuffle=True)
 y_train = X_train['is_churn']
 X_train = X_train.drop(['msno', 'is_churn'], axis=1)
 
