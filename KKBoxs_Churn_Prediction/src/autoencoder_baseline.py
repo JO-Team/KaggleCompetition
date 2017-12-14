@@ -75,7 +75,7 @@ encoder = Dense(encoding_dim, activation="tanh",
 encoder = Dense(int(encoding_dim / 2), activation="relu")(encoder)
 
 decoder = Dense(int(encoding_dim / 2), activation='tanh')(encoder)
-decoder = Dense(input_dim, activation='softmax')(decoder)
+decoder = Dense(1, activation='softmax')(decoder)
 
 autoencoder = Model(inputs=input_layer, outputs=decoder)
 
