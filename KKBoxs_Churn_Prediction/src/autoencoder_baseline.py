@@ -54,14 +54,13 @@ test = test.drop(['transaction_date', 'membership_expire_date', 'expiration_date
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
+# train['is_churn'] = keras.utils.to_categorical(train['is_churn'], num_classes=2)
+
 X_train, X_test = train_test_split(train, test_size=0.2, random_state=47)
 X_train = X_train.drop(['msno', 'is_churn'], axis=1)
 
 y_test = X_test['is_churn']
 X_test = X_test.drop(['msno', 'is_churn'], axis=1)
-
-X_train['is_churn'] = keras.utils.to_categorical(X_train['is_churn'], num_classes=2)
-X_test['is_churn'] = keras.utils.to_categorical(X_test['is_churn'], num_classes=2)
 
 X_train = X_train.values
 X_test = X_test.values
@@ -76,7 +75,7 @@ encoder = Dense(encoding_dim, activation="tanh",
 encoder = Dense(int(encoding_dim / 2), activation="relu")(encoder)
 
 decoder = Dense(int(encoding_dim / 2), activation='tanh')(encoder)
-decoder = Dense(2, activation='softmax')(decoder)
+decoder = Dense(1, activation='softmax')(decoder)
 
 autoencoder = Model(inputs=input_layer, outputs=decoder)
 
@@ -89,7 +88,7 @@ autoencoder.compile(optimizer='adam',
                     metrics=['accuracy'])
 
 checkpointer = ModelCheckpoint(filepath="model.h5",
-                               verbose=0,
+                               verbose=5,
                                save_best_only=True)
 
 tensorboard = TensorBoard(log_dir='./log',
@@ -108,6 +107,9 @@ history = autoencoder.fit(X_train, X_train,
 # autoencoder = load_model('model.h5')
 
 predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values)
+
+print(predictions)
+
 test['is_churn'] = np.argmax(predictions, axis=0)
 test.drop(cols, axis=1, inplace=True)
 
