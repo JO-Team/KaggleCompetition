@@ -84,7 +84,7 @@ autoencoder.compile(optimizer='adam',
                     metrics=['accuracy'])
 
 checkpointer = ModelCheckpoint(filepath="model.h5",
-                               verbose=5,
+                               verbose=1,
                                save_best_only=True)
 
 tensorboard = TensorBoard(log_dir='./log',
@@ -99,7 +99,7 @@ history = autoencoder.fit(X_train, y_train,
                           batch_size=batch_size,
                           shuffle=True,
                           validation_data=(X_test, y_test),
-                          verbose=10,
+                          verbose=1,
                           callbacks=[checkpointer, tensorboard]).history
 
 # autoencoder = load_model('model.h5')
@@ -108,7 +108,7 @@ predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values
 
 print(predictions)
 
-test['is_churn'] = np.argmax(predictions, axis=0)
+test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
 
 print(test)
