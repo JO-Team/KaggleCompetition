@@ -60,8 +60,8 @@ print(len(train_0))
 train_1 = train[train['is_churn'] == 1]
 train_append = train_1
 
-for i in range(9):
-    train_append.append(train_1)
+for _ in range(17):
+    train_append = train_append.append(train_1)
 
 print(len(train_1))
 print(len(train_append))
