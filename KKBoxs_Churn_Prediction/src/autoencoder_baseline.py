@@ -64,13 +64,10 @@ X_train = X_train.values
 X_test = X_test.values
 
 input_dim = X_train.shape[1]
-
-print(input_dim)
-
 encoding_dim = 14
 
 autoencoder = Sequential()
-autoencoder.add(Dense(62, input_shape=(62,)))
+autoencoder.add(Dense(62, input_dim=62))
 autoencoder.add(Dense(31, activation='relu'))
 autoencoder.add(Dense(15, activation='relu'))
 autoencoder.add(Dense(1, activation='sigmoid'))
