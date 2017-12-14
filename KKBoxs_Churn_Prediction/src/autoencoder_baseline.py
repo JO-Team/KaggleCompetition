@@ -52,8 +52,6 @@ train = train.drop(['transaction_date', 'membership_expire_date', 'expiration_da
 test = test.drop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
 # Delete date for now
 
-train['is_churn'] = keras.utils.to_categorical(train['is_churn'], num_classes=2)
-
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
 X_train, X_test = train_test_split(train, test_size=0.2, random_state=47)
@@ -61,6 +59,9 @@ X_train = X_train.drop(['msno', 'is_churn'], axis=1)
 
 y_test = X_test['is_churn']
 X_test = X_test.drop(['msno', 'is_churn'], axis=1)
+
+X_train['is_churn'] = keras.utils.to_categorical(X_train['is_churn'], num_classes=2)
+X_test['is_churn'] = keras.utils.to_categorical(X_test['is_churn'], num_classes=2)
 
 X_train = X_train.values
 X_test = X_test.values
@@ -90,6 +91,7 @@ autoencoder.compile(optimizer='adam',
 checkpointer = ModelCheckpoint(filepath="model.h5",
                                verbose=0,
                                save_best_only=True)
+
 tensorboard = TensorBoard(log_dir='./log',
                           histogram_freq=0,
                           write_graph=True,
