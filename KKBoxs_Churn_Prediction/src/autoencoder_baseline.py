@@ -1,7 +1,9 @@
 import gc
 
 import pandas as pd
+import numpy as np
 from keras import regularizers
+import keras
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.layers import Input, Dense
 from keras.models import Model
@@ -50,6 +52,8 @@ train = train.drop(['transaction_date', 'membership_expire_date', 'expiration_da
 test = test.drop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
 # Delete date for now
 
+train['is_churn'] = keras.utils.to_categorical(train['is_churn'], num_classes=2)
+
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
 X_train, X_test = train_test_split(train, test_size=0.2, random_state=47)
@@ -71,21 +75,22 @@ encoder = Dense(encoding_dim, activation="tanh",
 encoder = Dense(int(encoding_dim / 2), activation="relu")(encoder)
 
 decoder = Dense(int(encoding_dim / 2), activation='tanh')(encoder)
-decoder = Dense(input_dim, activation='relu')(decoder)
+decoder = Dense(2, activation='softmax')(decoder)
 
 autoencoder = Model(inputs=input_layer, outputs=decoder)
 
-nb_epoch = 100
+# nb_epoch = 200
+nb_epoch = 1
 batch_size = 32
 
 autoencoder.compile(optimizer='adam',
-                    loss='mean_squared_error',
+                    loss='categorical_crossentropy',
                     metrics=['accuracy'])
 
 checkpointer = ModelCheckpoint(filepath="model.h5",
                                verbose=0,
                                save_best_only=True)
-tensorboard = TensorBoard(log_dir='./logs',
+tensorboard = TensorBoard(log_dir='./log',
                           histogram_freq=0,
                           write_graph=True,
                           write_images=True)
@@ -95,13 +100,15 @@ history = autoencoder.fit(X_train, X_train,
                           batch_size=batch_size,
                           shuffle=True,
                           validation_data=(X_test, X_test),
-                          verbose=1,
+                          verbose=10,
                           callbacks=[checkpointer, tensorboard]).history
 
 # autoencoder = load_model('model.h5')
 
 predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values)
-test['is_churn'] = predictions
+test['is_churn'] = np.argmax(predictions, axis=0)
 test.drop(cols, axis=1, inplace=True)
 
-test.to_csv('submission_autoencoder_features_user_log_transactions_baseline_Dec_13.csv', index=False)
+print(test)
+
+# test.to_csv('submission_autoencoder_features_user_log_transactions_baseline_Dec_13.csv', index=False)
