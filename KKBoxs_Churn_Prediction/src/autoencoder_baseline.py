@@ -72,6 +72,8 @@ autoencoder.add(Dense(31, activation='relu'))
 autoencoder.add(Dense(15, activation='relu'))
 autoencoder.add(Dense(1, activation='sigmoid'))
 
+autoencoder.summary()
+
 # nb_epoch = 200
 nb_epoch = 1
 batch_size = 32
