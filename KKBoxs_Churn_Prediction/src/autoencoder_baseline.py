@@ -55,8 +55,8 @@ cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 # train['is_churn'] = keras.utils.to_categorical(train['is_churn'], num_classes=2)
 
 X_train, X_test = train_test_split(train, test_size=0.2, random_state=47)
-X_train = X_train.drop(['msno', 'is_churn'], axis=1)
 y_train = X_train['is_churn']
+X_train = X_train.drop(['msno', 'is_churn'], axis=1)
 
 y_test = X_test['is_churn']
 X_test = X_test.drop(['msno', 'is_churn'], axis=1)
