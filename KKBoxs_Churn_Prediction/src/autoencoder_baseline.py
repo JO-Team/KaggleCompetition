@@ -1,12 +1,10 @@
 import gc
 
-import pandas as pd
 import numpy as np
-from keras import regularizers
-import keras
+import pandas as pd
 from keras.callbacks import ModelCheckpoint, TensorBoard
-from keras.layers import Input, Dense
-from keras.models import Model
+from keras.layers import Dense
+from keras.models import Sequential
 from sklearn.model_selection import train_test_split
 
 gc.enable()
@@ -68,23 +66,18 @@ X_test = X_test.values
 input_dim = X_train.shape[1]
 encoding_dim = 14
 
-input_layer = Input(shape=(input_dim,))
-
-encoder = Dense(encoding_dim, activation="tanh",
-                activity_regularizer=regularizers.l1(10e-5))(input_layer)
-encoder = Dense(int(encoding_dim / 2), activation="relu")(encoder)
-
-decoder = Dense(int(encoding_dim / 2), activation='tanh')(encoder)
-decoder = Dense(1, activation='softmax')(decoder)
-
-autoencoder = Model(inputs=input_layer, outputs=decoder)
+autoencoder = Sequential()
+autoencoder.add(Dense(62, input_shape=(2686241, 62)))
+autoencoder.add(Dense(31, activation='relu'))
+autoencoder.add(Dense(15, activation='relu'))
+autoencoder.add(Dense(1, activation='sigmoid'))
 
 # nb_epoch = 200
 nb_epoch = 1
 batch_size = 32
 
 autoencoder.compile(optimizer='adam',
-                    loss='categorical_crossentropy',
+                    loss='binary_crossentropy',
                     metrics=['accuracy'])
 
 checkpointer = ModelCheckpoint(filepath="model.h5",
