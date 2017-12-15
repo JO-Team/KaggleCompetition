@@ -5,6 +5,7 @@ from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.layers import Dense
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
+from numpy import random as rm
 
 gc.enable()
 
@@ -73,9 +74,15 @@ for _ in range(17):
 train = train_0.append(train_append)
 '''
 
+
 # train1 random sample 1/17
+def rand_rows(df, num_rows = 5):
+    subset = rm.choice(df.index.values, size = num_rows)
+    return df.loc[subset]
+
+
 print(len(train_0))
-train_0.sample(frac=1.0/17.0, replace=True, random_state=47)
+train_0 = rand_rows(train_0, len(train_1))
 print(len(train_0))
 train = train_0.append(train_1)
 print(train)
