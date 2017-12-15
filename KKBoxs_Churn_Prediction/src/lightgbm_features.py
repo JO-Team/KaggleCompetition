@@ -3,6 +3,7 @@ import gc
 import lightgbm as lgb
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import ShuffleSplit
 
 gc.enable()
@@ -29,8 +30,8 @@ test = pd.merge(test, transactions_test, how='left', on='msno')
 train = pd.merge(train, user_log_train, how='left', on='msno')
 test = pd.merge(test, user_log_test, how='left', on='msno')
 
-# train = pd.merge(train, user_log_all, how='left', on='msno')
-# test = pd.merge(test, user_log_all, how='left', on='msno')
+train = pd.merge(train, user_log_all, how='left', on='msno')
+test = pd.merge(test, user_log_all, how='left', on='msno')
 
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
@@ -52,6 +53,12 @@ test = test.fillna(0)
 train = train.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
 test = test.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
 # Delete date for now
+
+train['autorenew_&_not_cancel'] = ((train.is_auto_renew == 1) == (train.is_cancel == 0)).astype(np.int8)
+test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel == 0)).astype(np.int8)
+
+train['notAutorenew_&_cancel'] = ((train.is_auto_renew == 0) == (train.is_cancel == 1)).astype(np.int8)
+test['notAutorenew_&_cancel'] = ((test.is_auto_renew == 0) == (test.is_cancel == 1)).astype(np.int8)
 
 print('Features List:')
 print(train.columns)
