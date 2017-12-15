@@ -114,7 +114,7 @@ autoencoder.add(Dense(1, activation='sigmoid'))
 
 autoencoder.summary()
 
-nb_epoch = 100
+nb_epoch = 200
 batch_size = 32
 
 autoencoder.compile(optimizer='adam',
