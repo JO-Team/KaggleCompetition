@@ -7,28 +7,24 @@ from sklearn.model_selection import ShuffleSplit
 
 gc.enable()
 
-transactions = pd.read_csv('../input/processed_transaction_all.csv')
+transactions_train = pd.read_csv('../input/processed_transaction_features_feb.csv')
+transactions_test = pd.read_csv('../input/processed_transaction_features_mar.csv')
+transactions = pd.read_csv('../input/processed_transaction_features.csv')
 
-# members_v1 = pd.read_csv('../input/members.csv')
-# members_v2 = pd.read_csv('../input/members_v3.csv')
-# members = members_v1.append(members_v2, ignore_index=True)
 members = pd.read_csv('../input/members_v3.csv')
 
 user_log_train = pd.read_csv('../input/processed_features_user_log_feb.csv')
 user_log_test = pd.read_csv('../input/processed_features_user_log_mar.csv')
-# user_log_all = pd.read_csv('../input/processed_user_log_all.csv')
+user_log_all = pd.read_csv('../input/processed_user_log_all.csv')
 
-# train_v1 = pd.read_csv('../input/train.csv')
-# train_v2 = pd.read_csv('../input/train_v2.csv')
-# train = train_v1.append(train_v2, ignore_index=True)
 train = pd.read_csv('../input/train_v2.csv')
 
 test = pd.read_csv('../input/sample_submission_v2.csv')
 
 # Merge Data
 
-train = pd.merge(train, transactions, how='left', on='msno')
-test = pd.merge(test, transactions, how='left', on='msno')
+train = pd.merge(train, transactions_train, how='left', on='msno')
+test = pd.merge(test, transactions_test, how='left', on='msno')
 
 train = pd.merge(train, user_log_train, how='left', on='msno')
 test = pd.merge(test, user_log_test, how='left', on='msno')
@@ -56,6 +52,9 @@ test = test.fillna(0)
 train = train.drop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
 test = test.drop(['transaction_date', 'membership_expire_date', 'expiration_date', 'registration_init_time'], axis=1)
 # Delete date for now
+
+print('Features List:')
+print(train.columns)
 
 feature_list = [
     # raw data
@@ -107,7 +106,7 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
-test.to_csv('submission_lightgbm_features_all_eta_0.002_round_2500_Dec_13.csv', index=False)
+test.to_csv('submission_lightgbm_features_new_all_eta_0.01_round_2000_Dec_15.csv', index=False)
 
 print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
@@ -119,6 +118,6 @@ print(cols)
 print(type(importance))
 a = pd.DataFrame({'feature': cols, 'importance': importance})
 print(a)
-a.to_csv('feature_importance.csv')
+a.to_csv('feature_importance_all.csv')
 # plt.show()
 plt.savefig('lightgbm_feaeture_importance_')
