@@ -67,16 +67,62 @@ test = test.fillna(0)
 # Delete date for now
 train = train.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
 test = test.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
-# Delete date for now
+
+# Remove Features with 0 feature importance
+train = train.drop(
+    ['payment_method_id14',
+     'payment_method_id18',
+     'payment_method_id21',
+     'payment_method_id26',
+     'payment_method_id35',
+     'transaction_date_month_x',
+     'transaction_date_day_x',
+     'membership_expire_date_year_x',
+     'membership_expire_date_month_x',
+     'membership_expire_date_day_x',
+     'transaction_date_day_y',
+     'membership_expire_date_day_y'], axis=1)
+test = test.drop(
+    ['payment_method_id14',
+     'payment_method_id18',
+     'payment_method_id21',
+     'payment_method_id26',
+     'payment_method_id35',
+     'transaction_date_month_x',
+     'transaction_date_day_x',
+     'membership_expire_date_year_x',
+     'membership_expire_date_month_x',
+     'membership_expire_date_day_x',
+     'transaction_date_day_y',
+     'membership_expire_date_day_y'], axis=1)
+
+# Remove Features with feature importance less than 100
+train = train.drop(
+    ['payment_method_id16',
+     'payment_method_id17',
+     'payment_method_id19',
+     'payment_method_id23',
+     'payment_method_id27',
+     'payment_method_id28',
+     'payment_method_id31',
+     'is_discount_x',
+     'transaction_date_year_x'], axis=1)
+test = test.drop(
+    ['payment_method_id16',
+     'payment_method_id17',
+     'payment_method_id19',
+     'payment_method_id23',
+     'payment_method_id27',
+     'payment_method_id28',
+     'payment_method_id31',
+     'is_discount_x',
+     'transaction_date_year_x'], axis=1)
 
 train['autorenew_&_not_cancel'] = ((train.is_auto_renew == 1) == (train.is_cancel == 0)).astype(np.int8)
 test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel == 0)).astype(np.int8)
 
 train['notAutorenew_&_cancel'] = ((train.is_auto_renew == 0) == (train.is_cancel == 1)).astype(np.int8)
 test['notAutorenew_&_cancel'] = ((test.is_auto_renew == 0) == (test.is_cancel == 1)).astype(np.int8)
-
-print('Features List:')
-print(train.columns)
 
 feature_list = [
     # raw data
@@ -129,8 +175,8 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
 
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
-test.drop(cols, axis=1, inplace=True)
-test.to_csv('submission_lightgbm_features_remove_useless_columns_eta_0.002_round_2500_Dec_15.csv', index=False)
+test = test[['msno', 'is_churn']]
+test.to_csv('submission_lightgbm_features_features_selection_v1_eta_0.002_round_2500_Dec_15.csv', index=False)
 
 print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
