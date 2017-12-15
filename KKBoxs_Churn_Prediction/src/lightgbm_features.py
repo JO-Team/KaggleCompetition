@@ -13,7 +13,8 @@ transactions_test = pd.read_csv('../input/processed_transaction_features_mar.csv
 transactions = pd.read_csv('../input/processed_transaction_features.csv')
 
 transactions = transactions[
-    ['discount', 'amt_per_day', 'is_discount', 'membership_days', 'transaction_date_year', 'transaction_date_month',
+    ['msno', 'discount', 'amt_per_day', 'is_discount', 'membership_days', 'transaction_date_year',
+     'transaction_date_month',
      'transaction_date_day', 'membership_expire_date_year', 'membership_expire_date_month',
      'membership_expire_date_day']]
 
@@ -135,10 +136,10 @@ importance = bst.feature_importance()
 # importance = sorted(importance., key=operator.itemgetter(1))
 
 # importance = importance[::-1]
-print(cols)
-print(type(importance))
+# print(cols)
+# print(type(importance))
 a = pd.DataFrame({'feature': cols, 'importance': importance})
-print(a)
+# print(a)
 a.to_csv('feature_importance_all.csv')
 # plt.show()
 plt.savefig('lightgbm_feaeture_importance_')
