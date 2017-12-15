@@ -101,14 +101,14 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
         'max_depth': 7,
     }
 
-    bst = lgb.train(params, train_data, 2500, valid_sets=[val_data], early_stopping_rounds=50)
+    bst = lgb.train(params, train_data, 1500, valid_sets=[val_data], early_stopping_rounds=50)
 
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
-test.to_csv('submission_lightgbm_features_all_eta_0.002_round_2500_Dec_13.csv', index=False)
+# test.to_csv('submission_lightgbm_features_all_eta_0.002_round_2500_Dec_13.csv', index=False)
 
 print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
 plt.show()
-plt.savefig('lightgbm_feaeture_importance')
+plt.savefig('lightgbm_feaeture_importance_1500')
