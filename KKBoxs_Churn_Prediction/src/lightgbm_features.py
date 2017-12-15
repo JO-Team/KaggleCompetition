@@ -109,6 +109,16 @@ test.drop(cols, axis=1, inplace=True)
 test.to_csv('submission_lightgbm_features_all_eta_0.002_round_2500_Dec_13.csv', index=False)
 
 print('Plot feature importances...')
+print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
+importance =  bst.feature_importance()
+#importance = sorted(importance., key=operator.itemgetter(1))
+
+#importance = importance[::-1]
+print(cols)
+print(type(importance))
+a = pd.DataFrame({'feature':cols,'importance':importance})
+print(a)
+a.to_csv('feature_importance.csv')
 # plt.show()
 plt.savefig('lightgbm_feaeture_importance_')
