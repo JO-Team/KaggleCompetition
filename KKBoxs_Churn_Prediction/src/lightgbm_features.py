@@ -12,6 +12,11 @@ transactions_train = pd.read_csv('../input/processed_transaction_features_feb.cs
 transactions_test = pd.read_csv('../input/processed_transaction_features_mar.csv')
 transactions = pd.read_csv('../input/processed_transaction_features.csv')
 
+transactions = transactions[
+    ['discount', 'amt_per_day', 'is_discount', 'membership_days', 'transaction_date_year', 'transaction_date_month',
+     'transaction_date_day', 'membership_expire_date_year', 'membership_expire_date_month',
+     'membership_expire_date_day']]
+
 members = pd.read_csv('../input/members_v3.csv')
 
 user_log_train = pd.read_csv('../input/processed_features_user_log_feb.csv')
@@ -26,6 +31,9 @@ test = pd.read_csv('../input/sample_submission_v2.csv')
 
 train = pd.merge(train, transactions_train, how='left', on='msno')
 test = pd.merge(test, transactions_test, how='left', on='msno')
+
+train = pd.merge(train, transactions, how='left', on='msno')
+test = pd.merge(test, transactions, how='left', on='msno')
 
 train = pd.merge(train, user_log_train, how='left', on='msno')
 test = pd.merge(test, user_log_test, how='left', on='msno')
