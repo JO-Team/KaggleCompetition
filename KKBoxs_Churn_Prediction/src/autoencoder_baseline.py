@@ -141,4 +141,4 @@ test.drop(cols, axis=1, inplace=True)
 
 print(test)
 
-test.to_csv('submission_autoencoder_all_features_fractional_balanced_200_32_Dec_14.csv', index=False)
+test.to_csv('submission_autoencoder_all_features_17_balanced_100_32_Dec_14.csv', index=False)
