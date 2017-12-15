@@ -8,9 +8,9 @@ from sklearn.model_selection import ShuffleSplit
 
 gc.enable()
 
-transactions_train = pd.read_csv('../input/processed_transaction_features_feb.csv')
-transactions_test = pd.read_csv('../input/processed_transaction_features_mar.csv')
-transactions = pd.read_csv('../input/processed_transaction_features.csv')
+transactions_train = pd.read_csv('../input/processed_transaction_features_feb.csv', index_col=0)
+transactions_test = pd.read_csv('../input/processed_transaction_features_mar.csv', index_col=0)
+transactions = pd.read_csv('../input/processed_transaction_features.csv', index_col=0)
 
 transactions = transactions[
     ['msno', 'discount', 'amt_per_day', 'is_discount', 'membership_days', 'transaction_date_year',
@@ -99,6 +99,8 @@ feature_list = [
 
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
+print(cols)
+
 bst = None
 
 for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_size=0.4).split(train):
@@ -128,7 +130,7 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
-test.to_csv('submission_lightgbm_features_trans_user_log_split_by_month_eta_0.002_round_2500_Dec_15.csv', index=False)
+test.to_csv('submission_lightgbm_features_remove_useless_columns_eta_0.002_round_2500_Dec_15.csv', index=False)
 
 print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
