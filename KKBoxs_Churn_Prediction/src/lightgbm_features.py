@@ -113,7 +113,7 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
-test.to_csv('submission_lightgbm_features_new_all_eta_0.01_round_2000_Dec_15.csv', index=False)
+test.to_csv('submission_lightgbm_features_trans_user_log_split_by_month_eta_0.01_round_2000_Dec_15.csv', index=False)
 
 print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
