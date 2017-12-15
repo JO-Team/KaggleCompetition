@@ -81,11 +81,8 @@ def rand_rows(df, num_rows = 5):
     return df.loc[subset]
 
 
-print(len(train_0))
 train_0 = rand_rows(train_0, len(train_1))
-print(len(train_0))
 train = train_0.append(train_1)
-print(train)
 
 X_train, X_test = train_test_split(train, test_size=0.2, random_state=47, shuffle=True)
 y_train = X_train['is_churn']
@@ -108,8 +105,7 @@ autoencoder.add(Dense(1, activation='sigmoid'))
 
 autoencoder.summary()
 
-# nb_epoch = 200
-nb_epoch = 1
+nb_epoch = 200
 batch_size = 32
 
 autoencoder.compile(optimizer='adam',
@@ -146,4 +142,4 @@ test.drop(cols, axis=1, inplace=True)
 
 print(test)
 
-# test.to_csv('submission_autoencoder_features_user_log_transactions_baseline_Dec_13.csv', index=False)
+test.to_csv('submission_autoencoder_all_features_fractional_balanced_200_32_Dec_14.csv', index=False)
