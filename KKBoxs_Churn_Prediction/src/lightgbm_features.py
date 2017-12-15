@@ -110,5 +110,5 @@ test.drop(cols, axis=1, inplace=True)
 
 print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
-plt.show()
+# plt.show()
 plt.savefig('lightgbm_feaeture_importance_1500')
