@@ -47,7 +47,7 @@ train['gender'] = train['gender'].map(gender)
 test['gender'] = test['gender'].map(gender)
 
 train['bd'] = train['bd'].replace(0, train['bd'].mode())
-test['bd'] = test['bd'].replace(0, test['bdW'].mode())
+test['bd'] = test['bd'].replace(0, test['bd'].mode())
 
 train['gender'] = train['gender'].replace(0, train['gender'].mean())
 test['gender'] = test['gender'].replace(0, test['gender'].mean())
