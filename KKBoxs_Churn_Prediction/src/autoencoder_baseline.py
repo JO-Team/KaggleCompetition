@@ -4,7 +4,9 @@ import pandas as pd
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.layers import Dense
 from keras.models import Sequential
+from numpy import random as rm
 from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
 
 gc.enable()
 
@@ -63,27 +65,35 @@ cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 train_0 = train[train['is_churn'] == 0]
 train_1 = train[train['is_churn'] == 1]
 
+'''
 # Enlarge train_1 for 17 times
-
 train_append = train_1
 
 for _ in range(17):
     train_append = train_append.append(train_1)
 
 train = train_0.append(train_append)
-
 '''
+
+
 # train1 random sample 1/17
-def rand_rows(df, num_rows = 5):
+def rand_rows(df, num_rows=5):
     subset = rm.choice(df.index.values, size=num_rows)
     return df.loc[subset]
 
 
 train_0 = rand_rows(train_0, len(train_1))
 train = train_0.append(train_1)
-'''
 
-X_train, X_test = train_test_split(train, test_size=0.2, random_state=47, shuffle=True)
+
+# Add Normalize
+min_max_scaler = preprocessing.MinMaxScaler()
+np_scaled = min_max_scaler.fit_transform(train)
+train_normalized = pd.DataFrame(np_scaled)
+
+print(train_normalized.head(5))
+
+X_train, X_test = train_test_split(train_normalized, test_size=0.2, random_state=47, shuffle=True)
 y_train = X_train['is_churn']
 X_train = X_train.drop(['msno', 'is_churn'], axis=1)
 
@@ -141,4 +151,4 @@ test.drop(cols, axis=1, inplace=True)
 
 print(test)
 
-test.to_csv('submission_autoencoder_all_features_17_balanced_100_32_Dec_14.csv', index=False)
+test.to_csv('submission_autoencoder_all_features_Normalize_fractional_balanced_200_32_Dec_14.csv', index=False)
