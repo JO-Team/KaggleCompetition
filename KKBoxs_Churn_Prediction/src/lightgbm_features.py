@@ -1,26 +1,27 @@
 import gc
 
 import lightgbm as lgb
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import ShuffleSplit
-import matplotlib.pyplot as plt
-
 
 gc.enable()
 
 transactions = pd.read_csv('../input/processed_transaction_all.csv')
 
-members_v1 = pd.read_csv('../input/members.csv')
-members_v2 = pd.read_csv('../input/members_v2.csv')
-members = members_v1.append(members_v2, ignore_index=True)
+# members_v1 = pd.read_csv('../input/members.csv')
+# members_v2 = pd.read_csv('../input/members_v3.csv')
+# members = members_v1.append(members_v2, ignore_index=True)
+members = pd.read_csv('../input/members_v3.csv')
 
 user_log_train = pd.read_csv('../input/processed_features_user_log_feb.csv')
 user_log_test = pd.read_csv('../input/processed_features_user_log_mar.csv')
 # user_log_all = pd.read_csv('../input/processed_user_log_all.csv')
 
-train_v1 = pd.read_csv('../input/train.csv')
-train_v2 = pd.read_csv('../input/train_v2.csv')
-train = train_v1.append(train_v2, ignore_index=True)
+# train_v1 = pd.read_csv('../input/train.csv')
+# train_v2 = pd.read_csv('../input/train_v2.csv')
+# train = train_v1.append(train_v2, ignore_index=True)
+train = pd.read_csv('../input/train_v2.csv')
 
 test = pd.read_csv('../input/sample_submission_v2.csv')
 
@@ -38,7 +39,7 @@ test = pd.merge(test, user_log_test, how='left', on='msno')
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
 
-del transactions, members_v1, members_v2, members, user_log_train, user_log_test, train_v1, train_v2
+del transactions, members, user_log_train, user_log_test
 gc.collect()
 
 # Drop duplicates first
@@ -89,7 +90,7 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
         'objective': 'binary',
         'metric': 'binary_logloss',
         'boosting': 'gbdt',
-        'learning_rate': 0.002,  # small learn rate, large number of iterations
+        'learning_rate': 0.01,  # small learn rate, large number of iterations
         'verbose': 0,
         'num_leaves': 108,
         'bagging_fraction': 0.95,
@@ -101,7 +102,7 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
         'max_depth': 7,
     }
 
-    bst = lgb.train(params, train_data, 2500, valid_sets=[val_data], early_stopping_rounds=50)
+    bst = lgb.train(params, train_data, 2000, valid_sets=[val_data], early_stopping_rounds=50)
 
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
@@ -109,15 +110,14 @@ test.drop(cols, axis=1, inplace=True)
 test.to_csv('submission_lightgbm_features_all_eta_0.002_round_2500_Dec_13.csv', index=False)
 
 print('Plot feature importances...')
-print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
-importance =  bst.feature_importance()
-#importance = sorted(importance., key=operator.itemgetter(1))
+importance = bst.feature_importance()
+# importance = sorted(importance., key=operator.itemgetter(1))
 
-#importance = importance[::-1]
+# importance = importance[::-1]
 print(cols)
 print(type(importance))
-a = pd.DataFrame({'feature':cols,'importance':importance})
+a = pd.DataFrame({'feature': cols, 'importance': importance})
 print(a)
 a.to_csv('feature_importance.csv')
 # plt.show()
