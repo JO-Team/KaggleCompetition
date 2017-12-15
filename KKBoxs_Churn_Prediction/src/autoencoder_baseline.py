@@ -5,7 +5,6 @@ from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.layers import Dense
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
-from numpy import random as rm
 
 gc.enable()
 
@@ -65,24 +64,24 @@ train_0 = train[train['is_churn'] == 0]
 train_1 = train[train['is_churn'] == 1]
 
 # Enlarge train_1 for 17 times
-'''
+
 train_append = train_1
 
 for _ in range(17):
     train_append = train_append.append(train_1)
 
 train = train_0.append(train_append)
+
 '''
-
-
 # train1 random sample 1/17
 def rand_rows(df, num_rows = 5):
-    subset = rm.choice(df.index.values, size = num_rows)
+    subset = rm.choice(df.index.values, size=num_rows)
     return df.loc[subset]
 
 
 train_0 = rand_rows(train_0, len(train_1))
 train = train_0.append(train_1)
+'''
 
 X_train, X_test = train_test_split(train, test_size=0.2, random_state=47, shuffle=True)
 y_train = X_train['is_churn']
@@ -100,12 +99,12 @@ autoencoder = Sequential()
 autoencoder.add(Dense(input_dim, input_dim=input_dim))
 autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
 autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
-autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
+# autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
 autoencoder.add(Dense(1, activation='sigmoid'))
 
 autoencoder.summary()
 
-nb_epoch = 200
+nb_epoch = 100
 batch_size = 32
 
 autoencoder.compile(optimizer='adam',
