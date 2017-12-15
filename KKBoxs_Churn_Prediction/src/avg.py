@@ -7,7 +7,7 @@ def avg_all_files(result_folder='output/'):
     if not os.path.exists(result_folder):
         raise Exception('Make sure {} is a correctly assigned path for files'.format(result_folder))
 
-    sample_df = pd.read_csv('input/sample_submission_v2.csv')
+    sample_df = pd.read_csv('../input/sample_submission_v2.csv')
     msno = sample_df['msno'].values
 
     targets = 0
