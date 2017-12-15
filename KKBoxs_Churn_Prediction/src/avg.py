@@ -28,7 +28,6 @@ def avg_all_files(result_folder='output/'):
             df = pd.read_csv(fullpath)
 
         print(df.info())
-        print(df.target.head())
         targets += df['is_churn'] / siz
 
     avg = pd.DataFrame({'msno': msno, 'is_churn': targets})
