@@ -16,7 +16,7 @@ members = members_v1.append(members_v2, ignore_index=True)
 
 user_log_train = pd.read_csv('../input/processed_features_user_log_feb.csv')
 user_log_test = pd.read_csv('../input/processed_features_user_log_mar.csv')
-user_log_all = pd.read_csv('../input/processed_user_log_all.csv')
+# user_log_all = pd.read_csv('../input/processed_user_log_all.csv')
 
 train_v1 = pd.read_csv('../input/train.csv')
 train_v2 = pd.read_csv('../input/train_v2.csv')
@@ -32,13 +32,13 @@ test = pd.merge(test, transactions, how='left', on='msno')
 train = pd.merge(train, user_log_train, how='left', on='msno')
 test = pd.merge(test, user_log_test, how='left', on='msno')
 
-train = pd.merge(train, user_log_all, how='left', on='msno')
-test = pd.merge(test, user_log_all, how='left', on='msno')
+# train = pd.merge(train, user_log_all, how='left', on='msno')
+# test = pd.merge(test, user_log_all, how='left', on='msno')
 
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
 
-del transactions, members_v1, members_v2, members, user_log_train, user_log_test, user_log_all, train_v1, train_v2
+del transactions, members_v1, members_v2, members, user_log_train, user_log_test, train_v1, train_v2
 gc.collect()
 
 # Drop duplicates first
