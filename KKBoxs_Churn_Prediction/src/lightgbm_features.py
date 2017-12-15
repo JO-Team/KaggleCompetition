@@ -2,8 +2,8 @@ import gc
 
 import lightgbm as lgb
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import ShuffleSplit
 
 gc.enable()
@@ -45,6 +45,12 @@ test = test.drop_duplicates('msno')
 gender = {'male': 1, 'female': 2}
 train['gender'] = train['gender'].map(gender)
 test['gender'] = test['gender'].map(gender)
+
+train['bd'] = train['bd'].replace(0, train['bd'].mode())
+test['bd'] = test['bd'].replace(0, test['bdW'].mode())
+
+train['gender'] = train['gender'].replace(0, train['gender'].mean())
+test['gender'] = test['gender'].replace(0, test['gender'].mean())
 
 train = train.fillna(0)
 test = test.fillna(0)
@@ -96,7 +102,7 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
         'objective': 'binary',
         'metric': 'binary_logloss',
         'boosting': 'gbdt',
-        'learning_rate': 0.01,  # small learn rate, large number of iterations
+        'learning_rate': 0.002,  # small learn rate, large number of iterations
         'verbose': 0,
         'num_leaves': 108,
         'bagging_fraction': 0.95,
@@ -108,12 +114,12 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
         'max_depth': 7,
     }
 
-    bst = lgb.train(params, train_data, 2000, valid_sets=[val_data], early_stopping_rounds=50)
+    bst = lgb.train(params, train_data, 2500, valid_sets=[val_data], early_stopping_rounds=50)
 
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
-test.to_csv('submission_lightgbm_features_trans_user_log_split_by_month_eta_0.01_round_2000_Dec_15.csv', index=False)
+test.to_csv('submission_lightgbm_features_trans_user_log_split_by_month_eta_0.002_round_2500_Dec_15.csv', index=False)
 
 print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
