@@ -144,11 +144,7 @@ history = autoencoder.fit(X_train, y_train,
 
 predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values)
 
-print(predictions)
-
 test['is_churn'] = predictions
 test.drop(cols, axis=1, inplace=True)
-
-print(test)
 
 test.to_csv('submission_autoencoder_all_features_Normalize_fractional_balanced_200_32_Dec_14.csv', index=False)
