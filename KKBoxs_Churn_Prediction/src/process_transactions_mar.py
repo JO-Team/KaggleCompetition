@@ -26,8 +26,6 @@ for i in transactions['payment_method_id'].unique():
 newdf = newdf.rename(columns=payment_method_id)  # renaming the new columns
 del newdf['payment_method_id']  # deleting the extra columns
 
-print(newdf.columns)
-
 newdf_grouped = newdf.groupby('msno').agg({
     'payment_plan_days': np.mean, 'plan_list_price': np.mean,
     'actual_amount_paid': np.mean,
@@ -36,7 +34,6 @@ newdf_grouped = newdf.groupby('msno').agg({
     'is_cancel': np.mean,
     'payment_method_id2': np.sum,
     'payment_method_id3': np.sum,
-    'payment_method_id4': np.sum,
     'payment_method_id5': np.sum,
     'payment_method_id6': np.sum,
     'payment_method_id8': np.sum,
