@@ -1,10 +1,7 @@
 import numpy as np
 import pandas as pd
 
-transactions = pd.read_csv('../input/transactions.csv')
-
-transactions = transactions[
-    (transactions['transaction_date'] > 20170131) & (transactions['transaction_date'] < 20170301)]
+transactions = pd.read_csv('../input/transactions_v2.csv')
 
 # h=change the type of these series
 transactions['payment_method_id'] = transactions['payment_method_id'].astype('int8')
@@ -29,23 +26,38 @@ for i in transactions['payment_method_id'].unique():
 newdf = newdf.rename(columns=payment_method_id)  # renaming the new columns
 del newdf['payment_method_id']  # deleting the extra columns
 
+print(newdf.columns)
+
 newdf_grouped = newdf.groupby('msno').agg({
     'payment_plan_days': np.mean, 'plan_list_price': np.mean,
     'actual_amount_paid': np.mean,
     'is_auto_renew': np.mean, 'transaction_date': min,
     'membership_expire_date': max,
     'is_cancel': np.mean,
-    'payment_method_id14': np.sum,
+    'payment_method_id2': np.sum,
+    'payment_method_id3': np.sum,
+    'payment_method_id4': np.sum,
+    'payment_method_id5': np.sum,
+    'payment_method_id6': np.sum,
+    'payment_method_id8': np.sum,
+    'payment_method_id10': np.sum,
+    'payment_method_id11': np.sum, 'payment_method_id12': np.sum,
+    'payment_method_id13': np.sum,
+    'payment_method_id14': np.sum, 'payment_method_id15': np.sum,
     'payment_method_id16': np.sum,
     'payment_method_id17': np.sum, 'payment_method_id18': np.sum,
     'payment_method_id19': np.sum,
+    'payment_method_id20': np.sum,
     'payment_method_id21': np.sum,
+    'payment_method_id22': np.sum,
     'payment_method_id23': np.sum,
+    'payment_method_id24': np.sum,
+    'payment_method_id25': np.sum,
     'payment_method_id26': np.sum, 'payment_method_id27': np.sum,
     'payment_method_id28': np.sum,
     'payment_method_id29': np.sum, 'payment_method_id30': np.sum,
     'payment_method_id31': np.sum,
-    'payment_method_id33': np.sum,
+    'payment_method_id32': np.sum, 'payment_method_id33': np.sum,
     'payment_method_id34': np.sum,
     'payment_method_id35': np.sum, 'payment_method_id36': np.sum,
     'payment_method_id37': np.sum,
@@ -87,4 +99,4 @@ newdf_grouped['membership_expire_date_day'] = newdf_grouped['membership_expire_d
 
 #################################################################################################################
 
-newdf_grouped.to_csv('../input/processed_transaction_features_feb.csv')
+newdf_grouped.to_csv('../input/processed_transaction_features_mar.csv')
