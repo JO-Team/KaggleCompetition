@@ -105,6 +105,9 @@ train = train.drop(
      'payment_method_id27',
      'payment_method_id28',
      'payment_method_id31',
+     'payment_method_id33',
+     'payment_method_id34',
+     'payment_method_id39',
      'is_discount_x',
      'transaction_date_year_x'], axis=1)
 test = test.drop(
@@ -115,6 +118,9 @@ test = test.drop(
      'payment_method_id27',
      'payment_method_id28',
      'payment_method_id31',
+     'payment_method_id33',
+     'payment_method_id34',
+     'payment_method_id39',
      'is_discount_x',
      'transaction_date_year_x'], axis=1)
 
@@ -171,12 +177,12 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
         'max_depth': 7,
     }
 
-    bst = lgb.train(params, train_data, 2500, valid_sets=[val_data], early_stopping_rounds=50)
+    bst = lgb.train(params, train_data, 3000, valid_sets=[val_data], early_stopping_rounds=50)
 
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test = test[['msno', 'is_churn']]
-test.to_csv('submission_lightgbm_features_features_selection_v1_eta_0.002_round_2500_Dec_15.csv', index=False)
+test.to_csv('submission_lightgbm_features_features_selection_v2_eta_0.002_round_3000_Dec_15.csv', index=False)
 
 print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
