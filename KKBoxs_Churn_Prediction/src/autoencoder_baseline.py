@@ -68,44 +68,6 @@ test['gender'] = test['gender'].replace(0, test['gender'].mean())
 train = train.drop(['registration_init_time'], axis=1)
 test = test.drop(['registration_init_time'], axis=1)
 
-# Remove Features with 0 feature importance
-train = train.drop(
-    ['payment_method_id14',
-     'payment_method_id18',
-     'payment_method_id21',
-     'payment_method_id26',
-     'payment_method_id35',
-     ], axis=1)
-
-test = test.drop(
-    ['payment_method_id14',
-     'payment_method_id18',
-     'payment_method_id21',
-     'payment_method_id26',
-     'payment_method_id35',
-     ], axis=1)
-
-# Remove Features with feature importance less than 100
-train = train.drop(
-    ['payment_method_id16',
-     'payment_method_id17',
-     'payment_method_id19',
-     'payment_method_id23',
-     'payment_method_id27',
-     'payment_method_id28',
-     'payment_method_id31',
-     ], axis=1)
-
-test = test.drop(
-    ['payment_method_id16',
-     'payment_method_id17',
-     'payment_method_id19',
-     'payment_method_id23',
-     'payment_method_id27',
-     'payment_method_id28',
-     'payment_method_id31',
-     ], axis=1)
-
 train['autorenew_&_not_cancel'] = ((train.is_auto_renew == 1) == (train.is_cancel == 0)).astype(np.int8)
 test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel == 0)).astype(np.int8)
 
