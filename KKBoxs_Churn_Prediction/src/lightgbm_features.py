@@ -124,6 +124,7 @@ test = test.drop(
      'is_discount_x',
      'transaction_date_year_x'], axis=1)
 
+# Create 4 new features
 train['autorenew_&_not_cancel'] = ((train.is_auto_renew == 1) == (train.is_cancel == 0)).astype(np.int8)
 test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel == 0)).astype(np.int8)
 
@@ -153,7 +154,35 @@ cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
 print(cols)
 
+params = {
+    'objective': 'binary',
+    'metric': 'binary_logloss',
+    'boosting': 'gbdt',
+    'learning_rate': 0.002,  # small learn rate, large number of iterations
+    'verbose': 0,
+    'num_leaves': 108,
+    'bagging_fraction': 0.95,
+    'bagging_freq': 1,
+    'bagging_seed': 1,
+    'feature_fraction': 0.9,
+    'feature_fraction_seed': 1,
+    'max_bin': 128,
+    'max_depth': 7,
+    'reg_alpha': 1,
+    'reg_lambda': 0,
+    'min_split_gain': 0.5,
+    'min_child_weight': 1,
+    'min_child_samples': 10,
+    'scale_pos_weight': 1
+}
+
 bst = None
+
+cv_results = lgb.cv(
+    params, lgb.Dataset(train[cols], label=train['is_churn']), num_boost_round=1500, nfold=5, stratified=False,
+    shuffle=True,
+    metrics='binary_logloss',
+    early_stopping_rounds=50, verbose_eval=50, show_stdv=True, seed=0)
 
 for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_size=0.4).split(train):
     train_data = lgb.Dataset(train[cols].loc[train_indices, :],
@@ -161,28 +190,13 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
     val_data = lgb.Dataset(train[cols].loc[val_indices, :],
                            label=train.loc[val_indices, 'is_churn'])
 
-    params = {
-        'objective': 'binary',
-        'metric': 'binary_logloss',
-        'boosting': 'gbdt',
-        'learning_rate': 0.002,  # small learn rate, large number of iterations
-        'verbose': 0,
-        'num_leaves': 108,
-        'bagging_fraction': 0.95,
-        'bagging_freq': 1,
-        'bagging_seed': 1,
-        'feature_fraction': 0.9,
-        'feature_fraction_seed': 1,
-        'max_bin': 128,
-        'max_depth': 7,
-    }
-
-    bst = lgb.train(params, train_data, 3000, valid_sets=[val_data], early_stopping_rounds=50)
+    bst = lgb.train(params, train_data, 2500, valid_sets=[val_data], early_stopping_rounds=50)
 
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test = test[['msno', 'is_churn']]
-test.to_csv('submission_lightgbm_features_features_selection_v2_eta_0.002_round_3000_Dec_15.csv', index=False)
+test.to_csv('submission_lightgbm_features_features_selection_best_parameter_eta_0.002_round_2000_Dec_15.csv',
+            index=False)
 
 print('Plot feature importances...')
 ax = lgb.plot_importance(bst)
