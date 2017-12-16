@@ -59,8 +59,8 @@ train['gender'] = train['gender'].replace(0, train['gender'].mean())
 test['gender'] = test['gender'].replace(0, test['gender'].mean())
 
 # Delete date for now
-train = train.drop(['registration_init_time'], axis=1)
-test = test.drop(['registration_init_time'], axis=1)
+train = train.drop(['expiration_date', 'registration_init_time'], axis=1)
+test = test.drop(['expiration_date', 'registration_init_time'], axis=1)
 
 train['autorenew_&_not_cancel'] = ((train.is_auto_renew == 1) == (train.is_cancel == 0)).astype(np.int8)
 test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel == 0)).astype(np.int8)
