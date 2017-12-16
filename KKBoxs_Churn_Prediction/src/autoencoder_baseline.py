@@ -15,12 +15,6 @@ transactions_train = pd.read_csv('../input/processed_transaction_features_feb.cs
 transactions_test = pd.read_csv('../input/processed_transaction_features_mar.csv', index_col=0)
 transactions = pd.read_csv('../input/processed_transaction_features.csv', index_col=0)
 
-transactions = transactions[
-    ['msno', 'discount', 'amt_per_day', 'is_discount', 'membership_days', 'transaction_date_year',
-     'transaction_date_month',
-     'transaction_date_day', 'membership_expire_date_year', 'membership_expire_date_month',
-     'membership_expire_date_day']]
-
 members = pd.read_csv('../input/members_v3.csv')
 
 user_log_train = pd.read_csv('../input/processed_features_user_log_feb.csv')
