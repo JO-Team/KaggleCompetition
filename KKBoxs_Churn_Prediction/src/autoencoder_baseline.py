@@ -64,9 +64,6 @@ test['bd'] = test['bd'].replace(0, test['bd'].mode())
 train['gender'] = train['gender'].replace(0, train['gender'].mean())
 test['gender'] = test['gender'].replace(0, test['gender'].mean())
 
-train = train.fillna(0)
-test = test.fillna(0)
-
 # Delete date for now
 train = train.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
 test = test.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
@@ -127,8 +124,15 @@ test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel =
 train['notAutorenew_&_cancel'] = ((train.is_auto_renew == 0) == (train.is_cancel == 1)).astype(np.int8)
 test['notAutorenew_&_cancel'] = ((test.is_auto_renew == 0) == (test.is_cancel == 1)).astype(np.int8)
 
+train = train.replace([np.inf, -np.inf], np.nan)
+
+train = train.fillna(0)
+test = test.fillna(0)
+
 train_0 = train[train['is_churn'] == 0]
 train_1 = train[train['is_churn'] == 1]
+
+
 
 '''
 # Enlarge train_1 for 17 times
