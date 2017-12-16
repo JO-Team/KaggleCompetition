@@ -65,8 +65,8 @@ train['gender'] = train['gender'].replace(0, train['gender'].mean())
 test['gender'] = test['gender'].replace(0, test['gender'].mean())
 
 # Delete date for now
-train = train.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
-test = test.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
+train = train.drop(['registration_init_time'], axis=1)
+test = test.drop(['registration_init_time'], axis=1)
 
 # Remove Features with 0 feature importance
 train = train.drop(
