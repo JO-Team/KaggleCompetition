@@ -33,8 +33,8 @@ test = pd.read_csv('../input/sample_submission_v2.csv')
 
 # Merge Data
 
-train = pd.merge(train, transactions_train, how='left', on='msno')
-test = pd.merge(test, transactions_test, how='left', on='msno')
+# train = pd.merge(train, transactions_train, how='left', on='msno')
+# test = pd.merge(test, transactions_test, how='left', on='msno')
 
 train = pd.merge(train, transactions, how='left', on='msno')
 test = pd.merge(test, transactions, how='left', on='msno')
@@ -75,26 +75,15 @@ train = train.drop(
      'payment_method_id21',
      'payment_method_id26',
      'payment_method_id35',
-     'transaction_date_month_x',
-     'transaction_date_day_x',
-     'membership_expire_date_year_x',
-     'membership_expire_date_month_x',
-     'membership_expire_date_day_x',
-     'transaction_date_day_y',
-     'membership_expire_date_day_y'], axis=1)
+     ], axis=1)
+
 test = test.drop(
     ['payment_method_id14',
      'payment_method_id18',
      'payment_method_id21',
      'payment_method_id26',
      'payment_method_id35',
-     'transaction_date_month_x',
-     'transaction_date_day_x',
-     'membership_expire_date_year_x',
-     'membership_expire_date_month_x',
-     'membership_expire_date_day_x',
-     'transaction_date_day_y',
-     'membership_expire_date_day_y'], axis=1)
+     ], axis=1)
 
 # Remove Features with feature importance less than 100
 train = train.drop(
@@ -105,8 +94,8 @@ train = train.drop(
      'payment_method_id27',
      'payment_method_id28',
      'payment_method_id31',
-     'is_discount_x',
-     'transaction_date_year_x'], axis=1)
+     ], axis=1)
+
 test = test.drop(
     ['payment_method_id16',
      'payment_method_id17',
@@ -115,8 +104,7 @@ test = test.drop(
      'payment_method_id27',
      'payment_method_id28',
      'payment_method_id31',
-     'is_discount_x',
-     'transaction_date_year_x'], axis=1)
+     ], axis=1)
 
 train['autorenew_&_not_cancel'] = ((train.is_auto_renew == 1) == (train.is_cancel == 0)).astype(np.int8)
 test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel == 0)).astype(np.int8)
@@ -131,8 +119,6 @@ test = test.fillna(0)
 
 train_0 = train[train['is_churn'] == 0]
 train_1 = train[train['is_churn'] == 1]
-
-
 
 '''
 # Enlarge train_1 for 17 times
