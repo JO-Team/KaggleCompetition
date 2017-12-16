@@ -150,14 +150,15 @@ def rand_rows(df, num_rows=5):
 train_0 = rand_rows(train_0, len(train_1))
 train = train_0.append(train_1)
 
+cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
+
 # Add Normalize
 min_max_scaler = preprocessing.MinMaxScaler()
-np_scaled = min_max_scaler.fit_transform(train)
-train_normalized = pd.DataFrame(np_scaled)
+train[cols] = min_max_scaler.fit_transform(train[cols])
 
-print(train_normalized.head(5))
+print(train.head(5))
 
-X_train, X_test = train_test_split(train_normalized, test_size=0.2, random_state=47, shuffle=True)
+X_train, X_test = train_test_split(train, test_size=0.2, random_state=47, shuffle=True)
 y_train = X_train['is_churn']
 X_train = X_train.drop(['msno', 'is_churn'], axis=1)
 
