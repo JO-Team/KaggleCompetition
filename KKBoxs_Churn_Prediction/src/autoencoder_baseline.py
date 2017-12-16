@@ -100,10 +100,8 @@ train = train_0.append(train_1)
 cols = [c for c in train.columns if c not in ['is_churn', 'msno']]
 
 # Add Normalize
-min_max_scaler = preprocessing.MinMaxScaler()
-train[cols] = min_max_scaler.fit_transform(train[cols])
-
-print(train.head(5))
+# min_max_scaler = preprocessing.MinMaxScaler()
+# train[cols] = min_max_scaler.fit_transform(train[cols])
 
 X_train, X_test = train_test_split(train, test_size=0.2, random_state=47, shuffle=True)
 y_train = X_train['is_churn']
