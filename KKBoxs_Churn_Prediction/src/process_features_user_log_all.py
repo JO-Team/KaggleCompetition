@@ -59,10 +59,10 @@ def calculate_user_log_features(train):
     return train
 
 
-train = pd.read_csv('../input/processed_user_log_mid_all.csv')
+train = pd.read_csv('../input/processed_user_log_mid_all.csv', nrows=100)
 
 train = calculate_user_log_features(train)
 
-print(len(train))
+print(train)
 
-train.to_csv('../input/processed_features_user_log_all_time.csv', index=False)
+# train.to_csv('../input/processed_features_user_log_all_time.csv', index=False)
