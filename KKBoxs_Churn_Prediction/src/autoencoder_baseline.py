@@ -177,9 +177,9 @@ input_dim = X_train.shape[1]
 autoencoder = Sequential()
 autoencoder.add(Dense(input_dim, input_dim=input_dim))
 autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
-autoencoder.add(Dropout(0.4))
+autoencoder.add(Dropout(0.5))
 autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
-autoencoder.add(Dropout(0.2))
+autoencoder.add(Dropout(0.5))
 # autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
 autoencoder.add(Dense(1, activation='sigmoid'))
 
@@ -218,4 +218,4 @@ predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values
 test['is_churn'] = predictions
 test = test[['msno', 'is_churn']]
 
-test.to_csv('submission_autoencoder_features_selection_fractional_200_32_Dec_15.csv', index=False)
+test.to_csv('submission_autoencoder_features_selection_drop_fractional_200_32_Dec_15.csv', index=False)
