@@ -72,9 +72,8 @@ def process_user_log_together(df):
 
 gc.enable()
 
-# size = 4e7  # 40 million
-size = 100
-reader = pd.read_csv('../input/user_logs.csv', chunksize=size, nrows=1000)
+size = 4e7  # 40 million
+reader = pd.read_csv('../input/user_logs.csv', chunksize=size)
 start_time = time.time()
 for i in range(10):
     user_log_chunk = next(reader)
@@ -88,8 +87,8 @@ for i in range(10):
 
 user_log_feb = process_user_log_together(user_log_feb)
 
-print(user_log_feb)
+print(len(user_log_feb))
 
-# user_log_feb.to_csv("../input/processed_user_log_mid_all.csv", index=False)
+user_log_feb.to_csv("../input/processed_user_log_mid_all.csv", index=False)
 
 print('Done')
