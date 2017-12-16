@@ -3,7 +3,7 @@ import gc
 import numpy as np
 import pandas as pd
 from keras.callbacks import ModelCheckpoint, TensorBoard
-from keras.layers import Dense
+from keras.layers import Dense, Dropout
 from keras.models import Sequential
 from numpy import random as rm
 from sklearn import preprocessing
@@ -177,7 +177,9 @@ input_dim = X_train.shape[1]
 autoencoder = Sequential()
 autoencoder.add(Dense(input_dim, input_dim=input_dim))
 autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
+autoencoder.add(Dropout(0.4))
 autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
+autoencoder.add(Dropout(0.2))
 # autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
 autoencoder.add(Dense(1, activation='sigmoid'))
 
