@@ -87,7 +87,7 @@ params = {
     'objective': 'binary',
     'metric': 'binary_logloss',
     'boosting': 'gbdt',
-    'learning_rate': 0.002,  # small learn rate, large number of iterations
+    'learning_rate': 0.008,  # small learn rate, large number of iterations
     'verbose': 0,
     'num_leaves': 108,
     'bagging_fraction': 0.95,
@@ -124,7 +124,7 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test = test[['msno', 'is_churn']]
-test.to_csv('submission_lightgbm_all_time_feaetures_with_test_eta_0.002_round_2500_Dec_16.csv',
+test.to_csv('submission_lightgbm_all_time_feaetures_with_test_eta_0.008_round_2500_Dec_16.csv',
             index=False)
 
 print('Plot feature importances...')
