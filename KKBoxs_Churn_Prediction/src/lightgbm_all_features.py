@@ -14,8 +14,11 @@ members = pd.read_csv('../input/members_v3.csv')
 
 user_log_all = pd.read_csv('../input/processed_features_user_log_all_time.csv')
 user_log_test = pd.read_csv('../input/processed_features_user_log_all_time_including_mar.csv')
+user_log_feb = pd.read_csv('../input/processed_features_user_log_feb.csv')
+user_log_mar = pd.read_csv('../input/processed_features_user_log_mar.csv')
 
-train = pd.read_csv('../input/train_v2.csv')
+train = pd.read_csv('../input/train.csv')
+train = train.append(pd.read_csv('../input/train_v2.csv'), ignore_index=True)
 
 test = pd.read_csv('../input/sample_submission_v2.csv')
 
@@ -26,6 +29,9 @@ test = pd.merge(test, transactions, how='left', on='msno')
 
 train = pd.merge(train, user_log_all, how='left', on='msno')
 test = pd.merge(test, user_log_test, how='left', on='msno')
+
+train = pd.merge(train, user_log_feb, how='left', on='msno')
+test = pd.merge(test, user_log_mar, how='left', on='msno')
 
 train = pd.merge(train, members, how='left', on='msno')
 test = pd.merge(test, members, how='left', on='msno')
