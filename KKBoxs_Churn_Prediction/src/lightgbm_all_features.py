@@ -52,8 +52,8 @@ test['bd'] = test['bd'].replace(0, test['bd'].mode())
 train['gender'] = train['gender'].replace(0, train['gender'].mean())
 test['gender'] = test['gender'].replace(0, test['gender'].mean())
 
-train = train.fillna(0)
-test = test.fillna(0)
+# train = train.fillna(0)
+# test = test.fillna(0)
 
 # Delete date for now
 train = train.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
@@ -65,6 +65,64 @@ test['autorenew_&_not_cancel'] = ((test.is_auto_renew == 1) == (test.is_cancel =
 
 train['notAutorenew_&_cancel'] = ((train.is_auto_renew == 0) == (train.is_cancel == 1)).astype(np.int8)
 test['notAutorenew_&_cancel'] = ((test.is_auto_renew == 0) == (test.is_cancel == 1)).astype(np.int8)
+
+train = train.drop(['payment_method_id2',
+                    'payment_method_id3',
+                    'payment_method_id4',
+                    'payment_method_id5',
+                    'payment_method_id6',
+                    'payment_method_id8',
+                    'payment_method_id10',
+                    'payment_method_id11',
+                    'payment_method_id12',
+                    'payment_method_id13',
+                    'payment_method_id14',
+                    'payment_method_id16',
+                    'payment_method_id17',
+                    'payment_method_id18',
+                    'payment_method_id19',
+                    'payment_method_id20',
+                    'payment_method_id21',
+                    'payment_method_id22',
+                    'payment_method_id23',
+                    'payment_method_id24',
+                    'payment_method_id25',
+                    'payment_method_id27',
+                    'payment_method_id28',
+                    'payment_method_id31',
+                    'payment_method_id33',
+                    'payment_method_id34',
+                    'transaction_date_day',
+                    'membership_expire_date_day'], axis=1)
+
+test = test.drop(['payment_method_id2',
+                  'payment_method_id3',
+                  'payment_method_id4',
+                  'payment_method_id5',
+                  'payment_method_id6',
+                  'payment_method_id8',
+                  'payment_method_id10',
+                  'payment_method_id11',
+                  'payment_method_id12',
+                  'payment_method_id13',
+                  'payment_method_id14',
+                  'payment_method_id16',
+                  'payment_method_id17',
+                  'payment_method_id18',
+                  'payment_method_id19',
+                  'payment_method_id20',
+                  'payment_method_id21',
+                  'payment_method_id22',
+                  'payment_method_id23',
+                  'payment_method_id24',
+                  'payment_method_id25',
+                  'payment_method_id27',
+                  'payment_method_id28',
+                  'payment_method_id31',
+                  'payment_method_id33',
+                  'payment_method_id34',
+                  'transaction_date_day',
+                  'membership_expire_date_day'], axis=1)
 
 feature_list = [
     # raw data
@@ -130,7 +188,7 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test = test[['msno', 'is_churn']]
-test.to_csv('submission_lightgbm_all_time_feaetures_origin_version_eta_0.002_round_2500_Dec_16.csv',
+test.to_csv('submission_lightgbm_features_selection_origin_version_eta_0.002_round_2500_Dec_17.csv',
             index=False)
 
 print('Plot feature importances...')
@@ -143,6 +201,6 @@ importance = bst.feature_importance()
 # print(type(importance))
 a = pd.DataFrame({'feature': cols, 'importance': importance})
 # print(a)
-a.to_csv('feature_importance_all_time_features.csv')
+a.to_csv('feature_importance_features_selection.csv')
 # plt.show()
 plt.savefig('lightgbm_feaeture_importance_all_time')
