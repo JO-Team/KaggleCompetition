@@ -117,11 +117,13 @@ input_dim = X_train.shape[1]
 
 autoencoder = Sequential()
 autoencoder.add(Dense(input_dim, input_dim=input_dim))
-autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
+input_dim = input_dim / 2
+autoencoder.add(Dense(input_dim, activation='relu'))
 autoencoder.add(Dropout(0.5))
-autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
+input_dim = input_dim / 2
+autoencoder.add(Dense(input_dim, activation='relu'))
 autoencoder.add(Dropout(0.5))
-# autoencoder.add(Dense(int(input_dim / 2), activation='relu'))
+# autoencoder.add(Dense(input_dim, activation='relu'))
 autoencoder.add(Dense(1, activation='sigmoid'))
 
 autoencoder.summary()
