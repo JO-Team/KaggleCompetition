@@ -2,6 +2,7 @@ import gc
 
 import numpy as np
 import pandas as pd
+from keras import optimizers
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
@@ -11,8 +12,8 @@ from sklearn.model_selection import train_test_split
 
 gc.enable()
 
-transactions_train = pd.read_csv('../input/processed_transaction_features_feb.csv', index_col=0)
-transactions_test = pd.read_csv('../input/processed_transaction_features_mar.csv', index_col=0)
+# transactions_train = pd.read_csv('../input/processed_transaction_features_feb.csv', index_col=0)
+# transactions_test = pd.read_csv('../input/processed_transaction_features_mar.csv', index_col=0)
 transactions = pd.read_csv('../input/processed_transaction_features.csv', index_col=0)
 
 members = pd.read_csv('../input/members_v3.csv')
@@ -21,7 +22,8 @@ user_log_train = pd.read_csv('../input/processed_features_user_log_feb.csv')
 user_log_test = pd.read_csv('../input/processed_features_user_log_mar.csv')
 user_log_all = pd.read_csv('../input/processed_user_log_all.csv')
 
-train = pd.read_csv('../input/train_v2.csv')
+train = pd.read_csv('../input/train.csv')
+train = train.append(pd.read_csv('../input/train_v2.csv'), ignore_index=True)
 
 test = pd.read_csv('../input/sample_submission_v2.csv')
 
@@ -58,8 +60,6 @@ test['bd'] = test['bd'].replace(0, test['bd'].mode())
 train['gender'] = train['gender'].replace(0, train['gender'].mean())
 test['gender'] = test['gender'].replace(0, test['gender'].mean())
 
-print(train.columns)
-# Delete date for now
 train = train.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
 test = test.drop(['transaction_date', 'membership_expire_date', 'registration_init_time'], axis=1)
 
@@ -126,10 +126,12 @@ autoencoder.add(Dense(1, activation='sigmoid'))
 
 autoencoder.summary()
 
-nb_epoch = 200
+nb_epoch = 50
 batch_size = 32
 
-autoencoder.compile(optimizer='adam',
+sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+
+autoencoder.compile(optimizer=sgd,
                     loss='binary_crossentropy',
                     metrics=['accuracy'])
 
@@ -159,4 +161,4 @@ predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values
 test['is_churn'] = predictions
 test = test[['msno', 'is_churn']]
 
-test.to_csv('submission_autoencoder_features_selection_drop_fractional_200_32_Dec_15.csv', index=False)
+test.to_csv('submission_autoencoder_baseline_sgd_0.002_50_32_Dec_15.csv', index=False)
