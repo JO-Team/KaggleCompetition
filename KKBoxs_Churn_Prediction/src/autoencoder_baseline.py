@@ -137,7 +137,7 @@ autoencoder.summary()
 nb_epoch = 50
 batch_size = 32
 
-sgd = optimizers.SGD(lr=0.05, decay=1e-6, momentum=0.9, nesterov=True)
+sgd = optimizers.SGD(lr=0.002, decay=1e-6, momentum=0.9, nesterov=True)
 
 autoencoder.compile(optimizer=sgd,
                     loss='binary_crossentropy',
@@ -169,4 +169,4 @@ predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values
 test['is_churn'] = predictions
 test = test[['msno', 'is_churn']]
 
-test.to_csv('submission_autoencoder_baseline_sgd_0.05_50_32_Dec_15.csv', index=False)
+test.to_csv('submission_autoencoder_baseline_sgd_0.002_50_32_Dec_15.csv', index=False)
