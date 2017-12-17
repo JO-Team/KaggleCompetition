@@ -117,13 +117,19 @@ input_dim = X_train.shape[1]
 
 autoencoder = Sequential()
 autoencoder.add(Dense(input_dim, input_dim=input_dim))
+
 input_dim = int(input_dim / 2)
 autoencoder.add(Dense(input_dim, activation='relu'))
 autoencoder.add(Dropout(0.5))
+
 input_dim = int(input_dim / 2)
 autoencoder.add(Dense(input_dim, activation='relu'))
 autoencoder.add(Dropout(0.5))
-# autoencoder.add(Dense(input_dim, activation='relu'))
+
+input_dim = int(input_dim / 2)
+autoencoder.add(Dense(input_dim, activation='relu'))
+autoencoder.add(Dropout(0.5))
+
 autoencoder.add(Dense(1, activation='sigmoid'))
 
 autoencoder.summary()
@@ -131,7 +137,7 @@ autoencoder.summary()
 nb_epoch = 50
 batch_size = 32
 
-sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+sgd = optimizers.SGD(lr=0.05, decay=1e-6, momentum=0.9, nesterov=True)
 
 autoencoder.compile(optimizer=sgd,
                     loss='binary_crossentropy',
@@ -163,4 +169,4 @@ predictions = autoencoder.predict(test.drop(['msno', 'is_churn'], axis=1).values
 test['is_churn'] = predictions
 test = test[['msno', 'is_churn']]
 
-test.to_csv('submission_autoencoder_baseline_sgd_0.002_50_32_Dec_15.csv', index=False)
+test.to_csv('submission_autoencoder_baseline_sgd_0.05_50_32_Dec_15.csv', index=False)
