@@ -12,8 +12,8 @@ transactions = pd.read_csv('../input/processed_transaction_features.csv', index_
 
 members = pd.read_csv('../input/members_v3.csv')
 
-user_log_all = pd.read_csv('../input/processed_features_user_log_all_time.csv')
-user_log_test = pd.read_csv('../input/processed_features_user_log_all_time_including_mar.csv')
+user_log_all = pd.read_csv('../input/processed_user_log_all.csv')
+# user_log_test = pd.read_csv('../input/processed_features_user_log_all_time_including_mar.csv')
 user_log_feb = pd.read_csv('../input/processed_features_user_log_feb.csv')
 user_log_mar = pd.read_csv('../input/processed_features_user_log_mar.csv')
 
@@ -28,7 +28,7 @@ train = pd.merge(train, transactions, how='left', on='msno')
 test = pd.merge(test, transactions, how='left', on='msno')
 
 train = pd.merge(train, user_log_all, how='left', on='msno')
-test = pd.merge(test, user_log_test, how='left', on='msno')
+test = pd.merge(test, user_log_all, how='left', on='msno')
 
 train = pd.merge(train, user_log_feb, how='left', on='msno')
 test = pd.merge(test, user_log_mar, how='left', on='msno')
@@ -130,7 +130,7 @@ for train_indices, val_indices in ShuffleSplit(n_splits=1, test_size=0.1, train_
 predictions = bst.predict(test[cols])
 test['is_churn'] = predictions
 test = test[['msno', 'is_churn']]
-test.to_csv('submission_lightgbm_all_time_feaetures_more_train_eta_0.002_round_2500_Dec_16.csv',
+test.to_csv('submission_lightgbm_all_time_feaetures_origin_version_eta_0.002_round_2500_Dec_16.csv',
             index=False)
 
 print('Plot feature importances...')
