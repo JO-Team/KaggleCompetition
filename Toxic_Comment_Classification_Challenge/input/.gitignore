@@ -1,0 +1,4 @@
+# Ignore the large data file
+*.csv
+*.7z
+
